@@ -9,7 +9,7 @@ const Chat: FC = () => {
   useEffect(() => {
     if (socket.current)
       return;
-    socket.current = io('http://localhost:3000');
+    socket.current = io('ws://localhost:3000');
     socket.current?.on('msgToClient', (message) => {
       console.log(message);
       setMessages((messages) => [...messages, message]);
