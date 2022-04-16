@@ -4,32 +4,22 @@ import { io, Socket } from "socket.io-client";
 import useEventListener from '../hooks/use_event_listener';
 import useInterval from '../hooks/use_interval';
 
-export interface FrameInfo {
+interface FrameInfo {
   ballX: number;
   ballY: number;
+  ballRadius: number;
+  club1Pos: number;
+  club2Pos: number;
 }
 
 const Pong: FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const socket = useRef<Socket | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const socket = useRef<Socket>();
 
-  const [club1Pos, setClub1Pos] = useState(300);
-  const [frameInfo, setFrameInfo] = useState<FrameInfo>();
-
-  useEffect(() => {
-    if (socket.current)
-      return;
-    socket.current = io('ws://localhost:3000');
-    socket.current?.on('frameInfo', (frameInfo: FrameInfo) => {
-      console.log(frameInfo);
-      setFrameInfo(frameInfo);
-    });
-  }, []);
-
-  const renderField = () => {
+  const renderField = ({ ballX, ballY, club1Pos, club2Pos }: FrameInfo) => {
     const canvas = canvasRef.current;
     const ctx = canvasRef.current?.getContext('2d');
-    if (!canvas || !ctx || !frameInfo) return;
+    if (!canvas || !ctx) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -39,19 +29,27 @@ const Pong: FC = () => {
     ctx.fillStyle = 'rgb(255, 255, 255)';
 
     ctx.beginPath();
-    ctx.arc(frameInfo.ballX, frameInfo.ballY, 10, 0, 2 * Math.PI);
+    ctx.arc(ballX, ballY, 10, 0, 2 * Math.PI);
     ctx.fill();
 
     ctx.fillRect(20, club1Pos - 80, 20, 160);
+    ctx.fillRect(canvas.width - 40, club2Pos - 80, 20, 160);
   };
 
-  useInterval(renderField, 10);
+  useEffect(() => {
+    if (socket.current)
+      return;
+    socket.current = io('ws://localhost:3000');
+    socket.current?.on('frameInfo', (frameInfo: FrameInfo) => {
+      renderField(frameInfo);
+    });
+  }, []);
 
   const keyHandler = (e: KeyboardEvent) => {
     if (e.code == 'ArrowUp') {
-      setClub1Pos(pos => pos - 10);
+      socket.current?.emit('moveClub1', -20);
     } else if (e.code == 'ArrowDown') {
-      setClub1Pos(pos => pos + 10);
+      socket.current?.emit('moveClub1', 20);
     }
   };
 
@@ -59,9 +57,7 @@ const Pong: FC = () => {
 
   return (
     <>
-      <p>Club pos: {club1Pos}</p>
-      <p>Frame info: {JSON.stringify(frameInfo)}</p>
-      <canvas width="800" height="600" ref={canvasRef}></canvas>
+      <canvas width={800} height={600} ref={canvasRef}></canvas>
     </>
   );
 };
