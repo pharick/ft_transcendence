@@ -19,7 +19,7 @@ export class PongGateway implements OnGatewayConnection {
     setInterval(() => {
       const frameInfo: FrameInfo = this.pongService.getNextFrame();
       this.server.emit('frameInfo', frameInfo);
-    }, 10);
+    }, 5);
   }
 
   @SubscribeMessage('moveClub1')
