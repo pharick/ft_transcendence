@@ -15,20 +15,21 @@ export class PongGateway implements OnGatewayConnection {
 
   handleConnection(client: Socket, ...args: any[]): void {
     this.logger.log(`Pong client connected: ${client.id}`);
-
-    setInterval(() => {
-      const frameInfo: FrameInfo = this.pongService.getNextFrame();
-      this.server.emit('frameInfo', frameInfo);
-    }, 5);
   }
 
-  @SubscribeMessage('moveClub1')
-  handleMoveClub1(client: Socket, delta: number): void {
-    this.pongService.moveClub1(delta);
+  @SubscribeMessage('getNextFrame')
+  handleGetNextFrame(client: Socket, game_id: string): void {
+    const frame: FrameInfo = this.pongService.getNextFrame(game_id);
+    this.server.emit('nextFrame', frame);
   }
 
-  @SubscribeMessage('moveClub2')
-  handleMoveClub2(client: Socket, delta: number): void {
-    this.pongService.moveClub2(delta);
-  }
+  // @SubscribeMessage('moveClub1')
+  // handleMoveClub1(client: Socket, delta: number): void {
+  //   this.pongService.moveClub1(delta);
+  // }
+  //
+  // @SubscribeMessage('moveClub2')
+  // handleMoveClub2(client: Socket, delta: number): void {
+  //   this.pongService.moveClub2(delta);
+  // }
 }

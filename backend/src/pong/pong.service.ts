@@ -120,7 +120,11 @@ class Game {
 @Injectable()
 export class PongService {
 
-  private games: { [game_id: string]: Game } = {};
+  private games: Record<string, Game> = {};
+
+  findAll(): string[] {
+    return Object.keys(this.games);
+  }
 
   createNewGame(): string {
     const game_id: string = uuid4();

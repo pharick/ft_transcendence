@@ -11,7 +11,7 @@ const Game: NextPage = () => {
   return (
     <>
       <h1>Game {game_id}</h1>
-      <Pong game_id={game_id} />
+      {game_id && <Pong game_id={game_id} />}
     </>
   );
 };

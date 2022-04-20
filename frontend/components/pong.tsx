@@ -12,7 +12,11 @@ interface FrameInfo {
   club2Pos: number;
 }
 
-const Pong: FC = () => {
+interface PongProps {
+  game_id: string;
+}
+
+const Pong: FC<PongProps> = ({ game_id }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const socket = useRef<Socket>();
 
@@ -40,20 +44,24 @@ const Pong: FC = () => {
     if (socket.current)
       return;
     socket.current = io('ws://localhost:3000');
-    socket.current?.on('frameInfo', (frameInfo: FrameInfo) => {
-      renderField(frameInfo);
+    socket.current?.on('nextFrame', (frame: FrameInfo) => {
+      renderField(frame);
     });
   }, []);
 
-  const keyHandler = (e: KeyboardEvent) => {
-    if (e.code == 'ArrowUp') {
-      socket.current?.emit('moveClub1', -20);
-    } else if (e.code == 'ArrowDown') {
-      socket.current?.emit('moveClub1', 20);
-    }
-  };
+  // const keyHandler = (e: KeyboardEvent) => {
+  //   if (e.code == 'ArrowUp') {
+  //     socket.current?.emit('moveClub1', -20);
+  //   } else if (e.code == 'ArrowDown') {
+  //     socket.current?.emit('moveClub1', 20);
+  //   }
+  // };
 
-  useEventListener('keydown', keyHandler, document);
+  // useEventListener('keydown', keyHandler, document);
+
+  useInterval(() => {
+    socket.current?.emit('getNextFrame', game_id);
+  }, 10);
 
   return (
     <>
