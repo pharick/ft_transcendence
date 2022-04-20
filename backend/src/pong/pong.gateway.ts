@@ -3,7 +3,7 @@ import { Server, Socket } from "socket.io";
 import { Logger } from "@nestjs/common";
 
 import { PongService } from "./pong.service";
-import { FrameInfo } from './interfaces';
+import { FrameInfo } from '../../types/interfaces';
 
 @WebSocketGateway({cors: true})
 export class PongGateway implements OnGatewayConnection {
@@ -17,10 +17,16 @@ export class PongGateway implements OnGatewayConnection {
     this.logger.log(`Pong client connected: ${client.id}`);
   }
 
+  @SubscribeMessage('connectToGame')
+  handleConnectToGame(client: Socket, game_id: string): void {
+    this.logger.log(`Client connected to game: ${game_id}`);
+    client.join(game_id);
+  }
+
   @SubscribeMessage('getNextFrame')
   handleGetNextFrame(client: Socket, game_id: string): void {
     const frame: FrameInfo = this.pongService.getNextFrame(game_id);
-    this.server.emit('nextFrame', frame);
+    this.server.to(game_id).emit('nextFrame', frame);
   }
 
   // @SubscribeMessage('moveClub1')

@@ -3,14 +3,7 @@ import { io, Socket } from "socket.io-client";
 
 import useEventListener from '../hooks/use_event_listener';
 import useInterval from '../hooks/use_interval';
-
-interface FrameInfo {
-  ballX: number;
-  ballY: number;
-  ballRadius: number;
-  club1Pos: number;
-  club2Pos: number;
-}
+import { FrameInfo } from "../types/interfaces";
 
 interface PongProps {
   game_id: string;
@@ -40,10 +33,17 @@ const Pong: FC<PongProps> = ({ game_id }) => {
     ctx.fillRect(canvas.width - 40, club2Pos - 80, 20, 160);
   };
 
+  const toggleGameRunning = async () => {
+    const response = await fetch(`http://localhost:3000/games/${game_id}/toggle`, { method: 'POST' });
+  };
+
   useEffect(() => {
     if (socket.current)
       return;
+
     socket.current = io('ws://localhost:3000');
+    socket.current?.emit('connectToGame', game_id);
+
     socket.current?.on('nextFrame', (frame: FrameInfo) => {
       renderField(frame);
     });
@@ -66,6 +66,7 @@ const Pong: FC<PongProps> = ({ game_id }) => {
   return (
     <>
       <canvas width={800} height={600} ref={canvasRef}></canvas>
+      <button onClick={toggleGameRunning}>Run / Pause</button>
     </>
   );
 };

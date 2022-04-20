@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuid4 } from 'uuid';
 
-import { FrameInfo } from './interfaces';
+import { FrameInfo } from '../../types/interfaces';
 
 const radians = (degrees: number) => {
   return degrees * (Math.PI / 180);
@@ -97,13 +97,18 @@ class Game {
         this.ballBottom = this.fieldHeight;
         this.ballDirection = -this.ballDirection;
       }
-    }, 5);
+    }, 10);
   }
 
   pauseGame(): void {
     if (this.gameTimer) {
       clearInterval(this.gameTimer);
+      this.gameTimer = null;
     }
+  }
+
+  isGameRunning(): boolean {
+    return !!this.gameTimer;
   }
 
   getNextFrame(): FrameInfo {
@@ -137,14 +142,13 @@ export class PongService {
     return this.games[game_id].getNextFrame();
   }
 
-  resumeGame(game_id: string) {
+  toggleGameRunning(game_id: string) {
     if (!(game_id in this.games)) return;
-    this.games[game_id].resumeGame();
-  }
-
-  pauseGame(game_id: string) {
-    if (!(game_id in this.games)) return;
-    this.games[game_id].pauseGame();
+    if (this.games[game_id].isGameRunning()) {
+      this.games[game_id].pauseGame();
+    } else {
+      this.games[game_id].resumeGame();
+    }
   }
 
 }
