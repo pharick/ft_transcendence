@@ -1,7 +1,7 @@
 import { createProxyServer } from "http-proxy";
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-const API_URL = 'http://localhost:3000'
+const API_URL = 'http://localhost:4000'
 const proxy = createProxyServer();
 
 export const config = {

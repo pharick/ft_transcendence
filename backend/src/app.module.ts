@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { User } from "./users/user.entity";
+import { AuthModule } from './auth/auth.module';
 import { UsersModule } from "./users/users.module";
 import { GamesModule } from "./game/games.module";
+import { UsersService } from "./users/users.service";
 
 @Module({
   imports: [
@@ -17,10 +19,12 @@ import { GamesModule } from "./game/games.module";
       entities: [User],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([User]),
+    AuthModule,
     UsersModule,
     GamesModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [UsersService],
 })
 export class AppModule {}

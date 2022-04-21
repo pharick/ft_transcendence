@@ -5,7 +5,7 @@ import { Logger } from "@nestjs/common";
 import { GamesService } from "./games.service";
 import { FrameInfo } from './games.interfaces';
 
-@WebSocketGateway({cors: true})
+@WebSocketGateway()
 export class GamesGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
