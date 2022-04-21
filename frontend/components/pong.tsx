@@ -34,7 +34,7 @@ const Pong: FC<PongProps> = ({ game_id }) => {
   };
 
   const toggleGameRunning = async () => {
-    const response = await fetch(`http://localhost:3000/games/${game_id}/toggle`, { method: 'POST' });
+    const response = await fetch(`/api/games/${game_id}/toggle`, { method: 'POST' });
   };
 
   useEffect(() => {
