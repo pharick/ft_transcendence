@@ -3,7 +3,7 @@ import { Server, Socket } from "socket.io";
 import { Logger } from "@nestjs/common";
 
 import { GamesService } from "./games.service";
-import { FrameInfo } from '../../types/interfaces';
+import { FrameInfo } from './games.interfaces';
 
 @WebSocketGateway({cors: true})
 export class GamesGateway implements OnGatewayConnection {

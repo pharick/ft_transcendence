@@ -4,9 +4,9 @@ import { GamesService } from "./games.service";
 
 @Controller('games')
 export class GamesController {
-  constructor(private pongService: GamesService) {}
-
   private logger: Logger = new Logger('GamesController');
+  
+  constructor(private pongService: GamesService) {}
 
   @Get()
   findAll(): string[] {

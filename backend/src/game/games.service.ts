@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuid4 } from 'uuid';
 
-import { FrameInfo } from '../../types/interfaces';
+import { FrameInfo } from './games.interfaces';
 
 const radians = (degrees: number) => {
   return degrees * (Math.PI / 180);
