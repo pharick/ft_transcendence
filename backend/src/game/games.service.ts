@@ -123,7 +123,7 @@ class Game {
 }
 
 @Injectable()
-export class PongService {
+export class GamesService {
 
   private games: Record<string, Game> = {};
 

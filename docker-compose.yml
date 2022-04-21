@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  db:
+    build: './db'
+    volumes:
+      - 'db_data:/var/lib/postgresql/data/'
+    environment:
+      - POSTGRES_USER=ft_transcendence
+      - POSTGRES_PASSWORD=ft_transcendence
+      - POSTGRES_DB=ft_transcendence
+    ports:
+      - '5432:5432'
+
+volumes:
+  db_data:

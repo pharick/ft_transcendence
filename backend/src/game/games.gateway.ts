@@ -2,16 +2,16 @@ import {OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer
 import { Server, Socket } from "socket.io";
 import { Logger } from "@nestjs/common";
 
-import { PongService } from "./pong.service";
+import { GamesService } from "./games.service";
 import { FrameInfo } from '../../types/interfaces';
 
 @WebSocketGateway({cors: true})
-export class PongGateway implements OnGatewayConnection {
+export class GamesGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
   private logger: Logger = new Logger('PongGateway');
 
-  constructor(private pongService: PongService) {}
+  constructor(private pongService: GamesService) {}
 
   handleConnection(client: Socket, ...args: any[]): void {
     this.logger.log(`Pong client connected: ${client.id}`);

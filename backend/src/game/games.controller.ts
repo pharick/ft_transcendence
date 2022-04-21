@@ -1,12 +1,12 @@
 import {Controller, Post, Get, Param, Logger} from '@nestjs/common';
 
-import { PongService } from "./pong.service";
+import { GamesService } from "./games.service";
 
 @Controller('games')
-export class GameController {
-  constructor(private pongService: PongService) {}
+export class GamesController {
+  constructor(private pongService: GamesService) {}
 
-  private logger: Logger = new Logger('GameController');
+  private logger: Logger = new Logger('GamesController');
 
   @Get()
   findAll(): string[] {
