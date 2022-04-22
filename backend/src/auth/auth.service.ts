@@ -1,9 +1,9 @@
-import {Injectable, Logger} from "@nestjs/common";
-import {HttpService} from "@nestjs/axios";
-import {lastValueFrom, map} from "rxjs";
+import { Injectable, Logger } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom, map } from 'rxjs';
 
-import { UsersService } from "../users/users.service";
-import { User } from "../users/user.entity";
+import { UsersService } from '../users/users.service';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -12,16 +12,17 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private httpService: HttpService,
-  ) {}
+  ) {
+  }
 
-  private async getUserData(token: string) {
+  private async getUserData(token: string): Promise<any> {
     const observable = await this.httpService.get(
       'https://api.intra.42.fr/v2/me',
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     ).pipe(map(response => response.data));
     return lastValueFrom(observable);
   }
@@ -34,7 +35,7 @@ export class AuthService {
     return user;
   }
 
-  async login(code: string) {
+  async login(code: string): Promise<User> {
     const tokenObservable = await this.httpService.post(
       'https://api.intra.42.fr/oauth/token',
       {
@@ -43,7 +44,7 @@ export class AuthService {
         client_secret: 'f12a693d067cd5c662393089c00dfca52920efbcea5d79e21ed333df5c25e9e2',
         code: code,
         redirect_uri: 'http://localhost:3000/api/auth/login',
-      }
+      },
     ).pipe(map(response => response.data));
 
     const tokenData = await lastValueFrom(tokenObservable);
@@ -52,7 +53,6 @@ export class AuthService {
     const userData = await this.getUserData(accessToken);
     const username = userData.login;
 
-    const user = await this.findOrCreateUser(username);
-    this.logger.log(user);
+    return await this.findOrCreateUser(username);
   }
 }
