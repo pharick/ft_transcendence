@@ -26,7 +26,7 @@ const Home: NextPage = () => {
         LogIn
       </a>
 
-      <h1>Список игр</h1>
+      <h1>Games</h1>
 
       <ul>
         {gameList?.map((game_id: string) => (
