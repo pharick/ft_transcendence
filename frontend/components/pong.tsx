@@ -41,7 +41,7 @@ const Pong: FC<PongProps> = ({ game_id }) => {
     if (socket.current)
       return;
 
-    socket.current = io('ws://localhost:3000');
+    socket.current = io('/api');
     socket.current?.emit('connectToGame', game_id);
 
     socket.current?.on('nextFrame', (frame: FrameInfo) => {
