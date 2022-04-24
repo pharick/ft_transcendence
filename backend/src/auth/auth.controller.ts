@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Query, Redirect, Session } from '@nestjs/common';
+import { Controller, Get, Logger, Post, Query, Redirect, Session } from '@nestjs/common';
 
 import { AuthService } from "./auth.service";
 
@@ -13,8 +13,13 @@ export class AuthController {
   async login(
     @Query('code') code: string,
     @Session() session: Record<string, any>
-  ) {
+  ): Promise<void> {
     const user = await this.authService.login(code);
-    session.user_id = user.id;
+    session.userId = user.id;
+  }
+
+  @Post('logout')
+  logout(@Session() session: Record<string, any>): void {
+    session.destroy();
   }
 }

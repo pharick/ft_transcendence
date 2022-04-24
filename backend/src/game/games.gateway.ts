@@ -3,30 +3,35 @@ import { Server, Socket } from "socket.io";
 import { Logger } from "@nestjs/common";
 
 import { GamesService } from "./games.service";
-import { FrameInfo } from './games.interfaces';
+import { FrameInfo, GameInfo } from './games.interfaces';
 
-@WebSocketGateway()
+@WebSocketGateway({ cors: true })
 export class GamesGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
-  private logger: Logger = new Logger('PongGateway');
+  private logger: Logger = new Logger('GamesGateway');
 
-  constructor(private pongService: GamesService) {}
+  constructor(private gamesService: GamesService) {}
 
   handleConnection(client: Socket, ...args: any[]): void {
     this.logger.log(`Pong client connected: ${client.id}`);
   }
 
   @SubscribeMessage('connectToGame')
-  handleConnectToGame(client: Socket, game_id: string): void {
-    this.logger.log(`Client connected to game: ${game_id}`);
-    client.join(game_id);
+  handleConnectToGame(client: Socket, gameId: string): void {
+    const gameInfo: GameInfo = this.gamesService.findOne(gameId);
+    if (!gameInfo) {
+      client.emit('gameNotFoundError');
+    } else {
+      this.logger.log(`Client connected to game: ${gameId}`);
+      client.join(gameId);
+    }
   }
 
   @SubscribeMessage('getNextFrame')
-  handleGetNextFrame(client: Socket, game_id: string): void {
-    const frame: FrameInfo = this.pongService.getNextFrame(game_id);
-    this.server.to(game_id).emit('nextFrame', frame);
+  handleGetNextFrame(client: Socket, gameId: string): void {
+    const frame: FrameInfo = this.gamesService.getNextFrame(gameId);
+    this.server.to(gameId).emit('nextFrame', frame);
   }
 
   // @SubscribeMessage('moveClub1')

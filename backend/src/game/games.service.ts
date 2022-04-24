@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { v4 as uuid4 } from 'uuid';
 
+import { GameInfo } from './games.interfaces';
 import { FrameInfo } from './games.interfaces';
 
 const radians = (degrees: number) => {
@@ -20,6 +21,9 @@ class Game {
   private club1Pos: number;
   private club2Pos: number;
 
+  private player1Id: number;
+  private player2Id: number;
+
   private gameTimer: NodeJS.Timer;
 
   constructor() {
@@ -28,8 +32,8 @@ class Game {
     this.ballX = this.fieldWidth / 2;
     this.ballY = this.fieldHeight / 2;
     this.ballRadius = 10;
-    this.ballDirection = 45;
-    this.ballSpeed = 10;
+    this.ballDirection = 20;
+    this.ballSpeed = 5;
     this.club1Pos = this.fieldHeight / 2;
     this.club2Pos = this.fieldHeight / 2;
   }
@@ -97,6 +101,7 @@ class Game {
         this.ballBottom = this.fieldHeight;
         this.ballDirection = -this.ballDirection;
       }
+      this.ballSpeed += 0.001;
     }, 10);
   }
 
@@ -127,14 +132,28 @@ export class GamesService {
 
   private games: Record<string, Game> = {};
 
-  findAll(): string[] {
-    return Object.keys(this.games);
+  findAll(): GameInfo[] {
+    return Object.entries(this.games).map(([gameId, game]) => (
+      {
+        gameId: gameId,
+      }
+    ));
   }
 
-  createNewGame(): string {
-    const game_id: string = uuid4();
-    this.games[game_id] = new Game();
-    return game_id;
+  findOne(gameId: string): GameInfo {
+    if (!(gameId in this.games))
+      return null;
+    return {
+      gameId: gameId,
+    }
+  }
+
+  createNewGame(): GameInfo {
+    const gameId: string = uuid4();
+    this.games[gameId] = new Game();
+    return {
+      gameId: gameId,
+    };
   }
 
   getNextFrame(game_id: string): FrameInfo | null {
@@ -142,12 +161,12 @@ export class GamesService {
     return this.games[game_id].getNextFrame();
   }
 
-  toggleGameRunning(game_id: string) {
-    if (!(game_id in this.games)) return;
-    if (this.games[game_id].isGameRunning()) {
-      this.games[game_id].pauseGame();
+  toggleGameRunning(gameId: string) {
+    if (!(gameId in this.games)) return;
+    if (this.games[gameId].isGameRunning()) {
+      this.games[gameId].pauseGame();
     } else {
-      this.games[game_id].resumeGame();
+      this.games[gameId].resumeGame();
     }
   }
 

@@ -1,28 +1,36 @@
-import {Controller, Post, Get, Param, Logger} from '@nestjs/common';
+import { Controller, Post, Get, Param, Logger, Session, NotFoundException } from '@nestjs/common';
 
 import { GamesService } from "./games.service";
+import { GameInfo } from './games.interfaces';
 
 @Controller('games')
 export class GamesController {
   private logger: Logger = new Logger('GamesController');
   
-  constructor(private pongService: GamesService) {}
+  constructor(private gamesService: GamesService) {}
 
   @Get()
-  findAll(): string[] {
-    return this.pongService.findAll();
+  findAll(): GameInfo[] {
+    return this.gamesService.findAll();
+  }
+
+  @Get(':gameId')
+  findOne(@Param('gameId') gameId: string): GameInfo {
+    const gameInfo: GameInfo = this.gamesService.findOne(gameId);
+    if (!gameInfo)
+      throw new NotFoundException();
+    return gameInfo;
   }
 
   @Post()
-  create() {
-    return {
-      game_id: this.pongService.createNewGame(),
-    }
+  create(@Session() session: Record<string, any>): GameInfo {
+    this.logger.log(session.userId);
+    return this.gamesService.createNewGame();
   }
 
-  @Post(':game_id/toggle')
+  @Post(':gameId/toggle')
   toggleGameRunning(@Param() params) {
-    this.logger.log(`Toggle game running: ${params.game_id}`);
-    this.pongService.toggleGameRunning(params.game_id);
+    this.logger.log(`Toggle game running: ${params.gameId}`);
+    this.gamesService.toggleGameRunning(params.gameId);
   }
 }

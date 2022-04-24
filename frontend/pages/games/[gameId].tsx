@@ -6,12 +6,12 @@ const Pong = dynamic(() => import('../../components/pong'), { ssr: false });
 
 const Game: NextPage = () => {
   const router = useRouter();
-  const { game_id } = router.query;
+  const { gameId }: { gameId: string } = router.query;
 
   return (
     <>
-      <h1>Game {game_id}</h1>
-      {game_id && <Pong game_id={game_id} />}
+      <h1>Game {gameId}</h1>
+      {gameId && <Pong gameId={gameId} />}
     </>
   );
 };
