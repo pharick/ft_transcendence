@@ -1,31 +1,34 @@
 import type { NextPage } from 'next';
 import Link from "next/link";
 import { useState } from "react";
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { GetServerSideProps } from 'next';
 
-import User from '../../components/user';
+import UserBlock from '../../components/userBlock';
 import { GameInfo } from '../../types/interfaces';
 
+interface HomePageProps {
+  initGameList: GameInfo[];
+  user: Object;
+}
+
 export const getServerSideProps: GetServerSideProps = async () => {
-  const response = await fetch('http://localhost:4000/games/');
+  const response = await fetch('http://localhost:3000/api/games/');
   const initGameList: GameInfo[] = await response.json();
   return { props: { initGameList } };
 }
 
-const HomePage: NextPage = ({ initGameList }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const HomePage: NextPage<HomePageProps> = ({ initGameList, user }) => {
   const [gameList, setGameList] = useState<GameInfo[]>(initGameList);
 
   const handleCreateGame = async () => {
     const response = await fetch('/api/games/', { method: 'POST' });
-    if (response.status == 401) return; // TODO: попросить залогиниться
     const gameInfo: GameInfo = await response.json();
-    console.log(gameInfo);
     setGameList((gameList) => [...gameList, gameInfo]);
   };
 
   return (
     <>
-      <User/>
+      <UserBlock user={user}/>
 
       <h1>Games</h1>
 

@@ -1,20 +1,12 @@
 import { FC, useEffect, useState } from 'react';
 
-const User: FC = () => {
-  const [user, setUser] = useState();
-  const fetchCurrentUser = async () => {
-    const response = await fetch('/api/users/me');
-    const data = await response.json();
-    setUser(data.user);
-  };
+interface UserBlockProps {
+  user: Object;
+}
 
-  useEffect(() => {
-    fetchCurrentUser();
-  }, []);
-
+const UserBlock: FC<UserBlockProps> = ({ user }) => {
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
-    await fetchCurrentUser();
   };
 
   return (
@@ -34,4 +26,4 @@ const User: FC = () => {
   );
 };
 
-export default User;
+export default UserBlock;
