@@ -1,20 +1,22 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { v4 as uuid4 } from 'uuid';
 
 import { GameInfo } from './games.interfaces';
 import { FrameInfo } from './games.interfaces';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/user.entity';
 
 const radians = (degrees: number) => {
   return degrees * (Math.PI / 180);
 };
 
 class Game {
-  private fieldWidth: number;
-  private fieldHeight: number;
+  private readonly fieldWidth: number;
+  private readonly fieldHeight: number;
 
   private ballX: number;
   private ballY: number;
-  private ballRadius: number;
+  private readonly ballRadius: number;
   private ballDirection: number;
   private ballSpeed: number;
 
@@ -26,7 +28,7 @@ class Game {
 
   private gameTimer: NodeJS.Timer;
 
-  constructor() {
+  constructor(player1Id: number) {
     this.fieldWidth = 800;
     this.fieldHeight = 600;
     this.ballX = this.fieldWidth / 2;
@@ -36,6 +38,7 @@ class Game {
     this.ballSpeed = 5;
     this.club1Pos = this.fieldHeight / 2;
     this.club2Pos = this.fieldHeight / 2;
+    this.player1Id = player1Id;
   }
 
   private get ballLeft(): number {
@@ -70,11 +73,15 @@ class Game {
     this.ballY = n - this.ballRadius;
   }
 
-  moveClub1(delta: number) {
+  getPlayer1Id(): number {
+    return this.player1Id;
+  }
+
+  moveClub1(delta: number): void {
     this.club1Pos += delta;
   }
 
-  moveClub2(delta: number) {
+  moveClub2(delta: number): void {
     this.club2Pos += delta;
   }
 
@@ -129,36 +136,40 @@ class Game {
 
 @Injectable()
 export class GamesService {
-
   private games: Record<string, Game> = {};
 
-  findAll(): GameInfo[] {
-    return Object.entries(this.games).map(([gameId, game]) => (
-      {
-        gameId: gameId,
-      }
-    ));
+  constructor(private usersService: UsersService) {}
+
+  async findAll(): Promise<GameInfo[]> {
+    return await Promise.all(
+      Object.entries(this.games).map(async ([gameId]) => (
+        await this.findOne(gameId)
+      ))
+    );
   }
 
-  findOne(gameId: string): GameInfo {
+  async findOne(gameId: string): Promise<GameInfo> {
     if (!(gameId in this.games))
       return null;
+
+    const player1Id = this.games[gameId].getPlayer1Id();
+    const player1: User = await this.usersService.findOne(player1Id);
+
     return {
       gameId: gameId,
+      player1: player1,
     }
   }
 
-  createNewGame(): GameInfo {
+  async createNewGame(player1Id: number): Promise<GameInfo> {
     const gameId: string = uuid4();
-    this.games[gameId] = new Game();
-    return {
-      gameId: gameId,
-    };
+    this.games[gameId] = new Game(player1Id);
+    return this.findOne(gameId);
   }
 
-  getNextFrame(game_id: string): FrameInfo | null {
-    if (!(game_id in this.games)) return null;
-    return this.games[game_id].getNextFrame();
+  getNextFrame(gameId: string): FrameInfo | null {
+    if (!(gameId in this.games)) return null;
+    return this.games[gameId].getNextFrame();
   }
 
   toggleGameRunning(gameId: string) {

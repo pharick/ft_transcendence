@@ -23,8 +23,8 @@ export class GamesGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('connectToGame')
-  handleConnectToGame(client: Socket, gameId: string): void {
-    const gameInfo: GameInfo = this.gamesService.findOne(gameId);
+  async handleConnectToGame(client: Socket, gameId: string): Promise<void> {
+    const gameInfo: GameInfo = await this.gamesService.findOne(gameId);
     if (!gameInfo) {
       client.emit('gameNotFoundError');
     } else {

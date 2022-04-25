@@ -1,5 +1,6 @@
 export interface GameInfo {
   gameId: string;
+  player1: Object;
 }
 
 export interface FrameInfo {

@@ -16,10 +16,8 @@ export class UsersController {
 
   @Get('me')
   async getCurrentUser(@Session() session: Record<string, any>) {
-    const userId = session.user_id;
+    const userId = session.userId;
     const user = await this.usersService.findOne(userId);
-    this.logger.log(userId);
-    this.logger.log(user);
     return {
       user: user,
     };
