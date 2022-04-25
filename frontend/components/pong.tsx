@@ -2,7 +2,6 @@ import {FC, useEffect, useRef, useState} from 'react';
 import { io, Socket } from "socket.io-client";
 
 import useEventListener from '../hooks/use_event_listener';
-import useInterval from '../hooks/use_interval';
 import { FrameInfo } from "../types/interfaces";
 
 interface PongProps {
@@ -58,10 +57,6 @@ const Pong: FC<PongProps> = ({ gameId }) => {
   // };
 
   // useEventListener('keydown', keyHandler, document);
-
-  useInterval(() => {
-    socket.current?.emit('getNextFrame', gameId);
-  }, 10);
 
   return (
     <>

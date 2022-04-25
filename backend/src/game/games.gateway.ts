@@ -17,6 +17,11 @@ export class GamesGateway implements OnGatewayConnection {
     this.logger.log(`Pong client connected: ${client.id}`);
   }
 
+  private sendNextFrame(gameId: string): void {
+    const frame: FrameInfo = this.gamesService.getNextFrame(gameId);
+    this.server.to(gameId).emit('nextFrame', frame);
+  }
+
   @SubscribeMessage('connectToGame')
   handleConnectToGame(client: Socket, gameId: string): void {
     const gameInfo: GameInfo = this.gamesService.findOne(gameId);
@@ -25,13 +30,10 @@ export class GamesGateway implements OnGatewayConnection {
     } else {
       this.logger.log(`Client connected to game: ${gameId}`);
       client.join(gameId);
+      setInterval(() => {
+        this.sendNextFrame(gameId)
+      }, 10);
     }
-  }
-
-  @SubscribeMessage('getNextFrame')
-  handleGetNextFrame(client: Socket, gameId: string): void {
-    const frame: FrameInfo = this.gamesService.getNextFrame(gameId);
-    this.server.to(gameId).emit('nextFrame', frame);
   }
 
   // @SubscribeMessage('moveClub1')
