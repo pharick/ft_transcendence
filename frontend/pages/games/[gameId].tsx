@@ -6,7 +6,7 @@ const Pong = dynamic(() => import('../../components/pong'), { ssr: false });
 
 const Game: NextPage = () => {
   const router = useRouter();
-  const { gameId }: { gameId: string } = router.query;
+  const gameId = Array.isArray(router.query.gameId) ? router.query.gameId[0] : router.query.gameId;
 
   return (
     <>

@@ -6,10 +6,10 @@ import useInterval from '../hooks/use_interval';
 import { FrameInfo } from "../types/interfaces";
 
 interface PongProps {
-  game_id: string;
+  gameId: string;
 }
 
-const Pong: FC<PongProps> = ({ game_id }) => {
+const Pong: FC<PongProps> = ({ gameId }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const socket = useRef<Socket>();
 
@@ -34,7 +34,7 @@ const Pong: FC<PongProps> = ({ game_id }) => {
   };
 
   const toggleGameRunning = async () => {
-    const response = await fetch(`/api/games/${game_id}/toggle`, { method: 'POST' });
+    const response = await fetch(`/api/games/${gameId}/toggle`, { method: 'POST' });
   };
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const Pong: FC<PongProps> = ({ game_id }) => {
       return;
 
     socket.current = io('http://localhost:4000');
-    socket.current?.emit('connectToGame', game_id);
+    socket.current?.emit('connectToGame', gameId);
 
     socket.current?.on('nextFrame', (frame: FrameInfo) => {
       renderField(frame);
@@ -60,7 +60,7 @@ const Pong: FC<PongProps> = ({ game_id }) => {
   // useEventListener('keydown', keyHandler, document);
 
   useInterval(() => {
-    socket.current?.emit('getNextFrame', game_id);
+    socket.current?.emit('getNextFrame', gameId);
   }, 10);
 
   return (
