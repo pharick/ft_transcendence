@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { GetServerSideProps } from 'next';
 
+import { userContext } from '../../components/userProvider';
 import UserBlock from '../../components/userBlock';
 import { GameInfo, User } from '../../types/interfaces';
 
@@ -17,7 +18,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   return { props: { initGameList } };
 }
 
-const HomePage: NextPage<HomePageProps> = ({ initGameList, initUser }) => {
+const HomePage: NextPage<HomePageProps> = ({ initGameList }) => {
   const [gameList, setGameList] = useState<GameInfo[]>(initGameList);
 
   const handleCreateGame = async () => {
@@ -29,7 +30,12 @@ const HomePage: NextPage<HomePageProps> = ({ initGameList, initUser }) => {
 
   return (
     <>
-      <UserBlock initUser={initUser}/>
+      <userContext.Consumer>
+        {({ user, handleLogout }) => (
+          <UserBlock user={user} handleLogout={handleLogout} />
+        )}
+      </userContext.Consumer>
+
 
       <h1>Games</h1>
 

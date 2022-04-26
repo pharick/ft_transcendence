@@ -1,19 +1,12 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { User } from '../types/interfaces';
 
 interface UserBlockProps {
-  initUser: User
+  user?: User,
+  handleLogout?: () => void;
 }
 
-const UserBlock: FC<UserBlockProps> = ({ initUser }) => {
-  const [user, setUser] = useState<User | null>(initUser);
-
-
-  const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    setUser(null);
-  };
-
+const UserBlock: FC<UserBlockProps> = ({ user, handleLogout }) => {
   return (
     <section>
       {user ?
