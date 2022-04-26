@@ -1,3 +1,9 @@
+export interface User {
+  id: number;
+  username: string;
+  isActive: boolean;
+}
+
 export interface GameInfo {
   gameId: string;
   player1: Object;

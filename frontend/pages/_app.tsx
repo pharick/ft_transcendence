@@ -7,10 +7,20 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
 
 MyApp.getInitialProps = async (appContext: AppContext) => {
   const appProps = await App.getInitialProps(appContext);
-  const response = await fetch('http://localhost:3000/api/users/me');
-  const user = await response.json();
-  console.log(user);
-  return { ...appProps, user };
+
+  const cookie = appContext.ctx.req?.headers.cookie;
+  const response = await fetch(
+    'http://localhost:3000/api/users/me',
+    {
+      credentials: 'include',
+      headers: {
+        'Cookie': cookie ? cookie : '',
+      },
+    }
+  );
+  const data = await response.json();
+  appProps.pageProps.initUser = data.user;
+  return { ...appProps };
 };
 
 export default MyApp

@@ -4,11 +4,11 @@ import { useState } from "react";
 import { GetServerSideProps } from 'next';
 
 import UserBlock from '../../components/userBlock';
-import { GameInfo } from '../../types/interfaces';
+import { GameInfo, User } from '../../types/interfaces';
 
 interface HomePageProps {
   initGameList: GameInfo[];
-  user: Object;
+  initUser: User;
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
@@ -17,18 +17,19 @@ export const getServerSideProps: GetServerSideProps = async () => {
   return { props: { initGameList } };
 }
 
-const HomePage: NextPage<HomePageProps> = ({ initGameList, user }) => {
+const HomePage: NextPage<HomePageProps> = ({ initGameList, initUser }) => {
   const [gameList, setGameList] = useState<GameInfo[]>(initGameList);
 
   const handleCreateGame = async () => {
     const response = await fetch('/api/games/', { method: 'POST' });
+    if (response.status == 401) return;
     const gameInfo: GameInfo = await response.json();
     setGameList((gameList) => [...gameList, gameInfo]);
   };
 
   return (
     <>
-      <UserBlock user={user}/>
+      <UserBlock initUser={initUser}/>
 
       <h1>Games</h1>
 
