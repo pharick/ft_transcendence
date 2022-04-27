@@ -16,7 +16,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User>();
 
   const getUser = async () => {
-    const response = await fetch('http://localhost:3000/api/users/me');
+    const response = await fetch('http://localhost:3000/api/auth/me');
     const data = await response.json();
     setUser(data.user);
   };

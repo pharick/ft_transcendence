@@ -32,5 +32,4 @@ export class UsersService {
   findOneByUsername(username: string): Promise<User> {
     return this.usersRepository.findOne({ where: { username: username } })
   }
-
 }

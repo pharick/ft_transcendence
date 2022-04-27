@@ -36,11 +36,11 @@ export class GamesGateway implements OnGatewayConnection {
     }
   }
 
-  // @SubscribeMessage('moveClub1')
-  // handleMoveClub1(client: Socket, delta: number): void {
-  //   this.pongService.moveClub1(delta);
-  // }
-  //
+  @SubscribeMessage('moveClub1')
+  handleMoveClub1(client: Socket, { playerId, delta }): void {
+    // this.gamesService.moveClub()
+  }
+
   // @SubscribeMessage('moveClub2')
   // handleMoveClub2(client: Socket, delta: number): void {
   //   this.pongService.moveClub2(delta);

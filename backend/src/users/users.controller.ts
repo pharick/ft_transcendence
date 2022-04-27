@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Session } from '@nestjs/common';
+import { Controller, Get, Logger } from '@nestjs/common';
 
 import { UsersService } from "./users.service";
 import { User } from "./user.entity";
@@ -12,14 +12,5 @@ export class UsersController {
   @Get()
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
-  }
-
-  @Get('me')
-  async getCurrentUser(@Session() session: Record<string, any>) {
-    const userId = session.userId;
-    const user = await this.usersService.findOne(userId);
-    return {
-      user: user,
-    };
   }
 }

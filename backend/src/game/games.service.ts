@@ -73,16 +73,11 @@ class Game {
     this.ballY = n - this.ballRadius;
   }
 
-  getPlayer1Id(): number {
-    return this.player1Id;
-  }
-
-  moveClub1(delta: number): void {
-    this.club1Pos += delta;
-  }
-
-  moveClub2(delta: number): void {
-    this.club2Pos += delta;
+  moveClub(playerId: number, delta: number): void {
+    if (playerId == this.player1Id)
+      this.club1Pos += delta;
+    else if (playerId == this.player2Id)
+      this.club2Pos += delta;
   }
 
   resumeGame(): void {
@@ -123,6 +118,14 @@ class Game {
     return !!this.gameTimer;
   }
 
+  getPlayer1Id(): number {
+    return this.player1Id;
+  }
+
+  getPlayer2Id(): number {
+    return this.player2Id;
+  }
+
   getNextFrame(): FrameInfo {
     return {
       ballX: this.ballX,
@@ -137,6 +140,7 @@ class Game {
 @Injectable()
 export class GamesService {
   private games: Record<string, Game> = {};
+  private players: Record<number, string> = {};
 
   constructor(private usersService: UsersService) {}
 
@@ -153,17 +157,21 @@ export class GamesService {
       return null;
 
     const player1Id = this.games[gameId].getPlayer1Id();
+    const player2Id = this.games[gameId].getPlayer2Id();
     const player1: User = await this.usersService.findOne(player1Id);
+    const player2: User = await this.usersService.findOne(player2Id);
 
     return {
       gameId: gameId,
       player1: player1,
+      player2: player2,
     }
   }
 
   async createNewGame(player1Id: number): Promise<GameInfo> {
     const gameId: string = uuid4();
     this.games[gameId] = new Game(player1Id);
+    this.players[player1Id] = gameId;
     return this.findOne(gameId);
   }
 
@@ -181,4 +189,9 @@ export class GamesService {
     }
   }
 
+  moveClub(playerId: number, delta: number): void {
+    const gameId = this.players[playerId];
+    if (!(gameId in this.games)) return;
+    this.games[gameId].moveClub(playerId, delta);
+  }
 }
