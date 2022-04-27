@@ -6,7 +6,8 @@ export interface User {
 
 export interface GameInfo {
   gameId: string;
-  player1: Object;
+  player1?: User;
+  player2?: User;
 }
 
 export interface FrameInfo {

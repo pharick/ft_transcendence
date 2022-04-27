@@ -19,6 +19,7 @@ export class AuthController {
     @Session() session: Record<string, any>
   ): Promise<void> {
     session.userSessionId = await this.authService.login(code);
+    session.userId = this.authService.getUserIdBySessionId(session.userSessionId);
   }
 
   @Post('logout')

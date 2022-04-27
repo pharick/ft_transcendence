@@ -36,7 +36,6 @@ const HomePage: NextPage<HomePageProps> = ({ initGameList }) => {
         )}
       </userContext.Consumer>
 
-
       <h1>Games</h1>
 
       <ul>

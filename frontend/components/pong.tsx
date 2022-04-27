@@ -2,13 +2,14 @@ import {FC, useEffect, useRef, useState} from 'react';
 import { io, Socket } from "socket.io-client";
 
 import useEventListener from '../hooks/use_event_listener';
-import { FrameInfo } from "../types/interfaces";
+import { FrameInfo, GameInfo, User } from '../types/interfaces';
 
 interface PongProps {
-  gameId: string;
+  gameInfo: GameInfo;
+  user: User | undefined;
 }
 
-const Pong: FC<PongProps> = ({ gameId }) => {
+const Pong: FC<PongProps> = ({ gameInfo, user }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const socket = useRef<Socket>();
 
@@ -33,7 +34,7 @@ const Pong: FC<PongProps> = ({ gameId }) => {
   };
 
   const toggleGameRunning = async () => {
-    const response = await fetch(`/api/games/${gameId}/toggle`, { method: 'POST' });
+    const response = await fetch(`/api/games/${gameInfo.gameId}/toggle`, { method: 'POST' });
   };
 
   useEffect(() => {
@@ -41,22 +42,26 @@ const Pong: FC<PongProps> = ({ gameId }) => {
       return;
 
     socket.current = io('http://localhost:4000');
-    socket.current?.emit('connectToGame', gameId);
+    socket.current?.emit('connectToGame', gameInfo.gameId);
 
     socket.current?.on('nextFrame', (frame: FrameInfo) => {
       renderField(frame);
     });
   }, []);
 
-  // const keyHandler = (e: KeyboardEvent) => {
-  //   if (e.code == 'ArrowUp') {
-  //     socket.current?.emit('moveClub1', -20);
-  //   } else if (e.code == 'ArrowDown') {
-  //     socket.current?.emit('moveClub1', 20);
-  //   }
-  // };
+  const keyHandler = (e: KeyboardEvent) => {
+    console.log(gameInfo, user);
 
-  // useEventListener('keydown', keyHandler, document);
+    let delta = 0;
+    if (e.code == 'ArrowUp') delta = -20;
+    else if (e.code == 'ArrowDown') delta = 20;
+
+    if (gameInfo.player1?.id == user?.id || gameInfo.player2?.id == user?.id) {
+      socket.current?.emit('moveClub', delta);
+    }
+  };
+
+  useEventListener('keydown', keyHandler, document);
 
   return (
     <>

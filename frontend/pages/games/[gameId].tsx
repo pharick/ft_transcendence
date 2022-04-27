@@ -1,7 +1,9 @@
-import type { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 import dynamic from 'next/dynamic'
 
 import { GameInfo } from '../../types/interfaces';
+import UserBlock from '../../components/userBlock';
+import { userContext } from '../../components/userProvider';
 const Pong = dynamic(() => import('../../components/pong'), { ssr: false });
 
 interface GamePageProps {
@@ -20,7 +22,14 @@ const GamePage: NextPage<GamePageProps> = ({ gameInfo }) => {
   return (
     <>
       <h1>Game {gameInfo.gameId}</h1>
-      {gameInfo.gameId && <Pong gameId={gameInfo.gameId} />}
+
+      <userContext.Consumer>
+        {({ user }) => (
+          <Pong gameInfo={gameInfo} user={user} />
+        )}
+      </userContext.Consumer>
+
+
     </>
   );
 };
