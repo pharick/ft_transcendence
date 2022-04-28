@@ -2,7 +2,6 @@ import type { GetServerSideProps, NextPage } from 'next';
 import dynamic from 'next/dynamic'
 
 import { GameInfo } from '../../types/interfaces';
-import UserBlock from '../../components/userBlock';
 import { userContext } from '../../components/userProvider';
 const Pong = dynamic(() => import('../../components/pong'), { ssr: false });
 
@@ -24,8 +23,8 @@ const GamePage: NextPage<GamePageProps> = ({ gameInfo }) => {
       <h1>Game {gameInfo.gameId}</h1>
 
       <userContext.Consumer>
-        {({ user }) => (
-          <Pong gameInfo={gameInfo} user={user} />
+        {({ user, userSessionId }) => (
+          <Pong gameInfo={gameInfo} user={user} userSessionId={userSessionId} />
         )}
       </userContext.Consumer>
 

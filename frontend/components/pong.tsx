@@ -7,9 +7,10 @@ import { FrameInfo, GameInfo, User } from '../types/interfaces';
 interface PongProps {
   gameInfo: GameInfo;
   user: User | undefined;
+  userSessionId: string | undefined;
 }
 
-const Pong: FC<PongProps> = ({ gameInfo, user }) => {
+const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const socket = useRef<Socket>();
 
@@ -50,14 +51,14 @@ const Pong: FC<PongProps> = ({ gameInfo, user }) => {
   }, []);
 
   const keyHandler = (e: KeyboardEvent) => {
-    console.log(gameInfo, user);
-
     let delta = 0;
     if (e.code == 'ArrowUp') delta = -20;
     else if (e.code == 'ArrowDown') delta = 20;
 
-    if (gameInfo.player1?.id == user?.id || gameInfo.player2?.id == user?.id) {
-      socket.current?.emit('moveClub', delta);
+    if (delta != 0 &&
+        (gameInfo.player1?.id == user?.id ||
+         gameInfo.player2?.id == user?.id)) {
+      socket.current?.emit('moveClub', { userSessionId, delta });
     }
   };
 

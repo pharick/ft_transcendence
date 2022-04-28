@@ -4,6 +4,7 @@ import { Logger } from "@nestjs/common";
 
 import { GamesService } from "./games.service";
 import { FrameInfo, GameInfo } from './games.interfaces';
+import { AuthService } from '../auth/auth.service';
 
 @WebSocketGateway({ cors: true })
 export class GamesGateway implements OnGatewayConnection {
@@ -11,7 +12,10 @@ export class GamesGateway implements OnGatewayConnection {
   server: Server;
   private logger: Logger = new Logger('GamesGateway');
 
-  constructor(private gamesService: GamesService) {}
+  constructor(
+    private gamesService: GamesService,
+    private authService: AuthService,
+  ) {}
 
   handleConnection(client: Socket, ...args: any[]): void {
     this.logger.log(`Pong client connected: ${client.id}`);
@@ -36,9 +40,9 @@ export class GamesGateway implements OnGatewayConnection {
     }
   }
 
-  @SubscribeMessage('moveClub1')
-  handleMoveClub(client: Socket, data: any): void {
-    this.logger.log(data);
-    // this.gamesService.moveClub()
+  @SubscribeMessage('moveClub')
+  handleMoveClub(client: Socket, { userSessionId, delta }): void {
+    const userId = this.authService.getUserIdBySessionId(userSessionId);
+    this.gamesService.moveClub(userId, delta);
   }
 }

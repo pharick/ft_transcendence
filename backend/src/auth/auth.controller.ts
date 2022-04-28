@@ -30,9 +30,11 @@ export class AuthController {
 
   @Get('me')
   async getCurrentUser(@Session() session: Record<string, any>) {
-    const userId = this.authService.getUserIdBySessionId(session.userSessionId);
+    const userSessionId = session.userSessionId;
+    const userId = this.authService.getUserIdBySessionId(userSessionId);
     const user = await this.usersService.findOne(userId);
     return {
+      userSessionId: userSessionId || null,
       user: user || null,
     };
   }

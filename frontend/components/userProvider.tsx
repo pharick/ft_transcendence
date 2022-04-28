@@ -8,17 +8,20 @@ interface UserProviderProps {
 interface UserContext {
   user?: User,
   handleLogout?: () => void;
+  userSessionId?: string;
 }
 
 export const userContext = createContext<UserContext>({});
 
 const UserProvider: FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User>();
+  const [userSessionId, setUserSessionId] = useState<string>();
 
   const getUser = async () => {
     const response = await fetch('http://localhost:3000/api/auth/me');
     const data = await response.json();
     setUser(data.user);
+    setUserSessionId(data.userSessionId);
   };
 
   const handleLogout = async () => {
@@ -30,7 +33,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
     getUser();
   }, []);
 
-  const value = { user, handleLogout };
+  const value = { user, handleLogout, userSessionId };
 
   return (
     <userContext.Provider value={value}>

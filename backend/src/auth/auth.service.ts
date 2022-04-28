@@ -59,6 +59,7 @@ export class AuthService {
 
     const userSessionId = uuid4();
     this.userSessions[userSessionId] = user.id;
+    this.logger.log(this.userSessions);
     return userSessionId;
   }
 
@@ -67,6 +68,7 @@ export class AuthService {
   }
 
   getUserIdBySessionId(userSessionId: string): number {
+    this.logger.log(this.userSessions);
     return this.userSessions[userSessionId];
   }
 }
