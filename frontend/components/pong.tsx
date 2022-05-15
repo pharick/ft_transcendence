@@ -48,22 +48,31 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     socket.current?.on('nextFrame', (frame: FrameInfo) => {
       renderField(frame);
     });
-  }, []);
+  }, [gameInfo.gameId]);
 
-  const keyHandler = (e: KeyboardEvent) => {
-    let delta = 0;
-    if (e.code == 'ArrowUp') delta = -10;
-    else if (e.code == 'ArrowDown') delta = 10;
+  const keyDownHandler = (e: KeyboardEvent) => {
+    if (e.code != 'ArrowUp' && e.code != 'ArrowDown') return;
+    const up = e.code == 'ArrowUp';
 
-    if (delta != 0 &&
-        (gameInfo.player1?.id == user?.id ||
+    if ((gameInfo.player1?.id == user?.id ||
          gameInfo.player2?.id == user?.id)) {
       const gameId = gameInfo.gameId;
-      socket.current?.emit('moveClub', { gameId, userSessionId, delta });
+      socket.current?.emit('moveClubStart', { gameId, userSessionId, up });
     }
   };
 
-  useEventListener('keydown', keyHandler, document);
+  const keyUpHandler = (e: KeyboardEvent) => {
+    if (e.code != 'ArrowUp' && e.code != 'ArrowDown') return;
+
+    if ((gameInfo.player1?.id == user?.id ||
+      gameInfo.player2?.id == user?.id)) {
+      const gameId = gameInfo.gameId;
+      socket.current?.emit('moveClubStop', { gameId, userSessionId });
+    }
+  };
+
+  useEventListener('keydown', keyDownHandler, document);
+  useEventListener('keyup', keyUpHandler, document);
 
   return (
     <>
