@@ -17,17 +17,11 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
     const [score1, setScore1] = useState(1234);
     const [score2, setScore2] = useState(1234);
 
-    const renderField = ({ballX, ballY, club1Pos, club2Pos}: FrameInfo) => {
-        const canvas = canvasRef.current;
-        const ctx = canvasRef.current?.getContext('2d');
+    const renderField = ({ballX, ballY, ballRadius,  club1Pos, club2Pos}: FrameInfo) => {
+        const canvas = canvasRef.current!;
+        const ctx = canvas.getContext('2d')!;
 
-        if (!canvas || !ctx) {
-            console.log("Update your browser, canvas is not supported in the current version")
-            return;
-        }
-
-        const ballSize = canvas.width / 24 //10;
-        console.log(ballSize);
+        const ballSize = ballRadius * 2;
         const paddleHeight = ballSize * 5;
         const paddleTab = ballSize;
         // const maxPaddleY = canvas.height - ballSize - paddleHeight;
@@ -72,6 +66,14 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
     };
 
     useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvasRef.current?.getContext('2d');
+
+        if (!canvas || !ctx) {
+            console.log("Update your browser, canvas is not supported in the current version")
+            return;
+        }
+
         if (socket.current)
             return;
 
