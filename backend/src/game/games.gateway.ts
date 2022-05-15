@@ -1,8 +1,13 @@
-import {OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer} from '@nestjs/websockets';
-import { Server, Socket } from "socket.io";
-import { Logger } from "@nestjs/common";
+import {
+  OnGatewayConnection,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
+import { Logger } from '@nestjs/common';
 
-import { GamesService } from "./games.service";
+import { GamesService } from './games.service';
 import { FrameInfo, GameInfo } from './games.interfaces';
 import { AuthService } from '../auth/auth.service';
 
@@ -35,14 +40,14 @@ export class GamesGateway implements OnGatewayConnection {
       this.logger.log(`Client connected to game: ${gameId}`);
       client.join(gameId);
       setInterval(() => {
-        this.sendNextFrame(gameId)
+        this.sendNextFrame(gameId);
       }, 10);
     }
   }
 
   @SubscribeMessage('moveClub')
-  handleMoveClub(client: Socket, { userSessionId, delta }): void {
+  handleMoveClub(client: Socket, { gameId, userSessionId, delta }): void {
     const userId = this.authService.getUserIdBySessionId(userSessionId);
-    this.gamesService.moveClub(userId, delta);
+    this.gamesService.moveClub(gameId, userId, delta);
   }
 }

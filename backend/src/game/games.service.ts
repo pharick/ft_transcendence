@@ -11,29 +11,27 @@ const radians = (degrees: number) => {
 };
 
 class Game {
-  private readonly fieldWidth: number;
-  private readonly fieldHeight: number;
+  private readonly fieldWidth: number = 800;
+  private readonly fieldHeight: number = 600;
+  private readonly ballRadius: number = 8;
+  private readonly clubWidth: number = 10;
 
   private ballX: number;
   private ballY: number;
-  private readonly ballRadius: number;
   private ballDirection: number;
   private ballSpeed: number;
 
   private club1Pos: number;
   private club2Pos: number;
 
-  private player1Id: number;
+  private readonly player1Id: number;
   private player2Id: number;
 
   private gameTimer: NodeJS.Timer;
 
   constructor(player1Id: number) {
-    this.fieldWidth = 800;
-    this.fieldHeight = 600;
     this.ballX = this.fieldWidth / 2;
     this.ballY = this.fieldHeight / 2;
-    this.ballRadius = 10;
     this.ballDirection = 20;
     this.ballSpeed = 5;
     this.club1Pos = this.fieldHeight / 2;
@@ -103,6 +101,9 @@ class Game {
         this.ballBottom = this.fieldHeight;
         this.ballDirection = -this.ballDirection;
       }
+
+
+
       this.ballSpeed += 0.001;
     }, 10);
   }
@@ -128,9 +129,10 @@ class Game {
 
   getNextFrame(): FrameInfo {
     return {
+      ballRadius: this.ballRadius,
       ballX: this.ballX,
       ballY: this.ballY,
-      ballRadius: this.ballRadius,
+      clubWidth: this.clubWidth,
       club1Pos: this.club1Pos,
       club2Pos: this.club2Pos,
     }
@@ -140,7 +142,6 @@ class Game {
 @Injectable()
 export class GamesService {
   private games: Record<string, Game> = {};
-  private players: Record<number, string> = {};
 
   constructor(private usersService: UsersService) {}
 
@@ -171,7 +172,6 @@ export class GamesService {
   async createNewGame(player1Id: number): Promise<GameInfo> {
     const gameId: string = uuid4();
     this.games[gameId] = new Game(player1Id);
-    this.players[player1Id] = gameId;
     return this.findOne(gameId);
   }
 
@@ -189,8 +189,7 @@ export class GamesService {
     }
   }
 
-  moveClub(playerId: number, delta: number): void {
-    const gameId = this.players[playerId];
+  moveClub(gameId: number, playerId: number, delta: number): void {
     if (!(gameId in this.games)) return;
     this.games[gameId].moveClub(playerId, delta);
   }
