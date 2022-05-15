@@ -22,6 +22,7 @@ export class GamesGateway implements OnGatewayConnection {
     private authService: AuthService,
   ) {}
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handleConnection(client: Socket, ...args: any[]): void {
     this.logger.log(`Pong client connected: ${client.id}`);
   }

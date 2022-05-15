@@ -1,4 +1,12 @@
-import { Controller, Get, Logger, Post, Query, Redirect, Session } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Logger,
+  Post,
+  Query,
+  Redirect,
+  Session,
+} from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
@@ -16,10 +24,12 @@ export class AuthController {
   @Redirect('/')
   async login(
     @Query('code') code: string,
-    @Session() session: Record<string, any>
+    @Session() session: Record<string, any>,
   ): Promise<void> {
     session.userSessionId = await this.authService.login(code);
-    session.userId = this.authService.getUserIdBySessionId(session.userSessionId);
+    session.userId = this.authService.getUserIdBySessionId(
+      session.userSessionId,
+    );
   }
 
   @Post('logout')

@@ -9,13 +9,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { GamesService } from "./games.service";
+import { GamesService } from './games.service';
 import { GameInfo } from './games.interfaces';
 
 @Controller('games')
 export class GamesController {
   private logger: Logger = new Logger('GamesController');
-  
   constructor(private gamesService: GamesService) {}
 
   @Get()
@@ -26,16 +25,14 @@ export class GamesController {
   @Get(':gameId')
   async findOne(@Param('gameId') gameId: string): Promise<GameInfo> {
     const gameInfo: GameInfo = await this.gamesService.findOne(gameId);
-    if (!gameInfo)
-      throw new NotFoundException();
+    if (!gameInfo) throw new NotFoundException();
     return gameInfo;
   }
 
   @Post()
   create(@Session() session: Record<string, any>): Promise<GameInfo> {
     const userId: number = session.userId;
-    if (!userId)
-      throw new UnauthorizedException();
+    if (!userId) throw new UnauthorizedException();
     return this.gamesService.createNewGame(userId);
   }
 

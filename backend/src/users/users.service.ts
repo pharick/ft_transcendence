@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { User } from './user.entity';
-import { CreateUserDto } from "./users.dto";
+import { CreateUserDto } from './users.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,7 +11,7 @@ export class UsersService {
 
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>
+    private usersRepository: Repository<User>,
   ) {}
 
   create(createUserDto: CreateUserDto): Promise<User> {
@@ -25,11 +25,11 @@ export class UsersService {
 
   findOne(id: number): Promise<User> {
     return this.usersRepository.findOne({
-      where: { id, }
+      where: { id },
     });
   }
 
   findOneByUsername(username: string): Promise<User> {
-    return this.usersRepository.findOne({ where: { username: username } })
+    return this.usersRepository.findOne({ where: { username: username } });
   }
 }

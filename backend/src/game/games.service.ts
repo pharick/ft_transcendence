@@ -72,15 +72,12 @@ class Game {
   }
 
   moveClub(playerId: number, delta: number): void {
-    if (playerId == this.player1Id)
-      this.club1Pos += delta;
-    else if (playerId == this.player2Id)
-      this.club2Pos += delta;
+    if (playerId == this.player1Id) this.club1Pos += delta;
+    else if (playerId == this.player2Id) this.club2Pos += delta;
   }
 
   resumeGame(): void {
-    if (this.gameTimer)
-      return;
+    if (this.gameTimer) return;
     this.gameTimer = setInterval(() => {
       this.ballX += Math.cos(radians(this.ballDirection)) * this.ballSpeed;
       this.ballY += Math.sin(radians(this.ballDirection)) * this.ballSpeed;
@@ -101,8 +98,6 @@ class Game {
         this.ballBottom = this.fieldHeight;
         this.ballDirection = -this.ballDirection;
       }
-
-
 
       this.ballSpeed += 0.001;
     }, 10);
@@ -135,7 +130,7 @@ class Game {
       clubWidth: this.clubWidth,
       club1Pos: this.club1Pos,
       club2Pos: this.club2Pos,
-    }
+    };
   }
 }
 
@@ -147,15 +142,14 @@ export class GamesService {
 
   async findAll(): Promise<GameInfo[]> {
     return await Promise.all(
-      Object.entries(this.games).map(async ([gameId]) => (
-        await this.findOne(gameId)
-      ))
+      Object.entries(this.games).map(
+        async ([gameId]) => await this.findOne(gameId),
+      ),
     );
   }
 
   async findOne(gameId: string): Promise<GameInfo> {
-    if (!(gameId in this.games))
-      return null;
+    if (!(gameId in this.games)) return null;
 
     const player1Id = this.games[gameId].getPlayer1Id();
     const player2Id = this.games[gameId].getPlayer2Id();
@@ -166,7 +160,7 @@ export class GamesService {
       gameId: gameId,
       player1: player1,
       player2: player2,
-    }
+    };
   }
 
   async createNewGame(player1Id: number): Promise<GameInfo> {
