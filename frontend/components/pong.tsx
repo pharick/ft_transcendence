@@ -17,12 +17,11 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
     const [score1, setScore1] = useState(1234);
     const [score2, setScore2] = useState(1234);
 
-    const renderField = ({ballX, ballY, ballRadius,  club1Pos, club2Pos}: FrameInfo) => {
+    const renderField = ({ballX, ballY, ballRadius, clubWidth, clubHeight,  club1Pos, club2Pos}: FrameInfo) => {
         const canvas = canvasRef.current!;
         const ctx = canvas.getContext('2d')!;
 
         const ballSize = ballRadius * 2;
-        const paddleHeight = ballSize * 5;
         const paddleTab = ballSize;
         // const maxPaddleY = canvas.height - ballSize - paddleHeight;
 
@@ -55,10 +54,10 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
         //     ctx.fillRect(paddleTab, club1Pos, ballSize, paddleHeight); // 160
         // }
         // ;
-        console.log(paddleTab, club2Pos, ballSize, paddleHeight);
-        ctx.fillRect(paddleTab, club1Pos, ballSize, paddleHeight);
+        console.log(paddleTab, club1Pos - clubHeight / 2, clubWidth, clubHeight);
+        ctx.fillRect(paddleTab, club1Pos - clubHeight / 2, clubWidth, clubHeight);
 
-        ctx.fillRect(canvas.width - paddleTab - ballSize, club2Pos, ballSize, paddleHeight); // 160
+        ctx.fillRect(canvas.width - paddleTab - ballSize, club2Pos - clubHeight/ 2, clubWidth, clubHeight); // 160
     };
 
     const toggleGameRunning = async () => {
@@ -87,7 +86,9 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
 
     const keyHandler = (e: KeyboardEvent) => {
         let delta = 0;
-        if (e.code == 'ArrowUp') delta = -20;
+        if (e.code == 'ArrowUp') {
+            delta = -20;
+        }
         else if (e.code == 'ArrowDown') delta = 20;
 
         if (delta != 0 &&
@@ -104,7 +105,8 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
             <div className="field-wrapper">
                 <p className="score score1">{score1}</p>
                 <p className="score score2">{score2}</p>
-                <canvas className="field" ref={canvasRef}></canvas>
+                <canvas width="800" height="600" className="field" ref={canvasRef}></canvas>
+                {/*gameInfo.width, gameInfo.heigth - после добавления в бек исправить хард-корд*/}
             </div>
             <button onClick={toggleGameRunning}>Run / Pause</button>
         </>
