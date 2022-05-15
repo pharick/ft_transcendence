@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.field-wrapper {
+    position: relative;
+    width: 800px;
+    height: 600px;
+}
+
+.field {
+    width: 100%;
+    height: 100%;
+}
+
+.score {
+    position: absolute;
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 20px;
+    color: white;
+}
+
+.score1 {
+    top: 20px;
+    left: 25%;
+}
+
+.score2 {
+    top: 20px;
+    right: 25%;
+}

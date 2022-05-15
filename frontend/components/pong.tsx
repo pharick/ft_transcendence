@@ -14,14 +14,12 @@ interface PongProps {
 const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const socket = useRef<Socket>();
+    const [score1, setScore1] = useState(1234);
+    const [score2, setScore2] = useState(1234);
 
     const renderField = ({ballX, ballY, club1Pos, club2Pos}: FrameInfo) => {
         const canvas = canvasRef.current;
         const ctx = canvasRef.current?.getContext('2d');
-
-        // счет от сервера
-        const left = 1230;
-        const right = 4567;
 
         if (!canvas || !ctx) {
             console.log("Update your browser, canvas is not supported in the current version")
@@ -29,6 +27,7 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
         }
 
         const ballSize = canvas.width / 24 //10;
+        console.log(ballSize);
         const paddleHeight = ballSize * 5;
         const paddleTab = ballSize;
         // const maxPaddleY = canvas.height - ballSize - paddleHeight;
@@ -40,16 +39,8 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         //score
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.type = 'text/css';
-        link.href = 'https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap'
-        document.getElementsByTagName('head')[0].appendChild(link);
-        ctx.font = '50px "Press Start 2P"'
-        ctx.textBaseline = 'top';
-        ctx.fillStyle = "darkgrey";
-        ctx.textAlign = "center";
-        ctx.fillText(left + '   ' + right, canvas.width / 2, (3 * ballSize));
+        setScore1(456);
+        setScore2(1234);
 
         //centerline
         ctx.fillStyle = 'lightgrey';
@@ -70,7 +61,7 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
         //     ctx.fillRect(paddleTab, club1Pos, ballSize, paddleHeight); // 160
         // }
         // ;
-
+        console.log(paddleTab, club2Pos, ballSize, paddleHeight);
         ctx.fillRect(paddleTab, club1Pos, ballSize, paddleHeight);
 
         ctx.fillRect(canvas.width - paddleTab - ballSize, club2Pos, ballSize, paddleHeight); // 160
@@ -108,14 +99,12 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
 
     return (
         <>
-            <head>
-                <meta charSet={"UTF-8"}/>
-                <title>Ping-pong</title>
-            </head>
-            <body>
-            <canvas width={800} height={600} ref={canvasRef}></canvas>
+            <div className="field-wrapper">
+                <p className="score score1">{score1}</p>
+                <p className="score score2">{score2}</p>
+                <canvas className="field" ref={canvasRef}></canvas>
+            </div>
             <button onClick={toggleGameRunning}>Run / Pause</button>
-            </body>
         </>
     );
 };
