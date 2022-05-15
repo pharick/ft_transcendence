@@ -13,8 +13,9 @@ const radians = (degrees: number) => {
 class Game {
   private readonly fieldWidth: number = 800;
   private readonly fieldHeight: number = 600;
-  private readonly ballRadius: number = 8;
-  private readonly clubWidth: number = 10;
+  private readonly ballRadius: number = 4;
+  private readonly clubWidth: number = 8;
+  private readonly clubHeight: number = 80;
 
   private ballX: number;
   private ballY: number;
@@ -128,6 +129,7 @@ class Game {
       ballX: this.ballX,
       ballY: this.ballY,
       clubWidth: this.clubWidth,
+      clubHeight: this.clubHeight,
       club1Pos: this.club1Pos,
       club2Pos: this.club2Pos,
     };
