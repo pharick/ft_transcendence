@@ -1,5 +1,5 @@
-import {FC, useEffect, useRef, useState} from 'react';
-import { io, Socket } from "socket.io-client";
+import { FC, useEffect, useRef, useState } from 'react';
+import { io, Socket } from 'socket.io-client';
 
 import useEventListener from '../hooks/use_event_listener';
 import { FrameInfo, GameInfo, User } from '../types/interfaces';
@@ -10,15 +10,30 @@ interface PongProps {
   userSessionId: string | undefined;
 }
 
-const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
+const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const socket = useRef<Socket>();
   const [score1, setScore1] = useState(1234);
   const [score2, setScore2] = useState(1234);
 
-  const renderField = ({ballX, ballY, ballRadius, clubWidth, clubHeight,  club1Pos, club2Pos}: FrameInfo) => {
+  const renderField = ({
+    ballX,
+    ballY,
+    ballRadius,
+    clubWidth,
+    clubHeight,
+    club1Pos,
+    club2Pos,
+  }: FrameInfo) => {
     const canvas = canvasRef.current!;
-    const ctx = canvas.getContext('2d')!;
+    const ctx = canvas.getContext('2d');
+
+    if (!canvas || !ctx) {
+      console.log(
+        'Update your browser, canvas is not supported in the current version',
+      );
+      return;
+    }
 
     const ballSize = ballRadius * 2;
     const paddleTab = ballSize;
@@ -26,7 +41,7 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    //ball
+    //playground
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -37,43 +52,46 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
     //centerline
     ctx.fillStyle = 'lightgrey';
     for (let i = ballSize; i < canvas.height - ballSize; i += ballSize * 2) {
-        ctx.fillRect(canvas.width / 2 - ballSize / 2, i, ballSize / 4, ballSize / 2);
+      ctx.fillRect(
+        canvas.width / 2 - ballSize / 2,
+        i,
+        ballSize / 4,
+        ballSize / 2,
+      );
     }
 
     //ball
     ctx.fillStyle = 'white';
     ctx.fillRect(ballX, ballY, ballSize, ballSize);
 
-
-        // if (club1Pos < ballSize) {
-        //     ctx.fillRect(paddleTab, ballSize, ballSize, paddleHeight); // 160
-        // } else if (club1Pos > maxPaddleY) {
-        //     ctx.fillRect(paddleTab, maxPaddleY, ballSize, paddleHeight);
-        // } else {
-        //     ctx.fillRect(paddleTab, club1Pos, ballSize, paddleHeight); // 160
-        // }
-        // ;
-        console.log(paddleTab, club1Pos - clubHeight / 2, clubWidth, clubHeight);
-        ctx.fillRect(paddleTab, club1Pos - clubHeight / 2, clubWidth, clubHeight);
-
-        ctx.fillRect(canvas.width - paddleTab - ballSize, club2Pos - clubHeight/ 2, clubWidth, clubHeight); // 160
-    };
+    //club
+    ctx.fillRect(paddleTab, club1Pos - clubHeight / 2, clubWidth, clubHeight);
+    ctx.fillRect(
+      canvas.width - paddleTab - ballSize,
+      club2Pos - clubHeight / 2,
+      clubWidth,
+      clubHeight,
+    ); // 160
+  };
 
   const toggleGameRunning = async () => {
-    const response = await fetch(`/api/games/${gameInfo.gameId}/toggle`, { method: 'POST' });
+    const response = await fetch(`/api/games/${gameInfo.gameId}/toggle`, {
+      method: 'POST',
+    });
   };
 
   useEffect(() => {
-      const canvas = canvasRef.current;
-      const ctx = canvasRef.current?.getContext('2d');
+    const canvas = canvasRef.current;
+    const ctx = canvasRef.current?.getContext('2d');
 
-      if (!canvas || !ctx) {
-          console.log("Update your browser, canvas is not supported in the current version")
-          return;
-      }
+    if (!canvas || !ctx) {
+      console.log(
+        'Update your browser, canvas is not supported in the current version',
+      );
+      return;
+    }
 
-      if (socket.current)
-          return;
+    if (socket.current) return;
 
     socket.current = io('http://localhost:4000');
     socket.current?.emit('connectToGame', gameInfo.gameId);
@@ -87,8 +105,7 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
     if (e.code != 'ArrowUp' && e.code != 'ArrowDown') return;
     const up = e.code == 'ArrowUp';
 
-    if ((gameInfo.player1?.id == user?.id ||
-         gameInfo.player2?.id == user?.id)) {
+    if (gameInfo.player1?.id == user?.id || gameInfo.player2?.id == user?.id) {
       const gameId = gameInfo.gameId;
       socket.current?.emit('moveClubStart', { gameId, userSessionId, up });
     }
@@ -97,8 +114,7 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
   const keyUpHandler = (e: KeyboardEvent) => {
     if (e.code != 'ArrowUp' && e.code != 'ArrowDown') return;
 
-    if ((gameInfo.player1?.id == user?.id ||
-      gameInfo.player2?.id == user?.id)) {
+    if (gameInfo.player1?.id == user?.id || gameInfo.player2?.id == user?.id) {
       const gameId = gameInfo.gameId;
       socket.current?.emit('moveClubStop', { gameId, userSessionId });
     }
@@ -112,7 +128,12 @@ const Pong: FC<PongProps> = ({gameInfo, user, userSessionId}) => {
       <div className="field-wrapper">
         <p className="score score1">{score1}</p>
         <p className="score score2">{score2}</p>
-        <canvas width="800" height="600" className="field" ref={canvasRef}></canvas>
+        <canvas
+          width="800"
+          height="600"
+          className="field"
+          ref={canvasRef}
+        ></canvas>
         {/*gameInfo.width, gameInfo.heigth - после добавления в бек исправить хард-корд*/}
       </div>
       <button onClick={toggleGameRunning}>Run / Pause</button>
