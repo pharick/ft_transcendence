@@ -16,6 +16,7 @@ class Game {
   private readonly ballRadius: number = 4;
   private readonly clubWidth: number = 8;
   private readonly clubHeight: number = 80;
+  private readonly moveClubDelta: number = 10;
 
   private ballX: number;
   private ballY: number;
@@ -24,6 +25,9 @@ class Game {
 
   private club1Pos: number;
   private club2Pos: number;
+
+  private club1Delta: number;
+  private club2Delta: number;
 
   private readonly player1Id: number;
   private player2Id: number;
@@ -37,6 +41,8 @@ class Game {
     this.ballSpeed = 5;
     this.club1Pos = this.fieldHeight / 2;
     this.club2Pos = this.fieldHeight / 2;
+    this.club1Delta = 0;
+    this.club2Delta = 0;
     this.player1Id = player1Id;
   }
 
@@ -72,35 +78,76 @@ class Game {
     this.ballY = n - this.ballRadius;
   }
 
-  moveClub(playerId: number, delta: number): void {
-    if (playerId == this.player1Id) this.club1Pos += delta;
-    else if (playerId == this.player2Id) this.club2Pos += delta;
+  private get club1Top() {
+    return this.club1Pos - this.clubHeight / 2;
+  }
+
+  private get club1Bottom() {
+    return this.club1Pos + this.clubHeight / 2;
+  }
+
+  private get club2Top() {
+    return this.club2Pos - this.clubHeight / 2;
+  }
+
+  private get club2Bottom() {
+    return this.club2Pos + this.clubHeight / 2;
+  }
+
+  moveClubStart(playerId: number, up: boolean): void {
+    if (playerId == this.player1Id)
+      this.club1Delta = up ? -this.moveClubDelta : this.moveClubDelta;
+    else if (playerId == this.player2Id)
+      this.club2Delta = up ? -this.moveClubDelta : this.moveClubDelta;
+  }
+
+  moveClubStop(playerId: number): void {
+    if (playerId == this.player1Id) this.club1Delta = 0;
+    else if (playerId == this.player2Id) this.club2Delta = 0;
+  }
+
+  calculateNextFrame(): void {
+    this.ballX += Math.cos(radians(this.ballDirection)) * this.ballSpeed;
+    this.ballY += Math.sin(radians(this.ballDirection)) * this.ballSpeed;
+
+    if (this.ballLeft < 0) {
+      this.ballLeft = 0;
+      this.ballDirection = 180 - this.ballDirection;
+    }
+    if (this.ballTop < 0) {
+      this.ballTop = 0;
+      this.ballDirection = -this.ballDirection;
+    }
+    if (this.ballRight > this.fieldWidth) {
+      this.ballRight = this.fieldWidth;
+      this.ballDirection = 180 - this.ballDirection;
+    }
+    if (this.ballBottom > this.fieldHeight) {
+      this.ballBottom = this.fieldHeight;
+      this.ballDirection = -this.ballDirection;
+    }
+
+    if (
+      (this.club1Delta < 0 && this.club1Top > this.ballRadius * 2) ||
+      (this.club1Delta > 0 &&
+        this.club1Bottom < this.fieldHeight - this.ballRadius * 2)
+    )
+      this.club1Pos += this.club1Delta;
+
+    if (
+      (this.club2Delta < 0 && this.club2Top > this.ballRadius * 2) ||
+      (this.club2Delta > 0 &&
+        this.club2Bottom < this.fieldHeight - this.ballRadius * 2)
+    )
+      this.club2Pos += this.club2Delta;
+
+    // this.ballSpeed += 0.001;
   }
 
   resumeGame(): void {
     if (this.gameTimer) return;
     this.gameTimer = setInterval(() => {
-      this.ballX += Math.cos(radians(this.ballDirection)) * this.ballSpeed;
-      this.ballY += Math.sin(radians(this.ballDirection)) * this.ballSpeed;
-
-      if (this.ballLeft < 0) {
-        this.ballLeft = 0;
-        this.ballDirection = 180 - this.ballDirection;
-      }
-      if (this.ballTop < 0) {
-        this.ballTop = 0;
-        this.ballDirection = -this.ballDirection;
-      }
-      if (this.ballRight > this.fieldWidth) {
-        this.ballRight = this.fieldWidth;
-        this.ballDirection = 180 - this.ballDirection;
-      }
-      if (this.ballBottom > this.fieldHeight) {
-        this.ballBottom = this.fieldHeight;
-        this.ballDirection = -this.ballDirection;
-      }
-
-      this.ballSpeed += 0.001;
+      this.calculateNextFrame();
     }, 10);
   }
 
@@ -185,8 +232,13 @@ export class GamesService {
     }
   }
 
-  moveClub(gameId: number, playerId: number, delta: number): void {
+  moveClubStart(gameId: number, playerId: number, up: boolean): void {
     if (!(gameId in this.games)) return;
-    this.games[gameId].moveClub(playerId, delta);
+    this.games[gameId].moveClubStart(playerId, up);
+  }
+
+  moveClubStop(gameId: number, playerId: number): void {
+    if (!(gameId in this.games)) return;
+    this.games[gameId].moveClubStop(playerId);
   }
 }

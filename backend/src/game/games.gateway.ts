@@ -46,9 +46,17 @@ export class GamesGateway implements OnGatewayConnection {
     }
   }
 
-  @SubscribeMessage('moveClub')
-  handleMoveClub(client: Socket, { gameId, userSessionId, delta }): void {
+  @SubscribeMessage('moveClubStart')
+  handleMoveClubStart(client: Socket, { gameId, userSessionId, up }): void {
+    this.logger.log('Club start moving');
     const userId = this.authService.getUserIdBySessionId(userSessionId);
-    this.gamesService.moveClub(gameId, userId, delta);
+    this.gamesService.moveClubStart(gameId, userId, up);
+  }
+
+  @SubscribeMessage('moveClubStop')
+  handleMoveClubStop(client: Socket, { gameId, userSessionId }): void {
+    this.logger.log('Club stop moving');
+    const userId = this.authService.getUserIdBySessionId(userSessionId);
+    this.gamesService.moveClubStop(gameId, userId);
   }
 }
