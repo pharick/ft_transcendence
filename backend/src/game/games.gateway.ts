@@ -1,8 +1,13 @@
-import {OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer} from '@nestjs/websockets';
-import { Server, Socket } from "socket.io";
-import { Logger } from "@nestjs/common";
+import {
+  OnGatewayConnection,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
+import { Logger } from '@nestjs/common';
 
-import { GamesService } from "./games.service";
+import { GamesService } from './games.service';
 import { FrameInfo, GameInfo } from './games.interfaces';
 import { AuthService } from '../auth/auth.service';
 
@@ -17,6 +22,7 @@ export class GamesGateway implements OnGatewayConnection {
     private authService: AuthService,
   ) {}
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handleConnection(client: Socket, ...args: any[]): void {
     this.logger.log(`Pong client connected: ${client.id}`);
   }
@@ -35,7 +41,7 @@ export class GamesGateway implements OnGatewayConnection {
       this.logger.log(`Client connected to game: ${gameId}`);
       client.join(gameId);
       setInterval(() => {
-        this.sendNextFrame(gameId)
+        this.sendNextFrame(gameId);
       }, 10);
     }
   }

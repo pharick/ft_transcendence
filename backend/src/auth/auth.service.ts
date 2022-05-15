@@ -14,18 +14,16 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private httpService: HttpService,
-  ) {
-  }
+  ) {}
 
   private async getUserData(token: string): Promise<any> {
-    const observable = await this.httpService.get(
-      'https://api.intra.42.fr/v2/me',
-      {
+    const observable = await this.httpService
+      .get('https://api.intra.42.fr/v2/me', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      },
-    ).pipe(map(response => response.data));
+      })
+      .pipe(map((response) => response.data));
     return lastValueFrom(observable);
   }
 
@@ -38,25 +36,25 @@ export class AuthService {
   }
 
   async login(code: string): Promise<string> {
-    // const tokenObservable = await this.httpService.post(
-    //   'https://api.intra.42.fr/oauth/token',
-    //   {
-    //     grant_type: 'authorization_code',
-    //     client_id: '8a4a10a3a225a1b0315f1872a786036f3104d8206cfd0a95b8ec2c48c5ac1d9a',
-    //     client_secret: 'f12a693d067cd5c662393089c00dfca52920efbcea5d79e21ed333df5c25e9e2',
-    //     code: code,
-    //     redirect_uri: 'http://localhost:3000/api/auth/login',
-    //   },
-    // ).pipe(map(response => response.data));
-    //
-    // const tokenData = await lastValueFrom(tokenObservable);
-    // const accessToken = tokenData.access_token;
-    //
-    // const userData = await this.getUserData(accessToken);
-    // const username = userData.login;
+    const tokenObservable = await this.httpService
+      .post('https://api.intra.42.fr/oauth/token', {
+        grant_type: 'authorization_code',
+        client_id:
+          '8a4a10a3a225a1b0315f1872a786036f3104d8206cfd0a95b8ec2c48c5ac1d9a',
+        client_secret:
+          'f12a693d067cd5c662393089c00dfca52920efbcea5d79e21ed333df5c25e9e2',
+        code: code,
+        redirect_uri: 'http://localhost:3000/api/auth/login',
+      })
+      .pipe(map((response) => response.data));
 
-    // const user = await this.findOrCreateUser(username);
-    const user = await this.findOrCreateUser('cbelva');
+    const tokenData = await lastValueFrom(tokenObservable);
+    const accessToken = tokenData.access_token;
+
+    const userData = await this.getUserData(accessToken);
+    const username = userData.login;
+
+    const user = await this.findOrCreateUser(username);
 
     const userSessionId = uuid4();
     this.userSessions[userSessionId] = user.id;
