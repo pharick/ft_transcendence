@@ -14,7 +14,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const socket = useRef<Socket>();
 
-  const renderField = ({ ballX, ballY, club1Pos, club2Pos }: FrameInfo) => {
+  const renderField = ({ ballRadius, ballX, ballY, clubWidth, club1Pos, club2Pos }: FrameInfo) => {
     const canvas = canvasRef.current;
     const ctx = canvasRef.current?.getContext('2d');
     if (!canvas || !ctx) return;
@@ -27,11 +27,11 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     ctx.fillStyle = 'rgb(255, 255, 255)';
 
     ctx.beginPath();
-    ctx.arc(ballX, ballY, 10, 0, 2 * Math.PI);
+    ctx.arc(ballX, ballY, ballRadius, 0, 2 * Math.PI);
     ctx.fill();
 
-    ctx.fillRect(20, club1Pos - 80, 20, 160);
-    ctx.fillRect(canvas.width - 40, club2Pos - 80, 20, 160);
+    ctx.fillRect(20, club1Pos - 80, clubWidth, 160);
+    ctx.fillRect(canvas.width - clubWidth - 20, club2Pos - 80, clubWidth, 160);
   };
 
   const toggleGameRunning = async () => {
@@ -52,13 +52,14 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
 
   const keyHandler = (e: KeyboardEvent) => {
     let delta = 0;
-    if (e.code == 'ArrowUp') delta = -20;
-    else if (e.code == 'ArrowDown') delta = 20;
+    if (e.code == 'ArrowUp') delta = -10;
+    else if (e.code == 'ArrowDown') delta = 10;
 
     if (delta != 0 &&
         (gameInfo.player1?.id == user?.id ||
          gameInfo.player2?.id == user?.id)) {
-      socket.current?.emit('moveClub', { userSessionId, delta });
+      const gameId = gameInfo.gameId;
+      socket.current?.emit('moveClub', { gameId, userSessionId, delta });
     }
   };
 

@@ -11,9 +11,10 @@ export interface GameInfo {
 }
 
 export interface FrameInfo {
+  ballRadius: number;
   ballX: number;
   ballY: number;
-  ballRadius: number;
+  clubWidth: number;
   club1Pos: number;
   club2Pos: number;
 }
