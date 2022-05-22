@@ -1,22 +1,22 @@
 import type { NextPage } from 'next';
-import Link from "next/link";
-import { useState } from "react";
+import Link from 'next/link';
+import { useState } from 'react';
 import { GetServerSideProps } from 'next';
 
 import { userContext } from '../../components/userProvider';
 import UserBlock from '../../components/userBlock';
-import { GameInfo, User } from '../../types/interfaces';
+import { GameInfo, UserInfo } from '../../types/interfaces';
 
 interface HomePageProps {
   initGameList: GameInfo[];
-  initUser: User;
+  initUser: UserInfo;
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const response = await fetch('http://localhost:3000/api/games/');
   const initGameList: GameInfo[] = await response.json();
   return { props: { initGameList } };
-}
+};
 
 const HomePage: NextPage<HomePageProps> = ({ initGameList }) => {
   const [gameList, setGameList] = useState<GameInfo[]>(initGameList);

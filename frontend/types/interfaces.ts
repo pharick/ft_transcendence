@@ -1,4 +1,4 @@
-export interface User {
+export interface UserInfo {
   id: number;
   username: string;
   isActive: boolean;
@@ -6,8 +6,8 @@ export interface User {
 
 export interface GameInfo {
   gameId: string;
-  player1?: User;
-  player2?: User;
+  player1?: UserInfo;
+  player2?: UserInfo;
 }
 
 export interface FrameInfo {

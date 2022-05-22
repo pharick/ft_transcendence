@@ -1,12 +1,12 @@
 import { createContext, FC, ReactNode, useEffect, useState } from 'react';
-import { User } from '../types/interfaces';
+import { UserInfo } from '../types/interfaces';
 
 interface UserProviderProps {
   children?: ReactNode;
 }
 
 interface UserContext {
-  user?: User,
+  user?: UserInfo;
   handleLogout?: () => void;
   userSessionId?: string;
 }
@@ -14,7 +14,7 @@ interface UserContext {
 export const userContext = createContext<UserContext>({});
 
 const UserProvider: FC<UserProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<UserInfo>();
   const [userSessionId, setUserSessionId] = useState<string>();
 
   const getUser = async () => {
@@ -35,11 +35,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
 
   const value = { user, handleLogout, userSessionId };
 
-  return (
-    <userContext.Provider value={value}>
-      {children}
-    </userContext.Provider>
-  );
+  return <userContext.Provider value={value}>{children}</userContext.Provider>;
 };
 
 export default UserProvider;
