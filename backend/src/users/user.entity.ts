@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, Index } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  Index,
+  OneToMany,
+} from 'typeorm';
+import { PendingGame } from '../pendingGames/pendingGame.entity';
 
 @Entity()
 export class User {
@@ -11,4 +18,10 @@ export class User {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @OneToMany(() => PendingGame, (hostGame) => hostGame.hostUser)
+  hostGames: PendingGame[];
+
+  @OneToMany(() => PendingGame, (guestGame) => guestGame.hostUser)
+  guestGames: PendingGame[];
 }

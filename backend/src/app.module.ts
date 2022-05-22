@@ -6,6 +6,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { GamesModule } from './game/games.module';
 import { UsersService } from './users/users.service';
+import { PendingGame } from './pendingGames/pendingGame.entity';
+import { PendingGamesModule } from './pendingGames/pendingGames.module';
 
 @Module({
   imports: [
@@ -16,13 +18,14 @@ import { UsersService } from './users/users.service';
       username: 'ft_transcendence',
       password: 'ft_transcendence',
       database: 'ft_transcendence',
-      entities: [User],
+      entities: [User, PendingGame],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([User]),
     AuthModule,
     UsersModule,
     GamesModule,
+    PendingGamesModule,
   ],
   controllers: [],
   providers: [UsersService],
