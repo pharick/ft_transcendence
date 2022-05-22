@@ -37,8 +37,8 @@ export class GamesController {
   }
 
   @Post(':gameId/toggle')
-  toggleGameRunning(@Param() params) {
-    this.logger.log(`Toggle game running: ${params.gameId}`);
-    this.gamesService.toggleGameRunning(params.gameId);
+  toggleGameRunning(@Param('gameId') gameId: string) {
+    this.logger.log(`Toggle game running: ${gameId}`);
+    this.gamesService.toggleGameRunning(gameId);
   }
 }

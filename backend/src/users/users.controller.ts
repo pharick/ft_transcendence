@@ -4,6 +4,7 @@ import {
   Logger,
   NotFoundException,
   Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
@@ -21,7 +22,9 @@ export class UsersController {
   }
 
   @Get(':userId')
-  async findOne(@Param('userId') userId: number): Promise<User> {
+  async findOne(
+    @Param('userId', new ParseIntPipe()) userId: number,
+  ): Promise<User> {
     const user: User = await this.usersService.findOne(userId);
     if (!user) throw new NotFoundException();
     return user;

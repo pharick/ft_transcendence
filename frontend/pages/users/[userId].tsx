@@ -1,6 +1,6 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import { GameInfo, UserInfo } from '../../types/interfaces';
+import { UserInfo } from '../../types/interfaces';
 import { userContext } from '../../components/userProvider';
 import { CreatePendingGameDto } from '../../types/dtos';
 
@@ -11,7 +11,7 @@ interface UserPageProps {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const userId = context.params?.userId;
   const response = await fetch(`http://localhost:3000/api/users/${userId}`);
-  if (response.status == 404) return { notFound: true };
+  if (response.status == 404 || response.status == 400) return { notFound: true };
   const userInfo: UserInfo = await response.json();
   return { props: { userInfo } };
 };

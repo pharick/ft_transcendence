@@ -12,7 +12,31 @@ export class PendingGamesService {
   ) {}
 
   async findAll(): Promise<PendingGame[]> {
-    return this.pendingGamesRepository.find();
+    return this.pendingGamesRepository.find({
+      relations: ['hostUser', 'guestUser'],
+    });
+  }
+
+  async findByHost(hostUserId: number): Promise<PendingGame[]> {
+    return this.pendingGamesRepository.find({
+      relations: ['hostUser', 'guestUser'],
+      where: {
+        hostUser: {
+          id: hostUserId,
+        },
+      },
+    });
+  }
+
+  async findByGuest(guestUserId: number): Promise<PendingGame[]> {
+    return this.pendingGamesRepository.find({
+      relations: ['hostUser', 'guestUser'],
+      where: {
+        guestUser: {
+          id: guestUserId,
+        },
+      },
+    });
   }
 
   create(hostUser: User, guestUser: User | null): Promise<PendingGame> {
