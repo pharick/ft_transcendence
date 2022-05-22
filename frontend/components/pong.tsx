@@ -25,7 +25,8 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     club1Pos,
     club2Pos,
   }: FrameInfo) => {
-    const canvas = canvasRef.current!;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
     if (!canvas || !ctx) {
@@ -81,24 +82,19 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   };
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvasRef.current?.getContext('2d');
-
-    if (!canvas || !ctx) {
-      console.log(
-        'Update your browser, canvas is not supported in the current version',
-      );
-      return;
-    }
-
-    if (socket.current) return;
+    if (socket.current && socket.current?.active) return;
 
     socket.current = io('http://localhost:4000');
+    socket.current?.connect();
     socket.current?.emit('connectToGame', gameInfo.gameId);
 
     socket.current?.on('nextFrame', (frame: FrameInfo) => {
       renderField(frame);
     });
+
+    return () => {
+      socket.current?.disconnect();
+    };
   }, [gameInfo.gameId]);
 
   const keyDownHandler = (e: KeyboardEvent) => {

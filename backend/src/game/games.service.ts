@@ -95,6 +95,7 @@ class Game {
   }
 
   moveClubStart(playerId: number, up: boolean): void {
+    if (!playerId) return;
     if (playerId == this.player1Id)
       this.club1Delta = up ? -this.moveClubDelta : this.moveClubDelta;
     else if (playerId == this.player2Id)
@@ -102,6 +103,7 @@ class Game {
   }
 
   moveClubStop(playerId: number): void {
+    if (!playerId) return;
     if (playerId == this.player1Id) this.club1Delta = 0;
     else if (playerId == this.player2Id) this.club2Delta = 0;
   }
@@ -128,16 +130,16 @@ class Game {
     }
 
     if (
-      (this.club1Delta < 0 && this.club1Top > this.ballRadius * 2) ||
+      (this.club1Delta < 0 && this.club1Top > this.ballRadius * 3) ||
       (this.club1Delta > 0 &&
-        this.club1Bottom < this.fieldHeight - this.ballRadius * 2)
+        this.club1Bottom < this.fieldHeight - this.ballRadius * 3)
     )
       this.club1Pos += this.club1Delta;
 
     if (
-      (this.club2Delta < 0 && this.club2Top > this.ballRadius * 2) ||
+      (this.club2Delta < 0 && this.club2Top > this.ballRadius * 3) ||
       (this.club2Delta > 0 &&
-        this.club2Bottom < this.fieldHeight - this.ballRadius * 2)
+        this.club2Bottom < this.fieldHeight - this.ballRadius * 3)
     )
       this.club2Pos += this.club2Delta;
 
