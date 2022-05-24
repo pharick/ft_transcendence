@@ -4,9 +4,7 @@ import {
   Get,
   Param,
   Logger,
-  Session,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 
 import { GamesService } from './games.service';
@@ -27,13 +25,6 @@ export class GamesController {
     const gameInfo: GameInfo = await this.gamesService.findOne(gameId);
     if (!gameInfo) throw new NotFoundException();
     return gameInfo;
-  }
-
-  @Post()
-  create(@Session() session: Record<string, any>): Promise<GameInfo> {
-    const userId: number = session.userId;
-    if (!userId) throw new UnauthorizedException();
-    return this.gamesService.createNewGame(userId);
   }
 
   @Post(':gameId/toggle')

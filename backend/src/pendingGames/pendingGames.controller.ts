@@ -14,6 +14,8 @@ import { PendingGame } from './pendingGame.entity';
 import { CreatePendingGameDto } from './pendingGames.dto';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
+import { GamesService } from '../game/games.service';
+import { GameInfo } from '../game/games.interfaces';
 
 @Controller('pending')
 export class PendingGamesController {
@@ -21,6 +23,7 @@ export class PendingGamesController {
 
   constructor(
     private pendingGamesService: PendingGamesService,
+    private gamesService: GamesService,
     private usersService: UsersService,
   ) {}
 
@@ -56,5 +59,18 @@ export class PendingGamesController {
 
     if (!hostUserId) throw new UnauthorizedException();
     return this.pendingGamesService.create(hostUser, guestUser);
+  }
+
+  @Post(':pendingGameId/accept')
+  async accept(
+    @Session() session: Record<string, any>,
+    @Param('pendingGameId', new ParseIntPipe()) pendingGameId: number,
+  ): Promise<GameInfo> {
+    const game: PendingGame = await this.pendingGamesService.findOne(
+      pendingGameId,
+    );
+    this.logger.log(game);
+    if (session.userId != game.guestUser.id) throw new UnauthorizedException();
+    return this.gamesService.createNewGame(game.hostUser.id, game.guestUser.id);
   }
 }

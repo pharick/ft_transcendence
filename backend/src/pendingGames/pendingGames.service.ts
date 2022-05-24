@@ -17,6 +17,12 @@ export class PendingGamesService {
     });
   }
 
+  async findOne(id: number): Promise<PendingGame> {
+    return this.pendingGamesRepository.findOne(id, {
+      relations: ['hostUser', 'guestUser'],
+    });
+  }
+
   async findByHost(hostUserId: number): Promise<PendingGame[]> {
     return this.pendingGamesRepository.find({
       relations: ['hostUser', 'guestUser'],

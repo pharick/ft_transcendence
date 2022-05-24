@@ -12,5 +12,6 @@ import { AuthModule } from '../auth/auth.module';
   imports: [TypeOrmModule.forFeature([User]), HttpModule, AuthModule],
   providers: [GamesService, GamesGateway, UsersService],
   controllers: [GamesController],
+  exports: [GamesService],
 })
 export class GamesModule {}

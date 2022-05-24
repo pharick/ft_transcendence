@@ -17,10 +17,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
+
   const handleGameInvite = async () => {
     const createPendingGameDto: CreatePendingGameDto = {
       guestUserId: userInfo.id,
     };
+
     const response = await fetch('/api/pending/', {
       method: 'POST',
       headers: {
@@ -28,12 +30,10 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
       },
       body: JSON.stringify(createPendingGameDto),
     });
-    if (response.status == 401)
-      // redirect на страниця логина ? 404
-      return;
+
+    if (response.status == 401) return;
+
     const pendingGameInfo = await response.json();
-    console.log(pendingGameInfo);
-    // setGameList((gameList) => [...gameList, gameInfo]);
   };
 
   return (

@@ -4,6 +4,12 @@ export interface UserInfo {
   isActive: boolean;
 }
 
+export interface PendingGame {
+  id: number;
+  hostUser: UserInfo;
+  guestUser: UserInfo;
+}
+
 export interface GameInfo {
   gameId: string;
   player1?: UserInfo;

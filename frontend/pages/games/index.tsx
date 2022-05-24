@@ -1,33 +1,19 @@
 import type { NextPage } from 'next';
-import Link from 'next/link';
-import { useState } from 'react';
-import { GetServerSideProps } from 'next';
+// import { GetServerSideProps } from 'next';
 
 import { userContext } from '../../components/userProvider';
 import UserBlock from '../../components/userBlock';
-import { GameInfo, UserInfo } from '../../types/interfaces';
+import Invites from '../../components/invites';
 
 interface HomePageProps {
-  initGameList: GameInfo[];
-  initUser: UserInfo;
+
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const response = await fetch('http://localhost:3000/api/games/');
-  const initGameList: GameInfo[] = await response.json();
-  return { props: { initGameList } };
-};
+// export const getServerSideProps: GetServerSideProps = async () => {
+//
+// };
 
-const HomePage: NextPage<HomePageProps> = ({ initGameList }) => {
-  const [gameList, setGameList] = useState<GameInfo[]>(initGameList);
-
-  const handleCreateGame = async () => {
-    const response = await fetch('/api/games/', { method: 'POST' });
-    if (response.status == 401) return;
-    const gameInfo: GameInfo = await response.json();
-    setGameList((gameList) => [...gameList, gameInfo]);
-  };
-
+const HomePage: NextPage<HomePageProps> = () => {
   return (
     <>
       <userContext.Consumer>
@@ -36,19 +22,11 @@ const HomePage: NextPage<HomePageProps> = ({ initGameList }) => {
         )}
       </userContext.Consumer>
 
-      <h1>Games</h1>
-
-      <ul>
-        {gameList?.map((gameInfo: GameInfo) => (
-          <li key={gameInfo.gameId}>
-            <Link href={`/games/${gameInfo.gameId}`}>
-              <a>{gameInfo.gameId}</a>
-            </Link>
-          </li>
-        ))}
-      </ul>
-
-      <button onClick={handleCreateGame}>Create game</button>
+      <userContext.Consumer>
+        {({ user }) => (
+          <Invites user={user} />
+        )}
+      </userContext.Consumer>
     </>
   );
 };

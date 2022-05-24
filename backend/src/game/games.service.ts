@@ -34,7 +34,7 @@ class Game {
 
   private gameTimer: NodeJS.Timer;
 
-  constructor(player1Id: number) {
+  constructor(player1Id: number, player2Id: number) {
     this.ballX = this.fieldWidth / 2;
     this.ballY = this.fieldHeight / 2;
     this.ballDirection = 20;
@@ -44,6 +44,7 @@ class Game {
     this.club1Delta = 0;
     this.club2Delta = 0;
     this.player1Id = player1Id;
+    this.player2Id = player2Id;
   }
 
   private get ballLeft(): number {
@@ -214,9 +215,9 @@ export class GamesService {
     };
   }
 
-  async createNewGame(player1Id: number): Promise<GameInfo> {
+  async createNewGame(player1Id: number, player2Id: number): Promise<GameInfo> {
     const gameId: string = uuid4();
-    this.games[gameId] = new Game(player1Id);
+    this.games[gameId] = new Game(player1Id, player2Id);
     return this.findOne(gameId);
   }
 
