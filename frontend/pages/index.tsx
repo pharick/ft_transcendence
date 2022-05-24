@@ -1,9 +1,8 @@
 import type { NextPage } from 'next';
 // import { GetServerSideProps } from 'next';
 
-import { userContext } from '../../components/userProvider';
-import UserBlock from '../../components/userBlock';
-import Invites from '../../components/invites';
+import { userContext } from '../components/userProvider';
+import Invites from '../components/invites';
 
 interface HomePageProps {
 
@@ -16,12 +15,6 @@ interface HomePageProps {
 const HomePage: NextPage<HomePageProps> = () => {
   return (
     <>
-      <userContext.Consumer>
-        {({ user, handleLogout }) => (
-          <UserBlock user={user} handleLogout={handleLogout} />
-        )}
-      </userContext.Consumer>
-
       <userContext.Consumer>
         {({ user }) => (
           <Invites user={user} />

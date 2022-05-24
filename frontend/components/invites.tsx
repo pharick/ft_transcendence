@@ -9,20 +9,6 @@ const Invites: FC<InvitesProps> = ({ user }) => {
   const [hostGames, setHostGames] = useState<PendingGame[]>([]);
   const [guestGames, setGuestGames] = useState<PendingGame[]>([]);
 
-  const getHostGames = async () => {
-    if (!user) return;
-    const response = await fetch(`/api/pending/host/${user?.id}`);
-    const data = await response.json();
-    setHostGames(data);
-  };
-
-  const getGuestGames = async () => {
-    if (!user) return;
-    const response = await fetch(`/api/pending/guest/${user?.id}`);
-    const data = await response.json();
-    setGuestGames(data);
-  };
-
   const handleAccept = async (pendingGameId: number) => {
     const response = await fetch(
       `/api/pending/${pendingGameId}/accept`,
@@ -32,9 +18,23 @@ const Invites: FC<InvitesProps> = ({ user }) => {
   };
 
   useEffect(() => {
+    const getHostGames = async () => {
+      if (!user) return;
+      const response = await fetch(`/api/pending/host/${user?.id}`);
+      const data = await response.json();
+      setHostGames(data);
+    };
+
+    const getGuestGames = async () => {
+      if (!user) return;
+      const response = await fetch(`/api/pending/guest/${user?.id}`);
+      const data = await response.json();
+      setGuestGames(data);
+    };
+
     getHostGames().then();
     getGuestGames().then();
-  });
+  }, [user]);
 
   return (
     <section>

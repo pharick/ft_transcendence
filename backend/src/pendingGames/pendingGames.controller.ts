@@ -69,7 +69,6 @@ export class PendingGamesController {
     const game: PendingGame = await this.pendingGamesService.findOne(
       pendingGameId,
     );
-    this.logger.log(game);
     if (session.userId != game.guestUser.id) throw new UnauthorizedException();
     return this.gamesService.createNewGame(game.hostUser.id, game.guestUser.id);
   }

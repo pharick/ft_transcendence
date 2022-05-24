@@ -1,14 +1,17 @@
 import type { AppProps } from 'next/app';
 import UserProvider from '../components/userProvider';
-import '../style.css';
+import '../styles/style.css';
+import Layout from '../components/layout';
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
 
   return (
     <UserProvider>
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </UserProvider>
   )
 };
 
-export default MyApp
+export default MyApp;
