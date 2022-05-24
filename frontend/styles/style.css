@@ -7,6 +7,15 @@ body {
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
 }
 
+a {
+    text-decoration-color: dodgerblue;
+    transition: all 0.2s;
+}
+
+a:hover {
+    color: dodgerblue;
+}
+
 button {
     border: 1px solid lightgray;
     background-color: black;
@@ -33,10 +42,15 @@ button:active {
     height: 50px;
     color: #ffffff;
     display: flex;
+    align-items: center;
 }
 
 .header a {
     color: lightgray;
+}
+
+.header a:hover {
+    color: dodgerblue;
 }
 
 /* User Block */
