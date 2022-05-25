@@ -10,5 +10,6 @@ import { PendingGame } from '../pendingGames/pendingGame.entity';
   imports: [TypeOrmModule.forFeature([User, PendingGame])],
   providers: [UsersService],
   controllers: [UsersController],
+  exports: [UsersService],
 })
 export class UsersModule {}

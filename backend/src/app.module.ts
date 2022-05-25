@@ -5,7 +5,6 @@ import { User } from './users/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { GamesModule } from './game/games.module';
-import { UsersService } from './users/users.service';
 import { PendingGame } from './pendingGames/pendingGame.entity';
 import { PendingGamesModule } from './pendingGames/pendingGames.module';
 
@@ -28,6 +27,6 @@ import { PendingGamesModule } from './pendingGames/pendingGames.module';
     PendingGamesModule,
   ],
   controllers: [],
-  providers: [UsersService],
+  providers: [],
 })
 export class AppModule {}
