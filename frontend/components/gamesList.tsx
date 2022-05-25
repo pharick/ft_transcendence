@@ -1,11 +1,11 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { PendingGame, UserInfo } from '../types/interfaces';
 
-interface InvitesProps {
+interface GamesListProps {
   user?: UserInfo;
 }
 
-const Invites: FC<InvitesProps> = ({ user }) => {
+const GamesList: FC<GamesListProps> = ({ user }) => {
   const [hostGames, setHostGames] = useState<PendingGame[]>([]);
   const [guestGames, setGuestGames] = useState<PendingGame[]>([]);
 
@@ -17,41 +17,37 @@ const Invites: FC<InvitesProps> = ({ user }) => {
     console.log(response);
   };
 
+  const getHostGames = useCallback(async () => {
+    if (!user) return;
+    const response = await fetch(`/api/pending/host/${user?.id}`);
+    const data = await response.json();
+    setHostGames(data);
+  }, [user]);
+
+  const getGuestGames = useCallback(async () => {
+    if (!user) return;
+    const response = await fetch(`/api/pending/guest/${user?.id}`);
+    const data = await response.json();
+    setGuestGames(data);
+  }, [user]);
+
   useEffect(() => {
-    const getHostGames = async () => {
-      if (!user) return;
-      const response = await fetch(`/api/pending/host/${user?.id}`);
-      const data = await response.json();
-      setHostGames(data);
-    };
-
-    const getGuestGames = async () => {
-      if (!user) return;
-      const response = await fetch(`/api/pending/guest/${user?.id}`);
-      const data = await response.json();
-      setGuestGames(data);
-    };
-
     getHostGames().then();
     getGuestGames().then();
-  }, [user]);
+  }, [getGuestGames, getHostGames]);
 
   return (
     <section>
-      <h3>Вы приглашаете</h3>
       <ul>
         {hostGames.map((game) => (
           <li key={game.id}>
-            {game.guestUser.username}
+            <p>Ждем ответа от {game.guestUser.username}</p>
           </li>
         ))}
-      </ul>
 
-      <h3>Вас приглашают</h3>
-      <ul>
         {guestGames.map((game) => (
           <li key={game.id}>
-            <p>{game.hostUser.username}</p>
+            <p>Вас приглашает {game.hostUser.username}</p>
             <button onClick={() => { handleAccept(game.id).then() }}>Принять приглашение</button>
           </li>
         ))}
@@ -60,4 +56,4 @@ const Invites: FC<InvitesProps> = ({ user }) => {
   );
 };
 
-export default Invites;
+export default GamesList;

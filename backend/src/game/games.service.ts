@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { v4 as uuid4 } from 'uuid';
 
 import { GameInfo } from './games.interfaces';
@@ -188,7 +188,10 @@ class Game {
 
 @Injectable()
 export class GamesService {
+  private logger: Logger = new Logger('GamesService');
+
   private games: Record<string, Game> = {};
+  private users: Record<number, string[]> = {};
 
   constructor(private usersService: UsersService) {}
 
@@ -197,6 +200,14 @@ export class GamesService {
       Object.entries(this.games).map(
         async ([gameId]) => await this.findOne(gameId),
       ),
+    );
+  }
+
+  async findMy(userId): Promise<GameInfo[]> {
+    if (!(userId in this.users)) return [];
+    this.logger.log(this.users[userId]);
+    return await Promise.all(
+      this.users[userId].map(async (gameId) => await this.findOne(gameId)),
     );
   }
 
@@ -215,9 +226,16 @@ export class GamesService {
     };
   }
 
+  private saveGameForUser(userId: number, gameId: string) {
+    if (!(userId in this.users)) this.users[userId] = [];
+    this.users[userId].push(gameId);
+  }
+
   async createNewGame(player1Id: number, player2Id: number): Promise<GameInfo> {
     const gameId: string = uuid4();
     this.games[gameId] = new Game(player1Id, player2Id);
+    this.saveGameForUser(player1Id, gameId);
+    this.saveGameForUser(player2Id, gameId);
     return this.findOne(gameId);
   }
 
