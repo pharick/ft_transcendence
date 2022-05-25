@@ -11,19 +11,19 @@ export class PendingGamesService {
     private pendingGamesRepository: Repository<PendingGame>,
   ) {}
 
-  async findAll(): Promise<PendingGame[]> {
+  findAll(): Promise<PendingGame[]> {
     return this.pendingGamesRepository.find({
       relations: ['hostUser', 'guestUser'],
     });
   }
 
-  async findOne(id: number): Promise<PendingGame> {
+  findOne(id: number): Promise<PendingGame> {
     return this.pendingGamesRepository.findOne(id, {
       relations: ['hostUser', 'guestUser'],
     });
   }
 
-  async findByHost(hostUserId: number): Promise<PendingGame[]> {
+  findByHost(hostUserId: number): Promise<PendingGame[]> {
     return this.pendingGamesRepository.find({
       relations: ['hostUser', 'guestUser'],
       where: {
@@ -34,7 +34,7 @@ export class PendingGamesService {
     });
   }
 
-  async findByGuest(guestUserId: number): Promise<PendingGame[]> {
+  findByGuest(guestUserId: number): Promise<PendingGame[]> {
     return this.pendingGamesRepository.find({
       relations: ['hostUser', 'guestUser'],
       where: {
@@ -51,5 +51,12 @@ export class PendingGamesService {
       guestUser,
     });
     return this.pendingGamesRepository.save(pendingGame);
+  }
+
+  async remove(pendingGameId: number): Promise<void> {
+    const game: PendingGame = await this.pendingGamesRepository.findOne(
+      pendingGameId,
+    );
+    await this.pendingGamesRepository.remove(game);
   }
 }

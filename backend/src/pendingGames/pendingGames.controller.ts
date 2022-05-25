@@ -70,6 +70,7 @@ export class PendingGamesController {
       pendingGameId,
     );
     if (session.userId != game.guestUser.id) throw new UnauthorizedException();
+    await this.pendingGamesService.remove(pendingGameId);
     return this.gamesService.createNewGame(game.hostUser.id, game.guestUser.id);
   }
 }
