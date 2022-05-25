@@ -40,7 +40,7 @@ class Game {
   constructor(player1Id: number, player2Id: number) {
     this.ballX = this.fieldWidth / 2;
     this.ballY = this.fieldHeight / 2;
-    this.ballDirection = 20;
+    this.ballDirection = 0;
     this.ballSpeed = 5;
     this.club1Pos = this.fieldHeight / 2;
     this.club2Pos = this.fieldHeight / 2;
@@ -92,12 +92,20 @@ class Game {
     return this.club1Pos + this.clubHeight / 2;
   }
 
+  private get club1Right(): number {
+    return this.ballRadius * 2 + this.clubWidth;
+  }
+
   private get club2Top(): number {
     return this.club2Pos - this.clubHeight / 2;
   }
 
   private get club2Bottom(): number {
     return this.club2Pos + this.clubHeight / 2;
+  }
+
+  private get club2Left(): number {
+    return this.fieldWidth - this.ballRadius * 2 - this.clubWidth;
   }
 
   get fieldInfo(): FieldInfo {
@@ -121,25 +129,50 @@ class Game {
     else if (playerId == this.player2Id) this.club2Delta = 0;
   }
 
+  newRound(): void {
+    this.ballX = this.fieldWidth / 2;
+    this.ballY = this.fieldHeight / 2;
+    this.ballDirection = 0;
+    this.pauseGame();
+  }
+
   calculateNextFrame(): void {
     this.ballX += Math.cos(radians(this.ballDirection)) * this.ballSpeed;
     this.ballY += Math.sin(radians(this.ballDirection)) * this.ballSpeed;
 
-    if (this.ballLeft < 0) {
-      this.ballLeft = 0;
-      this.ballDirection = 180 - this.ballDirection;
-    }
     if (this.ballTop < 0) {
       this.ballTop = 0;
       this.ballDirection = -this.ballDirection;
     }
-    if (this.ballRight > this.fieldWidth) {
-      this.ballRight = this.fieldWidth;
-      this.ballDirection = 180 - this.ballDirection;
-    }
     if (this.ballBottom > this.fieldHeight) {
       this.ballBottom = this.fieldHeight;
       this.ballDirection = -this.ballDirection;
+    }
+
+    if (
+      this.ballLeft < this.club1Right &&
+      this.ballBottom > this.club1Top &&
+      this.ballTop < this.club1Bottom
+    ) {
+      this.ballLeft = this.club1Right;
+      this.ballDirection = 180 - this.ballDirection;
+    }
+    if (
+      this.ballRight > this.club2Left &&
+      this.ballBottom > this.club2Top &&
+      this.ballTop < this.club2Bottom
+    ) {
+      this.ballRight = this.club2Left;
+      this.ballDirection = 180 - this.ballDirection;
+    }
+
+    if (this.ballLeft > this.fieldWidth) {
+      this.score1++;
+      this.newRound();
+    }
+    if (this.ballRight < 0) {
+      this.score2++;
+      this.newRound();
     }
 
     if (
