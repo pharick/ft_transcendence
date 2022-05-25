@@ -23,9 +23,9 @@ const GamePage: NextPage<GamePageProps> = ({ gameInfo }) => {
   return (
     <>
       <Head>
-        <title>Ping-pong</title>
+        <title>Game {gameInfo.player1.username} vs {gameInfo.player2.username}</title>
       </Head>
-      <h1>Game {gameInfo.gameId}</h1>
+      <h1>Game <b>{gameInfo.player1.username}</b> vs <b>{gameInfo.player2.username}</b></h1>
 
       <userContext.Consumer>
         {({ user, userSessionId }) => (

@@ -7,6 +7,16 @@ body {
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
 }
 
+main {
+    padding: 10px 30px;
+}
+
+h1 {
+    font-weight: normal;
+    text-decoration: underline;
+    text-decoration-color: dodgerblue;
+}
+
 a {
     text-decoration-color: dodgerblue;
     transition: all 0.2s;
