@@ -48,7 +48,7 @@ const GamesList: FC<GamesListProps> = ({ user }) => {
 
   return (
     <section>
-      <ul>
+      <ul className="game-list">
         {currentGames.map((game) => (
           <li key={game.gameId}>
             <p>Game <b>{game.player1.username}</b> vs <b>{game.player2.username}</b></p>
