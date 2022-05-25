@@ -30,7 +30,7 @@ class Game {
   private club2Delta: number;
 
   private readonly player1Id: number;
-  private player2Id: number;
+  private readonly player2Id: number;
 
   private gameTimer: NodeJS.Timer;
 

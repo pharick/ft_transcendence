@@ -12,8 +12,8 @@ export interface PendingGame {
 
 export interface GameInfo {
   gameId: string;
-  player1?: UserInfo;
-  player2?: UserInfo;
+  player1: UserInfo;
+  player2: UserInfo;
 }
 
 export interface FrameInfo {
