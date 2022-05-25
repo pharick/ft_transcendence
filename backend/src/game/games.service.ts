@@ -10,6 +10,10 @@ const radians = (degrees: number) => {
   return degrees * (Math.PI / 180);
 };
 
+const random = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
 class Game {
   private readonly fieldWidth: number = 800;
   private readonly fieldHeight: number = 600;
@@ -38,9 +42,6 @@ class Game {
   private gameTimer: NodeJS.Timer;
 
   constructor(player1Id: number, player2Id: number) {
-    this.ballX = this.fieldWidth / 2;
-    this.ballY = this.fieldHeight / 2;
-    this.ballDirection = 0;
     this.ballSpeed = 5;
     this.club1Pos = this.fieldHeight / 2;
     this.club2Pos = this.fieldHeight / 2;
@@ -50,6 +51,7 @@ class Game {
     this.player2Id = player2Id;
     this.score1 = 0;
     this.score2 = 0;
+    this.newRound(!!random(0, 1));
   }
 
   private get ballLeft(): number {
@@ -129,10 +131,12 @@ class Game {
     else if (playerId == this.player2Id) this.club2Delta = 0;
   }
 
-  newRound(): void {
+  newRound(player1Wins: boolean): void {
     this.ballX = this.fieldWidth / 2;
     this.ballY = this.fieldHeight / 2;
-    this.ballDirection = 0;
+    this.ballDirection = player1Wins
+      ? random(-30, 30)
+      : random(180 - 30, 180 + 30);
     this.pauseGame();
   }
 
@@ -168,11 +172,11 @@ class Game {
 
     if (this.ballLeft > this.fieldWidth) {
       this.score1++;
-      this.newRound();
+      this.newRound(true);
     }
     if (this.ballRight < 0) {
       this.score2++;
-      this.newRound();
+      this.newRound(false);
     }
 
     if (
