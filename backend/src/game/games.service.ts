@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { v4 as uuid4 } from 'uuid';
 
-import { GameInfo } from './games.interfaces';
+import { FieldInfo, GameInfo } from './games.interfaces';
 import { FrameInfo } from './games.interfaces';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
@@ -32,6 +32,9 @@ class Game {
   private readonly player1Id: number;
   private readonly player2Id: number;
 
+  private score1: number;
+  private score2: number;
+
   private gameTimer: NodeJS.Timer;
 
   constructor(player1Id: number, player2Id: number) {
@@ -45,6 +48,8 @@ class Game {
     this.club2Delta = 0;
     this.player1Id = player1Id;
     this.player2Id = player2Id;
+    this.score1 = 0;
+    this.score2 = 0;
   }
 
   private get ballLeft(): number {
@@ -79,20 +84,27 @@ class Game {
     this.ballY = n - this.ballRadius;
   }
 
-  private get club1Top() {
+  private get club1Top(): number {
     return this.club1Pos - this.clubHeight / 2;
   }
 
-  private get club1Bottom() {
+  private get club1Bottom(): number {
     return this.club1Pos + this.clubHeight / 2;
   }
 
-  private get club2Top() {
+  private get club2Top(): number {
     return this.club2Pos - this.clubHeight / 2;
   }
 
-  private get club2Bottom() {
+  private get club2Bottom(): number {
     return this.club2Pos + this.clubHeight / 2;
+  }
+
+  get fieldInfo(): FieldInfo {
+    return {
+      width: this.fieldWidth,
+      height: this.fieldHeight,
+    };
   }
 
   moveClubStart(playerId: number, up: boolean): void {
@@ -143,8 +155,6 @@ class Game {
         this.club2Bottom < this.fieldHeight - this.ballRadius * 3)
     )
       this.club2Pos += this.club2Delta;
-
-    // this.ballSpeed += 0.001;
   }
 
   resumeGame(): void {
@@ -182,6 +192,8 @@ class Game {
       clubHeight: this.clubHeight,
       club1Pos: this.club1Pos,
       club2Pos: this.club2Pos,
+      score1: this.score1,
+      score2: this.score2,
     };
   }
 }
@@ -221,6 +233,7 @@ export class GamesService {
 
     return {
       gameId: gameId,
+      field: this.games[gameId].fieldInfo,
       player1: player1,
       player2: player2,
     };

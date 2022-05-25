@@ -10,8 +10,14 @@ export interface PendingGame {
   guestUser: UserInfo;
 }
 
+export interface FieldInfo {
+  width: number;
+  height: number;
+}
+
 export interface GameInfo {
   gameId: string;
+  field: FieldInfo;
   player1: UserInfo;
   player2: UserInfo;
 }
@@ -24,4 +30,6 @@ export interface FrameInfo {
   clubHeight: number;
   club1Pos: number;
   club2Pos: number;
+  score1: number;
+  score2: number;
 }

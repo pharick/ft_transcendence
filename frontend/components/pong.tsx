@@ -13,8 +13,8 @@ interface PongProps {
 const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const socket = useRef<Socket>();
-  const [score1, setScore1] = useState(1234);
-  const [score2, setScore2] = useState(1234);
+  const [score1, setScore1] = useState(0);
+  const [score2, setScore2] = useState(0);
 
   const renderField = ({
     ballX,
@@ -24,6 +24,8 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     clubHeight,
     club1Pos,
     club2Pos,
+    score1,
+    score2,
   }: FrameInfo) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -38,41 +40,37 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
 
     const ballSize = ballRadius * 2;
     const paddleTab = ballSize;
-    // const maxPaddleY = canvas.height - ballSize - paddleHeight;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    //playground
+    // playground
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    //score
-    setScore1(456);
-    setScore2(1234);
+    // score
+    setScore1(score1);
+    setScore2(score2);
 
-    //centerline
+    // center line
     ctx.fillStyle = 'lightgrey';
-    for (let i = ballSize; i < canvas.height - ballSize; i += ballSize * 2) {
+    for (let y = ballSize; y < canvas.height - ballSize; y += ballSize * 2) {
       ctx.fillRect(
-        canvas.width / 2 - ballSize / 2,
-        i,
-        ballSize / 4,
-        ballSize / 2,
+        canvas.width / 2 - ballSize / 2, y,
+        ballSize / 4, ballSize / 2,
       );
     }
 
-    //ball
+    // ball
     ctx.fillStyle = 'white';
     ctx.fillRect(ballX, ballY, ballSize, ballSize);
 
-    //club
+    // clubs
     ctx.fillRect(paddleTab, club1Pos - clubHeight / 2, clubWidth, clubHeight);
     ctx.fillRect(
       canvas.width - paddleTab - ballSize,
       club2Pos - clubHeight / 2,
-      clubWidth,
-      clubHeight,
-    ); // 160
+      clubWidth, clubHeight,
+    );
   };
 
   const toggleGameRunning = async () => {
@@ -125,12 +123,11 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
         <p className="score score1">{score1}</p>
         <p className="score score2">{score2}</p>
         <canvas
-          width="800"
-          height="600"
+          width={gameInfo.field.width}
+          height={gameInfo.field.height}
           className="field"
           ref={canvasRef}
         ></canvas>
-        {/*gameInfo.width, gameInfo.heigth - после добавления в бек исправить хард-корд*/}
       </div>
       <button onClick={toggleGameRunning}>Run / Pause</button>
     </>
