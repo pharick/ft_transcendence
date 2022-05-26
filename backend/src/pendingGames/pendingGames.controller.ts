@@ -2,6 +2,8 @@ import {
   Body,
   ConflictException,
   Controller,
+  Delete,
+  ForbiddenException,
   Get,
   Logger,
   Param,
@@ -89,5 +91,18 @@ export class PendingGamesController {
     );
     this.pendingGamesGateway.server.emit('update');
     return game;
+  }
+
+  @Delete(':pendingGameId')
+  async remove(
+    @Session() session: Record<string, any>,
+    @Param('pendingGameId', new ParseIntPipe()) pendingGameId: number,
+  ): Promise<void> {
+    const userId: number = session.userId;
+    const pending = await this.pendingGamesService.findOne(pendingGameId);
+    if (pending.hostUser.id != userId && pending.guestUser.id != userId)
+      throw new ForbiddenException();
+    await this.pendingGamesService.remove(pendingGameId);
+    this.pendingGamesGateway.server.emit('update');
   }
 }

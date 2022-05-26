@@ -54,6 +54,10 @@ button:disabled {
     opacity: 80%;
 }
 
+.success-button {
+    background-color: #198754;
+}
+
 .error-button {
     background-color: #dc3545;
 }

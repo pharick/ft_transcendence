@@ -21,6 +21,14 @@ const GamesList: FC<GamesListProps> = ({ user }) => {
     console.log(response);
   };
 
+  const handleRemove = async (pendingGameId: number) => {
+    const response = await fetch(
+      `/api/pending/${pendingGameId}`,
+      { method: 'DELETE' }
+    );
+    console.log(response);
+  };
+
   const getHostGames = useCallback(async () => {
     if (!user) return;
     const response = await fetch(`/api/pending/host/${user?.id}`);
@@ -79,13 +87,17 @@ const GamesList: FC<GamesListProps> = ({ user }) => {
         {guestGames.map((game) => (
           <li key={game.id}>
             <p><b>{game.hostUser.username}</b> invites you</p>
-            <button onClick={() => { handleAccept(game.id).then() }}>Accept</button>
+            <div>
+              <button className="success-button" onClick={() => { handleAccept(game.id).then() }}>Accept</button>
+              <button className="error-button" onClick={() => { handleRemove(game.id).then() }}>Decline</button>
+            </div>
           </li>
         ))}
 
         {hostGames.map((game) => (
           <li key={game.id}>
             <p>Waiting for <b>{game.guestUser.username}</b></p>
+            <button className="error-button" onClick={() => { handleRemove(game.id).then() }}>Cancel</button>
           </li>
         ))}
       </ul>
