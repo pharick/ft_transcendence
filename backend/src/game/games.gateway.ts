@@ -11,7 +11,7 @@ import { GamesService } from './games.service';
 import { FrameInfo, GameInfo } from './games.interfaces';
 import { AuthService } from '../auth/auth.service';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({ namespace: 'game', cors: true })
 export class GamesGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
