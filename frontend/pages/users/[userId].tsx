@@ -2,7 +2,7 @@ import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import { UserInfo } from '../../types/interfaces';
 import { userContext } from '../../components/userProvider';
-import { CreatePendingGameDto } from '../../types/dtos';
+import Invite from '../../components/invite';
 
 interface UserPageProps {
   userInfo: UserInfo;
@@ -17,25 +17,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
-
-  const handleGameInvite = async () => {
-    const createPendingGameDto: CreatePendingGameDto = {
-      guestUserId: userInfo.id,
-    };
-
-    const response = await fetch('/api/pending/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(createPendingGameDto),
-    });
-
-    if (response.status == 401) return;
-
-    const pendingGameInfo = await response.json();
-  };
-
   return (
     <>
       <Head>
@@ -44,13 +25,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
       <h1> {userInfo.username} </h1>
       <userContext.Consumer>
         {({ user }) => (
-          <p>
-            {user?.id == userInfo.id ? (
-              "It's me"
-            ) : (
-              <button onClick={handleGameInvite}>Invite to the game</button>
-            )}
-          </p>
+          <Invite currentUser={user} userInfo={userInfo} />
         )}
       </userContext.Consumer>
     </>

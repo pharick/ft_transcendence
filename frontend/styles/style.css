@@ -39,15 +39,23 @@ button, .button {
     text-decoration: none;
 }
 
-button:hover, .button:hover {
+button:not(:disabled):hover, .button:hover {
     border-color: dodgerblue;
     color: white;
     cursor: pointer;
 }
 
-button:active, .button:active {
+button:not(:disabled):active, .button:active {
     transform: translate(1px, 1px);
     box-shadow: none;
+}
+
+button:disabled {
+    opacity: 80%;
+}
+
+.error-button {
+    background-color: #dc3545;
 }
 
 /* Header */

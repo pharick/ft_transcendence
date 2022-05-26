@@ -76,16 +76,16 @@ const GamesList: FC<GamesListProps> = ({ user }) => {
           </li>
         ))}
 
-        {hostGames.map((game) => (
-          <li key={game.id}>
-            <p>Waiting for <b>{game.guestUser.username}</b></p>
-          </li>
-        ))}
-
         {guestGames.map((game) => (
           <li key={game.id}>
             <p><b>{game.hostUser.username}</b> invites you</p>
             <button onClick={() => { handleAccept(game.id).then() }}>Accept</button>
+          </li>
+        ))}
+
+        {hostGames.map((game) => (
+          <li key={game.id}>
+            <p>Waiting for <b>{game.guestUser.username}</b></p>
           </li>
         ))}
       </ul>

@@ -1,12 +1,13 @@
 import {
-  BadRequestException,
   Body,
+  ConflictException,
   Controller,
   Get,
   Logger,
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Session,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -49,7 +50,7 @@ export class PendingGamesController {
     return this.pendingGamesService.findByGuest(guestUserId);
   }
 
-  @Post()
+  @Put()
   async create(
     @Session() session: Record<string, any>,
     @Body() createPendingGameDto: CreatePendingGameDto,
@@ -65,7 +66,7 @@ export class PendingGamesController {
       .create(hostUser, guestUser)
       .catch((error) => {
         this.logger.error(error);
-        throw new BadRequestException();
+        throw new ConflictException();
       });
     this.pendingGamesGateway.server.emit('update');
     return pending;
