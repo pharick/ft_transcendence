@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -60,7 +61,12 @@ export class PendingGamesController {
     const guestUser: User = await this.usersService.findOne(guestUserId);
 
     if (!hostUserId) throw new UnauthorizedException();
-    const pending = this.pendingGamesService.create(hostUser, guestUser);
+    const pending = this.pendingGamesService
+      .create(hostUser, guestUser)
+      .catch((error) => {
+        this.logger.error(error);
+        throw new BadRequestException();
+      });
     this.pendingGamesGateway.server.emit('update');
     return pending;
   }
