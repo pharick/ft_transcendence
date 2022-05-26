@@ -16,6 +16,7 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
 import { GamesService } from '../game/games.service';
 import { GameInfo } from '../game/games.interfaces';
+import { PendingGamesGateway } from './pendingGames.gateway';
 
 @Controller('pending')
 export class PendingGamesController {
@@ -25,6 +26,7 @@ export class PendingGamesController {
     private pendingGamesService: PendingGamesService,
     private gamesService: GamesService,
     private usersService: UsersService,
+    private pendingGamesGateway: PendingGamesGateway,
   ) {}
 
   @Get()
@@ -58,7 +60,9 @@ export class PendingGamesController {
     const guestUser: User = await this.usersService.findOne(guestUserId);
 
     if (!hostUserId) throw new UnauthorizedException();
-    return this.pendingGamesService.create(hostUser, guestUser);
+    const pending = this.pendingGamesService.create(hostUser, guestUser);
+    this.pendingGamesGateway.server.emit('update');
+    return pending;
   }
 
   @Post(':pendingGameId/accept')
@@ -66,11 +70,17 @@ export class PendingGamesController {
     @Session() session: Record<string, any>,
     @Param('pendingGameId', new ParseIntPipe()) pendingGameId: number,
   ): Promise<GameInfo> {
-    const game: PendingGame = await this.pendingGamesService.findOne(
+    const pending: PendingGame = await this.pendingGamesService.findOne(
       pendingGameId,
     );
-    if (session.userId != game.guestUser.id) throw new UnauthorizedException();
+    if (session.userId != pending.guestUser.id)
+      throw new UnauthorizedException();
     await this.pendingGamesService.remove(pendingGameId);
-    return this.gamesService.createNewGame(game.hostUser.id, game.guestUser.id);
+    const game = this.gamesService.createNewGame(
+      pending.hostUser.id,
+      pending.guestUser.id,
+    );
+    this.pendingGamesGateway.server.emit('update');
+    return game;
   }
 }

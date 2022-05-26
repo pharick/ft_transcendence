@@ -6,6 +6,7 @@ import { PendingGamesController } from './pendingGames.controller';
 import { PendingGamesService } from './pendingGames.service';
 import { GamesModule } from '../game/games.module';
 import { UsersModule } from '../users/users.module';
+import { PendingGamesGateway } from './pendingGames.gateway';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { UsersModule } from '../users/users.module';
     GamesModule,
     UsersModule,
   ],
-  providers: [PendingGamesService],
+  providers: [PendingGamesService, PendingGamesGateway],
   controllers: [PendingGamesController],
 })
 export class PendingGamesModule {}

@@ -1,12 +1,14 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { GameInfo, PendingGame, UserInfo } from '../types/interfaces';
 import Link from 'next/link';
+import { io, Socket } from 'socket.io-client';
 
 interface GamesListProps {
   user?: UserInfo;
 }
 
 const GamesList: FC<GamesListProps> = ({ user }) => {
+  const socket = useRef<Socket>();
   const [hostGames, setHostGames] = useState<PendingGame[]>([]);
   const [guestGames, setGuestGames] = useState<PendingGame[]>([]);
   const [currentGames, setCurrentGames] = useState<GameInfo[]>([]);
@@ -40,11 +42,27 @@ const GamesList: FC<GamesListProps> = ({ user }) => {
     setCurrentGames(data);
   }, [user]);
 
+  const handleUpdate = useCallback(async () => {
+    await getHostGames();
+    await getGuestGames();
+    await getCurrentGames();
+  }, [getCurrentGames, getGuestGames, getHostGames]);
+
   useEffect(() => {
-    getHostGames().then();
-    getGuestGames().then();
-    getCurrentGames().then();
-  }, [getGuestGames, getHostGames, getCurrentGames]);
+    handleUpdate().then();
+
+    if (socket.current && socket.current?.active) return;
+    socket.current = io('http://localhost:4000/pending');
+    socket.current?.connect();
+
+    socket.current?.on('update', () => {
+      handleUpdate().then();
+    });
+
+    return () => {
+      socket.current?.disconnect();
+    };
+  }, [handleUpdate]);
 
   return (
     <section>
