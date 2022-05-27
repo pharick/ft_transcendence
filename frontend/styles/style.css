@@ -156,6 +156,7 @@ button:disabled {
 
 .game-card:hover {
     box-shadow: 1px 1px 5px gray;
+    transform: translate(-1px, -1px);
 }
 
 .game-card-part {
