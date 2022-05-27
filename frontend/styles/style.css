@@ -32,7 +32,7 @@ button, .button {
     color: white;
     font-size: 1em;
     border-radius: 3px;
-    transition: all 0.1s;
+    transition: all 0.2s;
     box-shadow: 1px 1px 5px gray;
     padding: 5px 8px;
     display: inline-block;
@@ -118,18 +118,63 @@ button:disabled {
     margin: 0 10px 0 0;
 }
 
+/* Notification List */
+
+.notification-list {
+    list-style: none;
+    padding: 0;
+}
+
+.notification-list li {
+    border-bottom: 1px solid lightgray;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 /* Game List */
 
 .game-list {
     list-style: none;
     padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-.game-list li {
-    border-bottom: 1px solid lightgray;
+.game-card {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 30px;
+    margin: 5px;
+    width: 340px;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.game-card:hover {
+    box-shadow: 1px 1px 5px gray;
+}
+
+.game-card-part {
+    text-align: center;
+}
+
+.game-card-part:not(:last-child) {
+    margin-right: 50px;
+}
+
+.game-card-score {
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 30px;
+    margin: 0 0 10px;
+}
+
+.game-card-player {
+    margin: 0;
+    font-weight: bold;
 }
 
 /* Game */

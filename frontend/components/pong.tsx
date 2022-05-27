@@ -24,8 +24,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     clubHeight,
     club1Pos,
     club2Pos,
-    score1,
-    score2,
+    scores,
   }: FrameInfo) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -48,8 +47,8 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // score
-    setScore1(score1);
-    setScore2(score2);
+    setScore1(scores.player1);
+    setScore2(scores.player2);
 
     // center line
     ctx.fillStyle = 'lightgrey';

@@ -3,11 +3,11 @@ import { GameInfo, PendingGame, UserInfo } from '../types/interfaces';
 import Link from 'next/link';
 import { io, Socket } from 'socket.io-client';
 
-interface GamesListProps {
+interface NotificationsListProps {
   user?: UserInfo;
 }
 
-const GamesList: FC<GamesListProps> = ({ user }) => {
+const NotificationsList: FC<NotificationsListProps> = ({ user }) => {
   const socket = useRef<Socket>();
   const [hostGames, setHostGames] = useState<PendingGame[]>([]);
   const [guestGames, setGuestGames] = useState<PendingGame[]>([]);
@@ -74,7 +74,7 @@ const GamesList: FC<GamesListProps> = ({ user }) => {
 
   return (
     <section>
-      <ul className="game-list">
+      <ul className="notification-list">
         {currentGames.map((game) => (
           <li key={game.gameId}>
             <p>Game <b>{game.player1.username}</b> vs <b>{game.player2.username}</b></p>
@@ -105,4 +105,4 @@ const GamesList: FC<GamesListProps> = ({ user }) => {
   );
 };
 
-export default GamesList;
+export default NotificationsList;

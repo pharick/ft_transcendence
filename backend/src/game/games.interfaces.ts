@@ -5,11 +5,17 @@ export interface FieldInfo {
   height: number;
 }
 
+export interface ScoreInfo {
+  player1: number;
+  player2: number;
+}
+
 export interface GameInfo {
   gameId: string;
   field: FieldInfo;
   player1: User;
   player2: User;
+  scores: ScoreInfo;
 }
 
 export interface FrameInfo {
@@ -20,6 +26,5 @@ export interface FrameInfo {
   clubHeight: number;
   club1Pos: number;
   club2Pos: number;
-  score1: number;
-  score2: number;
+  scores: ScoreInfo;
 }

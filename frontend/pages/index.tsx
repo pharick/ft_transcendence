@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 
 import { userContext } from '../components/userProvider';
-import GamesList from '../components/gamesList';
+import NotificationsList from '../components/notificationsList';
 
 interface HomePageProps {
 
@@ -12,7 +12,7 @@ const HomePage: NextPage<HomePageProps> = () => {
     <>
       <userContext.Consumer>
         {({ user }) => (
-          <GamesList user={user} />
+          <NotificationsList user={user} />
         )}
       </userContext.Consumer>
     </>

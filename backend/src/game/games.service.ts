@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { v4 as uuid4 } from 'uuid';
 
-import { FieldInfo, GameInfo } from './games.interfaces';
+import { FieldInfo, GameInfo, ScoreInfo } from './games.interfaces';
 import { FrameInfo } from './games.interfaces';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
@@ -33,8 +33,8 @@ class Game {
   private club1Delta: number;
   private club2Delta: number;
 
-  private readonly player1Id: number;
-  private readonly player2Id: number;
+  private readonly _player1Id: number;
+  private readonly _player2Id: number;
 
   private score1: number;
   private score2: number;
@@ -47,8 +47,8 @@ class Game {
     this.club2Pos = this.fieldHeight / 2;
     this.club1Delta = 0;
     this.club2Delta = 0;
-    this.player1Id = player1Id;
-    this.player2Id = player2Id;
+    this._player1Id = player1Id;
+    this._player2Id = player2Id;
     this.score1 = 0;
     this.score2 = 0;
     this.newRound(!!random(0, 1));
@@ -110,10 +110,29 @@ class Game {
     return this.fieldWidth - this.ballRadius * 2 - this.clubWidth;
   }
 
+  get isGameRunning(): boolean {
+    return !!this.gameTimer;
+  }
+
+  get player1Id(): number {
+    return this._player1Id;
+  }
+
+  get player2Id(): number {
+    return this._player2Id;
+  }
+
   get fieldInfo(): FieldInfo {
     return {
       width: this.fieldWidth,
       height: this.fieldHeight,
+    };
+  }
+
+  get scores(): ScoreInfo {
+    return {
+      player1: this.score1,
+      player2: this.score2,
     };
   }
 
@@ -131,7 +150,7 @@ class Game {
     else if (playerId == this.player2Id) this.club2Delta = 0;
   }
 
-  newRound(player1Wins: boolean): void {
+  private newRound(player1Wins: boolean): void {
     this.ballX = this.fieldWidth / 2;
     this.ballY = this.fieldHeight / 2;
     this.ballDirection = player1Wins
@@ -140,10 +159,7 @@ class Game {
     this.pauseGame();
   }
 
-  calculateNextFrame(): void {
-    this.ballX += Math.cos(radians(this.ballDirection)) * this.ballSpeed;
-    this.ballY += Math.sin(radians(this.ballDirection)) * this.ballSpeed;
-
+  private checkBordersCollisions(): void {
     if (this.ballTop < 0) {
       this.ballTop = 0;
       this.ballDirection = -this.ballDirection;
@@ -152,7 +168,9 @@ class Game {
       this.ballBottom = this.fieldHeight;
       this.ballDirection = -this.ballDirection;
     }
+  }
 
+  private checkClubsCollisions(): void {
     if (
       this.ballLeft < this.club1Right &&
       this.ballBottom > this.club1Top &&
@@ -169,7 +187,9 @@ class Game {
       this.ballRight = this.club2Left;
       this.ballDirection = 180 - this.ballDirection;
     }
+  }
 
+  private checkGoals(): void {
     if (this.ballLeft > this.fieldWidth) {
       this.score1++;
       this.newRound(true);
@@ -178,7 +198,9 @@ class Game {
       this.score2++;
       this.newRound(false);
     }
+  }
 
+  private moveClubs(): void {
     if (
       (this.club1Delta < 0 && this.club1Top > this.ballRadius * 3) ||
       (this.club1Delta > 0 &&
@@ -192,6 +214,16 @@ class Game {
         this.club2Bottom < this.fieldHeight - this.ballRadius * 3)
     )
       this.club2Pos += this.club2Delta;
+  }
+
+  calculateNextFrame(): void {
+    this.ballX += Math.cos(radians(this.ballDirection)) * this.ballSpeed;
+    this.ballY += Math.sin(radians(this.ballDirection)) * this.ballSpeed;
+
+    this.checkBordersCollisions();
+    this.checkClubsCollisions();
+    this.checkGoals();
+    this.moveClubs();
   }
 
   resumeGame(): void {
@@ -208,18 +240,6 @@ class Game {
     }
   }
 
-  isGameRunning(): boolean {
-    return !!this.gameTimer;
-  }
-
-  getPlayer1Id(): number {
-    return this.player1Id;
-  }
-
-  getPlayer2Id(): number {
-    return this.player2Id;
-  }
-
   getNextFrame(): FrameInfo {
     return {
       ballRadius: this.ballRadius,
@@ -229,8 +249,7 @@ class Game {
       clubHeight: this.clubHeight,
       club1Pos: this.club1Pos,
       club2Pos: this.club2Pos,
-      score1: this.score1,
-      score2: this.score2,
+      scores: this.scores,
     };
   }
 }
@@ -263,8 +282,8 @@ export class GamesService {
   async findOne(gameId: string): Promise<GameInfo> {
     if (!(gameId in this.games)) return null;
 
-    const player1Id = this.games[gameId].getPlayer1Id();
-    const player2Id = this.games[gameId].getPlayer2Id();
+    const player1Id = this.games[gameId].player1Id;
+    const player2Id = this.games[gameId].player2Id;
     const player1: User = await this.usersService.findOne(player1Id);
     const player2: User = await this.usersService.findOne(player2Id);
 
@@ -273,6 +292,7 @@ export class GamesService {
       field: this.games[gameId].fieldInfo,
       player1: player1,
       player2: player2,
+      scores: this.games[gameId].scores,
     };
   }
 
@@ -296,7 +316,7 @@ export class GamesService {
 
   toggleGameRunning(gameId: string) {
     if (!(gameId in this.games)) return;
-    if (this.games[gameId].isGameRunning()) {
+    if (this.games[gameId].isGameRunning) {
       this.games[gameId].pauseGame();
     } else {
       this.games[gameId].resumeGame();
