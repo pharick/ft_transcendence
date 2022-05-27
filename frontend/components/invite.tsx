@@ -8,7 +8,8 @@ interface InviteProps {
 }
 
 const Invite: FC<InviteProps> = ({ currentUser, userInfo }) => {
-  const [isDisabled, setIsDisabled] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const handleGameInvite = async () => {
     const createPendingGameDto: CreatePendingGameDto = {
@@ -24,16 +25,21 @@ const Invite: FC<InviteProps> = ({ currentUser, userInfo }) => {
     });
 
     if (response.status == 409)
-      setIsDisabled(true);
+      setIsError(true);
+    if (response.status == 200)
+      setIsSuccess(true);
   };
+
+  const className = isSuccess ? 'success-button' : isError ? 'error-button' : '';
+  const text = isSuccess ? 'Invited' : isError ? 'Already invited' : 'Invite to the game';
 
   return (
     <>
       {currentUser?.id == userInfo.id ? (
-        <p>It&apos;s me</p>
+        <p>It&apos;s you</p>
       ) : (
-        <button disabled={isDisabled} className={isDisabled ? 'error-button' : ''} onClick={handleGameInvite}>
-          {!isDisabled ? 'Invite to the game' : 'Already invited'}
+        <button disabled={isSuccess || isError} className={className} onClick={handleGameInvite}>
+          {text}
         </button>
       )}
     </>
