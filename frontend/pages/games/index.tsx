@@ -31,19 +31,6 @@ const HomePage: NextPage<GamesPageProps> = ({ games }) => {
           </article>
         </li>
       ))}
-
-      <li>
-        <article className="game-card">
-          <div className="game-card-part">
-            <p className="game-card-score">1234</p>
-            <p className="game-card-player">foo</p>
-          </div>
-          <div className="game-card-part">
-            <p className="game-card-score">1234</p>
-            <p className="game-card-player">bar</p>
-          </div>
-        </article>
-      </li>
     </ul>
   );
 };
