@@ -25,7 +25,7 @@ const HomePage: NextPage<GamesPageProps> = ({ games }) => {
               <p className="game-card-player">{game.player1.username}</p>
             </div>
             <div className="game-card-part">
-              <p className="game-card-score">{game.scores.player1}</p>
+              <p className="game-card-score">{game.scores.player2}</p>
               <p className="game-card-player">{game.player2.username}</p>
             </div>
           </article>
