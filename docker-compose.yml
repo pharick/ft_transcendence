@@ -1,14 +1,21 @@
 version: '3.9'
 
 services:
+  backend:
+    build: './backend'
+    env_file:
+      - .env
+    ports:
+      - '4000:4000'
+
   db:
     build: './db'
     volumes:
       - 'db_data:/var/lib/postgresql/data/'
     environment:
-      - POSTGRES_USER=ft_transcendence
-      - POSTGRES_PASSWORD=ft_transcendence
-      - POSTGRES_DB=ft_transcendence
+      - POSTGRES_USER=${DATABASE_USERNAME}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
     ports:
       - '5432:5432'
 

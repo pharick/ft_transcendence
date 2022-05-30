@@ -12,9 +12,6 @@ export class PendingGamesGateway implements OnGatewayConnection {
   server: Server;
   private logger: Logger = new Logger('GamesGateway');
 
-  // constructor() {}
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handleConnection(client: Socket, ...args: any[]): void {
     this.logger.log(`Pending client connected: ${client.id}`);
   }

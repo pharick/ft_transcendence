@@ -5,6 +5,7 @@ import { v4 as uuid4 } from 'uuid';
 
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -14,11 +15,17 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private httpService: HttpService,
+    private configService: ConfigService,
   ) {}
+
+  private readonly INTRA_GET_TOKEN_API_URL: string =
+    'https://api.intra.42.fr/oauth/token';
+  private readonly INTRA_USER_INFO_API_URL: string =
+    'https://api.intra.42.fr/v2/me';
 
   private async getUserData(token: string): Promise<any> {
     const observable = await this.httpService
-      .get('https://api.intra.42.fr/v2/me', {
+      .get(this.INTRA_USER_INFO_API_URL, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -30,21 +37,19 @@ export class AuthService {
   private async findOrCreateUser(username: string): Promise<User> {
     const user = await this.usersService.findOneByUsername(username);
     if (!user) {
-      return await this.usersService.create({ username: username });
+      return await this.usersService.create(username);
     }
     return user;
   }
 
   async login(code: string): Promise<string> {
     const tokenObservable = await this.httpService
-      .post('https://api.intra.42.fr/oauth/token', {
+      .post(this.INTRA_GET_TOKEN_API_URL, {
         grant_type: 'authorization_code',
-        client_id:
-          '8a4a10a3a225a1b0315f1872a786036f3104d8206cfd0a95b8ec2c48c5ac1d9a',
-        client_secret:
-          'f12a693d067cd5c662393089c00dfca52920efbcea5d79e21ed333df5c25e9e2',
+        client_id: this.configService.get<string>('INTRA_CLIENT_ID'),
+        client_secret: this.configService.get<string>('INTRA_CLIENT_SECRET'),
         code: code,
-        redirect_uri: 'http://localhost:3000/api/auth/login',
+        redirect_uri: this.configService.get<string>('INTRA_REDIRECT_URL'),
       })
       .pipe(map((response) => response.data));
 

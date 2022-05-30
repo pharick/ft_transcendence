@@ -5,6 +5,7 @@ import {
   Index,
   OneToMany,
 } from 'typeorm';
+
 import { PendingGame } from '../pendingGames/pendingGame.entity';
 
 @Entity()
