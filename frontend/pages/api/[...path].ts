@@ -1,7 +1,7 @@
 import { createProxyServer } from "http-proxy";
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-const API_URL = 'http://localhost:4000'
+const API_URL = process.env.INTERNAL_API_URL;
 const proxy = createProxyServer();
 
 export const config = {
@@ -10,8 +10,9 @@ export const config = {
   },
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default (request: NextApiRequest, response: NextApiResponse) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(() => {
     request.url = request.url?.replace(/^\/api/, '');
 
     proxy.web(request, response, {

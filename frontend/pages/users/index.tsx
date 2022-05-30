@@ -7,8 +7,8 @@ interface UsersPageProps {
   users: UserInfo[],
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const response = await fetch('http://localhost:3000/api/users');
+export const getServerSideProps: GetServerSideProps = async () => {
+  const response = await fetch(`${process.env.INTERNAL_API_URL}/users`);
   const users: UserInfo[] = await response.json();
   return { props: { users } };
 };

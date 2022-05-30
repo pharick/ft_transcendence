@@ -13,7 +13,7 @@ interface GamePageProps {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const gameId = context.params?.gameId;
-  const response = await fetch(`http://localhost:3000/api/games/${gameId}`);
+  const response = await fetch(`${process.env.INTERNAL_API_URL}/games/${gameId}`);
   if (response.status == 404) return { notFound: true };
   const gameInfo: GameInfo = await response.json();
   return { props: { gameInfo } };

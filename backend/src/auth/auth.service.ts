@@ -43,7 +43,7 @@ export class AuthService {
   }
 
   async login(code: string): Promise<string> {
-    const tokenObservable = await this.httpService
+    const tokenObservable = this.httpService
       .post(this.INTRA_GET_TOKEN_API_URL, {
         grant_type: 'authorization_code',
         client_id: this.configService.get<string>('INTRA_CLIENT_ID'),
