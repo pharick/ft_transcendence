@@ -18,7 +18,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
   const [userSessionId, setUserSessionId] = useState<string>();
 
   const getUser = async () => {
-    const response = await fetch('http://localhost:3000/api/auth/me');
+    const response = await fetch('/api/auth/me');
     const data = await response.json();
     setUser(data.user);
     setUserSessionId(data.userSessionId);
