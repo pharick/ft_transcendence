@@ -60,7 +60,7 @@ const NotificationsList: FC<NotificationsListProps> = ({ user }) => {
     handleUpdate().then();
 
     if (socket.current && socket.current?.active) return;
-    socket.current = io('http://localhost:4000/pending');
+    socket.current = io('/api/pending');
     socket.current?.connect();
 
     socket.current?.on('update', () => {
