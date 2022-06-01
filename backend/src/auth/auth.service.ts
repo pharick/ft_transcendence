@@ -72,6 +72,6 @@ export class AuthService {
   }
 
   getUserIdBySessionId(userSessionId: string): number {
-    return this.userSessions[userSessionId];
+    return this.userSessions[userSessionId] || null;
   }
 }

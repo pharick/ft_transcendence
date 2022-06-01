@@ -18,7 +18,8 @@ export class PendingGamesService {
   }
 
   findOne(id: number): Promise<PendingGame> {
-    return this.pendingGamesRepository.findOne(id, {
+    return this.pendingGamesRepository.findOne({
+      where: { id },
       relations: ['hostUser', 'guestUser'],
     });
   }
@@ -54,9 +55,9 @@ export class PendingGamesService {
   }
 
   async remove(pendingGameId: number): Promise<void> {
-    const game: PendingGame = await this.pendingGamesRepository.findOne(
-      pendingGameId,
-    );
+    const game: PendingGame = await this.pendingGamesRepository.findOne({
+      where: { id: pendingGameId },
+    });
     await this.pendingGamesRepository.remove(game);
   }
 }

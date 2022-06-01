@@ -6,7 +6,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 
-@WebSocketGateway({ namespace: 'pending', cors: true })
+@WebSocketGateway({ namespace: 'pending' })
 export class PendingGamesGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;

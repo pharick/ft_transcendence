@@ -81,7 +81,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   useEffect(() => {
     if (socket.current && socket.current?.active) return;
 
-    socket.current = io('/api/game');
+    socket.current = io('/game');
     socket.current?.connect();
     socket.current?.emit('connectToGame', gameInfo.gameId);
 
