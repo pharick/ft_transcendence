@@ -54,14 +54,14 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     ctx.fillStyle = 'lightgrey';
     for (let y = ballSize; y < canvas.height - ballSize; y += ballSize * 2) {
       ctx.fillRect(
-        canvas.width / 2 - ballSize / 2, y,
+        canvas.width / 2 - ballSize / 8, y,
         ballSize / 4, ballSize / 2,
       );
     }
 
     // ball
     ctx.fillStyle = 'white';
-    ctx.fillRect(ballX, ballY, ballSize, ballSize);
+    ctx.fillRect(ballX - ballRadius, ballY - ballRadius, ballSize, ballSize);
 
     // clubs
     ctx.fillRect(paddleTab, club1Pos - clubHeight / 2, clubWidth, clubHeight);
@@ -81,7 +81,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   useEffect(() => {
     if (socket.current && socket.current?.active) return;
 
-    socket.current = io('/game');
+    socket.current = io(`${process.env.NODE_ENV == 'development' ? process.env.NEXT_PUBLIC_INTERNAL_API_URL : ''}/game`);
     socket.current?.connect();
     socket.current?.emit('connectToGame', gameInfo.gameId);
 

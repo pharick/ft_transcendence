@@ -1,4 +1,8 @@
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import { createProxyServer } from "http-proxy";
+import type { NextApiRequest, NextApiResponse } from 'next'
+
+const API_URL = process.env.NEXT_PUBLIC_INTERNAL_API_URL;
+const proxy = createProxyServer();
 
 export const config = {
   api: {
@@ -6,11 +10,15 @@ export const config = {
   },
 }
 
-const proxy = createProxyMiddleware({
-  target: process.env.INTERNAL_API_URL,
-  ws: true,
-  changeOrigin: true,
-  pathRewrite: { '^/api' : '' },
-});
+const proxyPage = (request: NextApiRequest, response: NextApiResponse) => {
+  return new Promise(() => {
+    request.url = request.url?.replace(/^\/api/, '');
 
-export default proxy;
+    proxy.web(request, response, {
+      target: API_URL,
+      autoRewrite: false,
+    });
+  });
+};
+
+export default proxyPage;

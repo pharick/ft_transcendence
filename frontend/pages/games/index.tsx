@@ -9,7 +9,7 @@ interface GamesPageProps {
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const response = await fetch(`${process.env.INTERNAL_API_URL}/games`);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/games`);
   const games: GameInfo[] = await response.json();
   return { props: { games } };
 };

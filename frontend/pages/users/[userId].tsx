@@ -10,7 +10,7 @@ interface UserPageProps {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const userId = context.params?.userId;
-  const response = await fetch(`${process.env.INTERNAL_API_URL}/users/${userId}`);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/users/${userId}`);
   if (response.status == 404 || response.status == 400) return { notFound: true };
   const userInfo: UserInfo = await response.json();
   return { props: { userInfo } };

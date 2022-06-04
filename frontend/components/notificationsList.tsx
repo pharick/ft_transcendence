@@ -60,7 +60,9 @@ const NotificationsList: FC<NotificationsListProps> = ({ user }) => {
     handleUpdate().then();
 
     if (socket.current && socket.current?.active) return;
-    socket.current = io('/pending');
+    socket.current = io(
+      `${process.env.NODE_ENV == 'development' ? process.env.NEXT_PUBLIC_INTERNAL_API_URL : ''}/pending`
+    );
     socket.current?.connect();
 
     socket.current?.on('update', () => {
