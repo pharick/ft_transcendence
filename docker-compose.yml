@@ -1,20 +1,20 @@
 version: '3.9'
 
 services:
-#  nginx:
-#    build: './nginx'
-#    ports:
-#      - '80:80'
+  nginx:
+    build: './nginx'
+    ports:
+      - '80:80'
 
-#  frontend:
-#    build: './frontend'
-#    env_file:
-#      - ./frontend/.env
+  frontend:
+    build: './frontend'
+    env_file:
+      - ./frontend/.env
 
-#  backend:
-#    build: './backend'
-#    env_file:
-#      - ./backend/.env
+  backend:
+    build: './backend'
+    env_file:
+      - ./backend/.env
 
   db:
     build: './db'
@@ -22,8 +22,6 @@ services:
       - 'db_data:/var/lib/postgresql/data/'
     env_file:
       - ./db/.env
-    ports:
-      - '5432:5432'
 
 volumes:
   db_data:
