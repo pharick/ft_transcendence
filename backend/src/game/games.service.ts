@@ -5,6 +5,9 @@ import { FieldInfo, GameInfo, ScoreInfo } from './games.interfaces';
 import { FrameInfo } from './games.interfaces';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
+import { CompletedGamesService } from '../completedGames/completedGames.service';
+import { CompletedGameDto } from '../completedGames/completedGame.dto';
+import { CompletedGame } from '../completedGames/completedGame.entity';
 
 const radians = (degrees: number) => {
   return degrees * (Math.PI / 180);
@@ -261,7 +264,10 @@ export class GamesService {
   private games: Record<string, Game> = {};
   private users: Record<number, string[]> = {};
 
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private completedGamesService: CompletedGamesService,
+  ) {}
 
   async findAll(): Promise<GameInfo[]> {
     return await Promise.all(
@@ -312,6 +318,19 @@ export class GamesService {
   getNextFrame(gameId: string): FrameInfo | null {
     if (!(gameId in this.games)) return null;
     return this.games[gameId].getNextFrame();
+  }
+
+  async endGame(gameId: string): Promise<CompletedGame> {
+    const game = this.games[gameId];
+    const completedGame: CompletedGameDto = {
+      score1: game.scores.player1,
+      score2: game.scores.player2,
+      duration: 0, // TODO
+      hostUser: await this.usersService.findOne(game.player1Id),
+      guestUser: await this.usersService.findOne(game.player2Id),
+    };
+    delete this.games[gameId];
+    return await this.completedGamesService.create(completedGame);
   }
 
   toggleGameRunning(gameId: string) {

@@ -38,3 +38,12 @@ export interface FrameInfo {
   club2Pos: number;
   scores: ScoreInfo;
 }
+
+export interface CompletedGameInfo {
+  id: number;
+  score1: number;
+  score2: number;
+  duration: number;
+  hostUser: UserInfo;
+  guestUser: UserInfo;
+}

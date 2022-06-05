@@ -17,6 +17,10 @@ export class GamesGateway implements OnGatewayConnection {
   server: Server;
   private logger: Logger = new Logger('GamesGateway');
 
+  private readonly max_score: number = 11;
+
+  private timers: Record<string, NodeJS.Timer> = {};
+
   constructor(
     private gamesService: GamesService,
     private authService: AuthService,
@@ -27,9 +31,19 @@ export class GamesGateway implements OnGatewayConnection {
     this.logger.log(`Pong client connected: ${client.id}`);
   }
 
-  private sendNextFrame(gameId: string): void {
+  private async sendNextFrame(gameId: string): Promise<void> {
     const frame: FrameInfo = this.gamesService.getNextFrame(gameId);
-    this.server.to(gameId).emit('nextFrame', frame);
+    if (
+      frame.scores.player1 >= this.max_score ||
+      frame.scores.player2 >= this.max_score
+    ) {
+      clearInterval(this.timers[gameId]);
+      delete this.timers[gameId];
+      const completedGame = await this.gamesService.endGame(gameId);
+      this.server.to(gameId).emit('endGame', completedGame);
+    } else {
+      this.server.to(gameId).emit('nextFrame', frame);
+    }
   }
 
   @SubscribeMessage('connectToGame')
@@ -40,7 +54,7 @@ export class GamesGateway implements OnGatewayConnection {
     } else {
       this.logger.log(`Client connected to game: ${gameId}`);
       client.join(gameId);
-      setInterval(() => {
+      this.timers[gameId] = setInterval(() => {
         this.sendNextFrame(gameId);
       }, 10);
     }

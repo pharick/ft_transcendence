@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { GamesModule } from './game/games.module';
 import { PendingGame } from './pendingGames/pendingGame.entity';
 import { PendingGamesModule } from './pendingGames/pendingGames.module';
+import { CompletedGame } from './completedGames/completedGame.entity';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { PendingGamesModule } from './pendingGames/pendingGames.module';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      entities: [User, PendingGame],
+      entities: [User, PendingGame, CompletedGame],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([User]),

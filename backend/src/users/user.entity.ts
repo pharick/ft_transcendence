@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 
 import { PendingGame } from '../pendingGames/pendingGame.entity';
+import { CompletedGame } from '../completedGames/completedGame.entity';
 
 @Entity()
 export class User {
@@ -20,9 +21,17 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
+  // User.pendingHostGames()
+  // SELECT * FROM pendingGames WHERE hostUser = 2;
   @OneToMany(() => PendingGame, (hostGame) => hostGame.hostUser)
-  hostGames: PendingGame[];
+  pendingHostGames: PendingGame[];
 
   @OneToMany(() => PendingGame, (guestGame) => guestGame.hostUser)
-  guestGames: PendingGame[];
+  pendingGuestGames: PendingGame[];
+
+  @OneToMany(() => CompletedGame, (hostGame) => hostGame.hostUser)
+  completedHostGames: CompletedGame[];
+
+  @OneToMany(() => CompletedGame, (guestGame) => guestGame.hostUser)
+  completedGuestGames: CompletedGame[];
 }

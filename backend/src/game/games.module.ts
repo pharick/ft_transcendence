@@ -7,6 +7,7 @@ import { User } from '../users/user.entity';
 import { HttpModule } from '@nestjs/axios';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
+import { CompletedGamesModule } from '../completedGames/completedGames.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UsersModule } from '../users/users.module';
     HttpModule,
     AuthModule,
     UsersModule,
+    CompletedGamesModule,
   ],
   providers: [GamesService, GamesGateway],
   controllers: [GamesController],

@@ -2,7 +2,7 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 import useEventListener from '../hooks/use_event_listener';
-import { FrameInfo, GameInfo, UserInfo } from '../types/interfaces';
+import { CompletedGameInfo, FrameInfo, GameInfo, UserInfo } from '../types/interfaces';
 
 interface PongProps {
   gameInfo: GameInfo;
@@ -87,6 +87,11 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
 
     socket.current?.on('nextFrame', (frame: FrameInfo) => {
       renderField(frame);
+    });
+
+    socket.current?.on('endGame', (completedGameInfo: CompletedGameInfo) => {
+      console.log('EndGame!');
+      window.location.replace(`/completed/${completedGameInfo.id}`);
     });
 
     return () => {

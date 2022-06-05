@@ -17,20 +17,20 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserInfo>();
   const [userSessionId, setUserSessionId] = useState<string>();
 
-  const getUser = async () => {
-    const response = await fetch('/api/auth/me');
-    const data = await response.json();
-    setUser(data.user);
-    setUserSessionId(data.userSessionId);
-  };
-
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
     setUser(undefined);
   };
 
   useEffect(() => {
-    getUser();
+    const getUser = async () => {
+      const response = await fetch('/api/auth/me');
+      const data = await response.json();
+      console.log(data);
+      setUser(data.user);
+      setUserSessionId(data.userSessionId);
+    };
+    getUser().then();
   }, []);
 
   const value = { user, handleLogout, userSessionId };
