@@ -7,6 +7,7 @@ import {
   NotFoundException,
   Session,
   Put,
+  UnauthorizedException,
 } from '@nestjs/common';
 
 import { GamesService } from './games.service';
@@ -47,6 +48,9 @@ export class GamesController {
     @Session() session: Record<string, any>,
   ): Promise<GameInfo> {
     const userId = session.userId;
+    if (userId === null) {
+      throw new UnauthorizedException();
+    }
     return await this.gamesService.createNewGame(userId, null);
   }
 }
