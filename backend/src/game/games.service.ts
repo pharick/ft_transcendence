@@ -322,6 +322,13 @@ export class GamesService {
     this.users[userId].push(gameId);
   }
 
+  private removeGame(gameId: string) {
+    delete this.games[gameId];
+    for (const key of Object.keys(this.users)) {
+      this.users[key] = this.users[key].filter((elem) => elem != gameId);
+    }
+  }
+
   async createNewGame(
     player1Id: number | null,
     player2Id: number | null,
@@ -351,7 +358,7 @@ export class GamesService {
       hostUser: await this.usersService.findOne(game.player1Id),
       guestUser: await this.usersService.findOne(game.player2Id),
     };
-    delete this.games[gameId];
+    this.removeGame(gameId);
     return await this.completedGamesService.create(completedGame);
   }
 
