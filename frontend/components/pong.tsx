@@ -2,7 +2,12 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 import useEventListener from '../hooks/use_event_listener';
-import { CompletedGameInfo, FrameInfo, GameInfo, UserInfo } from '../types/interfaces';
+import {
+  CompletedGameInfo,
+  FrameInfo,
+  GameInfo,
+  UserInfo,
+} from '../types/interfaces';
 
 interface PongProps {
   gameInfo: GameInfo;
@@ -21,7 +26,8 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     ballY,
     ballRadius,
     clubWidth,
-    clubHeight,
+    clubHeightLeft,
+    clubHeightRight,
     club1Pos,
     club2Pos,
     scores,
@@ -54,8 +60,10 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     ctx.fillStyle = 'lightgrey';
     for (let y = ballSize; y < canvas.height - ballSize; y += ballSize * 2) {
       ctx.fillRect(
-        canvas.width / 2 - ballSize / 8, y,
-        ballSize / 4, ballSize / 2,
+        canvas.width / 2 - ballSize / 8,
+        y,
+        ballSize / 4,
+        ballSize / 2,
       );
     }
 
@@ -64,11 +72,17 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     ctx.fillRect(ballX - ballRadius, ballY - ballRadius, ballSize, ballSize);
 
     // clubs
-    ctx.fillRect(paddleTab, club1Pos - clubHeight / 2, clubWidth, clubHeight);
+    ctx.fillRect(
+      paddleTab,
+      club1Pos - clubHeightLeft / 2,
+      clubWidth,
+      clubHeightLeft,
+    );
     ctx.fillRect(
       canvas.width - paddleTab - ballSize,
-      club2Pos - clubHeight / 2,
-      clubWidth, clubHeight,
+      club2Pos - clubHeightRight / 2,
+      clubWidth,
+      clubHeightRight,
     );
   };
 
@@ -81,7 +95,13 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   useEffect(() => {
     if (socket.current && socket.current?.active) return;
 
-    socket.current = io(`${process.env.NODE_ENV == 'development' ? process.env.NEXT_PUBLIC_INTERNAL_API_URL : ''}/game`);
+    socket.current = io(
+      `${
+        process.env.NODE_ENV == 'development'
+          ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+          : ''
+      }/game`,
+    );
     socket.current?.connect();
     socket.current?.emit('connectToGame', gameInfo.gameId);
 

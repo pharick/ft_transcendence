@@ -13,7 +13,9 @@ interface GamePageProps {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const gameId = context.params?.gameId;
-  const response = await fetch(`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/games/${gameId}`);
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/games/${gameId}`,
+  );
   if (response.status == 404) return { notFound: true };
   const gameInfo: GameInfo = await response.json();
   return { props: { gameInfo } };
@@ -23,9 +25,15 @@ const GamePage: NextPage<GamePageProps> = ({ gameInfo }) => {
   return (
     <>
       <Head>
-        <title>Game {gameInfo.player1.username} vs {gameInfo.player2.username}</title>
+        <title>
+          Game {gameInfo.player1 ? gameInfo.player1.username : 'Mr. Wall'} vs{' '}
+          {gameInfo.player2 ? gameInfo.player2.username : 'Mr. Wall'}
+        </title>
       </Head>
-      <h1>Game <b>{gameInfo.player1.username}</b> vs <b>{gameInfo.player2.username}</b></h1>
+      <h1>
+        Game <b>{gameInfo.player1 ? gameInfo.player1.username : 'Mr. Wall'}</b>{' '}
+        vs <b>{gameInfo.player2 ? gameInfo.player2.username : 'Mr. Wall'}</b>
+      </h1>
 
       <userContext.Consumer>
         {({ user, userSessionId }) => (
