@@ -48,7 +48,7 @@ export class GamesController {
     @Session() session: Record<string, any>,
   ): Promise<GameInfo> {
     const userId = session.userId;
-    if (userId === null) {
+    if (!userId) {
       throw new UnauthorizedException();
     }
     return await this.gamesService.createNewGame(userId, null);

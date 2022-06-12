@@ -6,6 +6,7 @@ import {
   ForbiddenException,
   Get,
   Logger,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -83,6 +84,7 @@ export class PendingGamesController {
     const pending: PendingGame = await this.pendingGamesService.findOne(
       pendingGameId,
     );
+    if (!pending) throw new NotFoundException();
     if (session.userId != pending.guestUser.id)
       throw new UnauthorizedException();
     await this.pendingGamesService.remove(pendingGameId);
@@ -101,6 +103,7 @@ export class PendingGamesController {
   ): Promise<void> {
     const userId: number = session.userId;
     const pending = await this.pendingGamesService.findOne(pendingGameId);
+    if (!pending) throw new NotFoundException();
     if (pending.hostUser.id != userId && pending.guestUser.id != userId)
       throw new ForbiddenException();
     await this.pendingGamesService.remove(pendingGameId);

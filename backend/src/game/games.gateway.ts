@@ -18,6 +18,7 @@ export class GamesGateway implements OnGatewayConnection {
   private logger: Logger = new Logger('GamesGateway');
 
   private readonly max_score: number = 11;
+  private readonly frame_delta: number = 32;
 
   private timers: Record<string, NodeJS.Timer> = {};
 
@@ -33,6 +34,7 @@ export class GamesGateway implements OnGatewayConnection {
 
   private async sendNextFrame(gameId: string): Promise<void> {
     const frame: FrameInfo = this.gamesService.getNextFrame(gameId);
+    if (!frame) return;
     if (
       frame.scores.player1 >= this.max_score ||
       frame.scores.player2 >= this.max_score
@@ -56,7 +58,7 @@ export class GamesGateway implements OnGatewayConnection {
       client.join(gameId);
       this.timers[gameId] = setInterval(() => {
         this.sendNextFrame(gameId);
-      }, 16);
+      }, this.frame_delta);
     }
   }
 
