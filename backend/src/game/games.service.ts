@@ -174,13 +174,22 @@ class Game {
   }
 
   private checkClubsCollisions(): void {
+    function newBallDirection(delta: number) {
+      if (delta <= 10 || delta >= 70) return 195;
+      if (delta <= 20 || delta >= 60) return 190;
+      if (delta <= 30 || delta >= 50) return 185;
+      return 180;
+    }
+
     if (
       this.ballLeft < this.club1Right &&
       this.ballBottom > this.club1Top &&
       this.ballTop < this.club1Bottom
     ) {
       this.ballLeft = this.club1Right;
-      this.ballDirection = 180 - this.ballDirection;
+      this.ballDirection =
+        newBallDirection(this.club1Bottom - this.ballTop) - this.ballDirection;
+      // this.ballDirection = 180 - this.ballDirection;
     }
     if (
       this.ballRight > this.club2Left &&
@@ -188,7 +197,9 @@ class Game {
       this.ballTop < this.club2Bottom
     ) {
       this.ballRight = this.club2Left;
-      this.ballDirection = 180 - this.ballDirection;
+      this.ballDirection =
+        newBallDirection(this.club1Bottom - this.ballTop) - this.ballDirection;
+      // this.ballDirection = 180 - this.ballDirection;
     }
   }
 

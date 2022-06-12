@@ -56,7 +56,7 @@ export class GamesGateway implements OnGatewayConnection {
       client.join(gameId);
       this.timers[gameId] = setInterval(() => {
         this.sendNextFrame(gameId);
-      }, 10);
+      }, 16);
     }
   }
 
