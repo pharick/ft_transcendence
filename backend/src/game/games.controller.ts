@@ -6,6 +6,7 @@ import {
   Logger,
   NotFoundException,
   Session,
+  Put,
 } from '@nestjs/common';
 
 import { GamesService } from './games.service';
@@ -39,5 +40,13 @@ export class GamesController {
   toggleGameRunning(@Param('gameId') gameId: string) {
     this.logger.log(`Toggle game running: ${gameId}`);
     this.gamesService.toggleGameRunning(gameId);
+  }
+
+  @Put()
+  async createTestGame(
+    @Session() session: Record<string, any>,
+  ): Promise<GameInfo> {
+    const userId = session.userId;
+    return await this.gamesService.createNewGame(userId, null);
   }
 }

@@ -22,13 +22,14 @@ class Game {
   private readonly fieldHeight: number = 600;
   private readonly ballRadius: number = 4;
   private readonly clubWidth: number = 8;
-  private readonly clubHeight: number = 80;
   private readonly moveClubDelta: number = 10;
 
   private ballX: number;
   private ballY: number;
   private ballDirection: number;
   private ballSpeed: number;
+  private clubHeightRight: number;
+  private clubHeightLeft: number;
 
   private club1Pos: number;
   private club2Pos: number;
@@ -36,15 +37,15 @@ class Game {
   private club1Delta: number;
   private club2Delta: number;
 
-  private readonly _player1Id: number;
-  private readonly _player2Id: number;
+  private readonly _player1Id: number | null;
+  private readonly _player2Id: number | null;
 
   private score1: number;
   private score2: number;
 
   private gameTimer: NodeJS.Timer;
 
-  constructor(player1Id: number, player2Id: number) {
+  constructor(player1Id: number | null, player2Id: number | null) {
     this.ballSpeed = 5;
     this.club1Pos = this.fieldHeight / 2;
     this.club2Pos = this.fieldHeight / 2;
@@ -55,6 +56,8 @@ class Game {
     this.score1 = 0;
     this.score2 = 0;
     this.newRound(!!random(0, 1));
+    this.clubHeightLeft = player1Id === null ? this.fieldHeight : 80;
+    this.clubHeightRight = player2Id === null ? this.fieldHeight : 80;
   }
 
   private get ballLeft(): number {
@@ -90,11 +93,11 @@ class Game {
   }
 
   private get club1Top(): number {
-    return this.club1Pos - this.clubHeight / 2;
+    return this.club1Pos - this.clubHeightLeft / 2;
   }
 
   private get club1Bottom(): number {
-    return this.club1Pos + this.clubHeight / 2;
+    return this.club1Pos + this.clubHeightLeft / 2;
   }
 
   private get club1Right(): number {
@@ -102,11 +105,11 @@ class Game {
   }
 
   private get club2Top(): number {
-    return this.club2Pos - this.clubHeight / 2;
+    return this.club2Pos - this.clubHeightRight / 2;
   }
 
   private get club2Bottom(): number {
-    return this.club2Pos + this.clubHeight / 2;
+    return this.club2Pos + this.clubHeightRight / 2;
   }
 
   private get club2Left(): number {
@@ -260,7 +263,8 @@ class Game {
       ballX: this.ballX,
       ballY: this.ballY,
       clubWidth: this.clubWidth,
-      clubHeight: this.clubHeight,
+      clubHeightLeft: this.clubHeightLeft,
+      clubHeightRight: this.clubHeightRight,
       club1Pos: this.club1Pos,
       club2Pos: this.club2Pos,
       scores: this.scores,
@@ -318,11 +322,18 @@ export class GamesService {
     this.users[userId].push(gameId);
   }
 
-  async createNewGame(player1Id: number, player2Id: number): Promise<GameInfo> {
+  async createNewGame(
+    player1Id: number | null,
+    player2Id: number | null,
+  ): Promise<GameInfo> {
     const gameId: string = uuid4();
     this.games[gameId] = new Game(player1Id, player2Id);
-    this.saveGameForUser(player1Id, gameId);
-    this.saveGameForUser(player2Id, gameId);
+    if (player1Id !== null) {
+      this.saveGameForUser(player1Id, gameId);
+    }
+    if (player2Id !== null) {
+      this.saveGameForUser(player2Id, gameId);
+    }
     return this.findOne(gameId);
   }
 

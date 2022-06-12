@@ -23,7 +23,8 @@ export interface FrameInfo {
   ballX: number;
   ballY: number;
   clubWidth: number;
-  clubHeight: number;
+  clubHeightLeft: number;
+  clubHeightRight: number;
   club1Pos: number;
   club2Pos: number;
   scores: ScoreInfo;
