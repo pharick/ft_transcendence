@@ -14,18 +14,16 @@ const NotificationsList: FC<NotificationsListProps> = ({ user }) => {
   const [currentGames, setCurrentGames] = useState<GameInfo[]>([]);
 
   const handleAccept = async (pendingGameId: number) => {
-    const response = await fetch(
-      `/api/pending/${pendingGameId}/accept`,
-      { method: 'POST' }
-    );
+    const response = await fetch(`/api/pending/${pendingGameId}/accept`, {
+      method: 'POST',
+    });
     console.log(response);
   };
 
   const handleRemove = async (pendingGameId: number) => {
-    const response = await fetch(
-      `/api/pending/${pendingGameId}`,
-      { method: 'DELETE' }
-    );
+    const response = await fetch(`/api/pending/${pendingGameId}`, {
+      method: 'DELETE',
+    });
     console.log(response);
   };
 
@@ -61,7 +59,11 @@ const NotificationsList: FC<NotificationsListProps> = ({ user }) => {
 
     if (socket.current && socket.current?.active) return;
     socket.current = io(
-      `${process.env.NODE_ENV == 'development' ? process.env.NEXT_PUBLIC_INTERNAL_API_URL : ''}/pending`
+      `${
+        process.env.NODE_ENV == 'development'
+          ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+          : ''
+      }/pending`,
     );
     socket.current?.connect();
 
@@ -79,7 +81,10 @@ const NotificationsList: FC<NotificationsListProps> = ({ user }) => {
       <ul className="notification-list">
         {currentGames.map((game) => (
           <li key={game.gameId}>
-            <p>Game <b>{game.player1.username}</b> vs <b>{game.player2.username}</b></p>
+            <p>
+              Game <b>{game.player1 ? game.player1.username : 'Mr. Wall'}</b> vs{' '}
+              <b>{game.player2 ? game.player2.username : 'Mr. Wall'}</b>
+            </p>
             <Link href={`/games/${game.gameId}`}>
               <a className="button">Play</a>
             </Link>
@@ -88,18 +93,43 @@ const NotificationsList: FC<NotificationsListProps> = ({ user }) => {
 
         {guestGames.map((game) => (
           <li key={game.id}>
-            <p><b>{game.hostUser.username}</b> invites you</p>
+            <p>
+              <b>{game.hostUser.username}</b> invites you
+            </p>
             <div>
-              <button className="success-button" onClick={() => { handleAccept(game.id).then() }}>Accept</button>
-              <button className="error-button" onClick={() => { handleRemove(game.id).then() }}>Decline</button>
+              <button
+                className="success-button"
+                onClick={() => {
+                  handleAccept(game.id).then();
+                }}
+              >
+                Accept
+              </button>
+              <button
+                className="error-button"
+                onClick={() => {
+                  handleRemove(game.id).then();
+                }}
+              >
+                Decline
+              </button>
             </div>
           </li>
         ))}
 
         {hostGames.map((game) => (
           <li key={game.id}>
-            <p>Waiting for <b>{game.guestUser.username}</b></p>
-            <button className="error-button" onClick={() => { handleRemove(game.id).then() }}>Cancel</button>
+            <p>
+              Waiting for <b>{game.guestUser.username}</b>
+            </p>
+            <button
+              className="error-button"
+              onClick={() => {
+                handleRemove(game.id).then();
+              }}
+            >
+              Cancel
+            </button>
           </li>
         ))}
       </ul>

@@ -1,5 +1,6 @@
 import {
   OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -12,7 +13,7 @@ import { FrameInfo, GameInfo } from './games.interfaces';
 import { AuthService } from '../auth/auth.service';
 
 @WebSocketGateway({ namespace: 'game', cors: true })
-export class GamesGateway implements OnGatewayConnection {
+export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
   private logger: Logger = new Logger('GamesGateway');
@@ -30,6 +31,16 @@ export class GamesGateway implements OnGatewayConnection {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handleConnection(client: Socket, ...args: any[]): void {
     this.logger.log(`Pong client connected: ${client.id}`);
+  }
+
+  handleDisconnect(client: Socket, ...args: any[]): any {
+    this.logger.log(`Pong client disconnect ${client.id}`);
+    this.logger.log(
+      `Game has paused ${this.gamesService.getGameIdByClientId(client.id)}`,
+    );
+    this.gamesService.pauseGame(
+      this.gamesService.getGameIdByClientId(client.id),
+    );
   }
 
   private async sendNextFrame(gameId: string): Promise<void> {
@@ -56,6 +67,7 @@ export class GamesGateway implements OnGatewayConnection {
     } else {
       this.logger.log(`Client connected to game: ${gameId}`);
       client.join(gameId);
+      this.gamesService.connectToGame(gameId, client.id);
       this.timers[gameId] = setInterval(() => {
         this.sendNextFrame(gameId);
       }, this.frame_delta);

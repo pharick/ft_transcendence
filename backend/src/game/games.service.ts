@@ -178,9 +178,14 @@ class Game {
 
   private checkClubsCollisions(): void {
     function newBallDirection(delta: number) {
-      if (delta <= 10 || delta >= 70) return 195;
-      if (delta <= 20 || delta >= 60) return 190;
-      if (delta <= 30 || delta >= 50) return 185;
+      if (delta <= 10) return 200;
+      if (delta <= 20) return 190;
+      if (delta <= 30) return 185;
+      if (delta <= 40) return 180;
+      if (delta <= 50) return 180;
+      if (delta <= 60) return 175;
+      if (delta <= 70) return 170;
+      if (delta <= 80) return 160;
       return 180;
     }
 
@@ -278,6 +283,7 @@ export class GamesService {
 
   private games: Record<string, Game> = {};
   private users: Record<number, string[]> = {};
+  private clientIdGameId: Record<string, string> = {};
 
   constructor(
     private usersService: UsersService,
@@ -327,6 +333,11 @@ export class GamesService {
     for (const key of Object.keys(this.users)) {
       this.users[key] = this.users[key].filter((elem) => elem != gameId);
     }
+    for (const key of Object.keys(this.clientIdGameId)) {
+      if (this.clientIdGameId[key] === gameId) {
+        delete this.clientIdGameId[key];
+      }
+    }
   }
 
   async createNewGame(
@@ -362,12 +373,29 @@ export class GamesService {
     return await this.completedGamesService.create(completedGame);
   }
 
-  toggleGameRunning(gameId: string) {
+  connectToGame(gameId: string, clientId: string) {
+    if (!(gameId in this.games)) {
+      this.logger.log(`Don't add gameId = ${gameId} - game doesn't exist`);
+      return;
+    }
+    this.clientIdGameId[clientId] = gameId;
+  }
+
+  startGame(gameId: string) {
+    if (!(gameId in this.games)) return;
+    if (!this.games[gameId].isGameRunning) {
+      this.games[gameId].resumeGame();
+    }
+  }
+
+  getGameIdByClientId(clientId: string) {
+    return this.clientIdGameId[clientId];
+  }
+
+  pauseGame(gameId: string) {
     if (!(gameId in this.games)) return;
     if (this.games[gameId].isGameRunning) {
       this.games[gameId].pauseGame();
-    } else {
-      this.games[gameId].resumeGame();
     }
   }
 
