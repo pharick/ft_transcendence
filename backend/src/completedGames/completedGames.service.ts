@@ -28,17 +28,20 @@ export class CompletedGamesService {
   }
 
   findAllByUser(userId: number): Promise<CompletedGame[]> {
-    return this.completedGamesRepository.findBy([
-      {
-        hostUser: {
-          id: userId,
+    return this.completedGamesRepository.find({
+      relations: ['hostUser', 'guestUser'],
+      where: [
+        {
+          hostUser: {
+            id: userId,
+          },
         },
-      },
-      {
-        guestUser: {
-          id: userId,
+        {
+          guestUser: {
+            id: userId,
+          },
         },
-      },
-    ]);
+      ]
+    });
   }
 }
