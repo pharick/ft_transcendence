@@ -26,4 +26,14 @@ export class CompletedGamesController {
     if (!completedGame) throw new NotFoundException();
     return completedGame;
   }
+
+  @Get('user/:userId')
+  async findAllByUser(
+    @Param('userId', new ParseIntPipe()) userId: number,
+  ): Promise<CompletedGame[]> {
+    const completedGames = await this.completedGamesService.findAllByUser(
+      userId,
+    );
+    return completedGames;
+  }
 }
