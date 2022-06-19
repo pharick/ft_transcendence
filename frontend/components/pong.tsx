@@ -153,7 +153,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
           ref={canvasRef}
         ></canvas>
       </div>
-      <button onClick={toggleGameRunning}>Run / Pause</button>
+      <button onClick={toggleGameRunning}>Run</button>
     </>
   );
 };
