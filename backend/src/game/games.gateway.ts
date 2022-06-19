@@ -23,8 +23,6 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private timers: Record<string, NodeJS.Timer> = {};
 
-  // private clientIdGameId: Record<string, string> = {};
-
   constructor(
     private gamesService: GamesService,
     private authService: AuthService,
