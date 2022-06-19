@@ -22,11 +22,11 @@ const HomePage: NextPage<GamesPageProps> = ({ games }) => {
           <article className="game-card">
             <div className="game-card-part">
               <p className="game-card-score">{game.scores.player1}</p>
-              <p className="game-card-player">{game.player1.username}</p>
+              <p className="game-card-player">{game.player1 ? game.player1.username : 'Mr. Wall'}</p>
             </div>
             <div className="game-card-part">
               <p className="game-card-score">{game.scores.player2}</p>
-              <p className="game-card-player">{game.player2.username}</p>
+              <p className="game-card-player">{game.player2 ? game.player2.username : 'Mr. Wall'}</p>
             </div>
           </article>
         </li>
