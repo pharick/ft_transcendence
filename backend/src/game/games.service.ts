@@ -361,13 +361,13 @@ export class GamesService {
   }
 
   async endGame(gameId: string): Promise<CompletedGame> {
-    const game = this.games[gameId];
+    const game = await this.findOne(gameId);
     const completedGame: CompletedGameDto = {
       score1: game.scores.player1,
       score2: game.scores.player2,
       duration: 0, // TODO
-      hostUser: await this.usersService.findOne(game.player1Id),
-      guestUser: await this.usersService.findOne(game.player2Id),
+      hostUser: game.player1,
+      guestUser: game.player2,
     };
     this.removeGame(gameId);
     return await this.completedGamesService.create(completedGame);
