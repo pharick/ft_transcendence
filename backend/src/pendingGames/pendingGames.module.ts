@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PendingGame } from './pendingGame.entity';
 import { User } from '../users/user.entity';
@@ -11,7 +11,7 @@ import { PendingGamesGateway } from './pendingGames.gateway';
 @Module({
   imports: [
     TypeOrmModule.forFeature([PendingGame, User]),
-    GamesModule,
+    forwardRef(() => GamesModule),
     UsersModule,
   ],
   providers: [PendingGamesService, PendingGamesGateway],
