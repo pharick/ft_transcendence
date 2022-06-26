@@ -362,6 +362,7 @@ export class GamesService {
 
   async endGame(gameId: string): Promise<CompletedGame> {
     const game = await this.findOne(gameId);
+    if (!game) return;
     const completedGame: CompletedGameDto = {
       score1: game.scores.player1,
       score2: game.scores.player2,
