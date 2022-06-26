@@ -16,7 +16,7 @@ const Aside: FC = () => {
     if (isVisible) {
       setIsVisible(false);
     }
-  }, [router.asPath, isVisible]);
+  }, [router.asPath]);
 
   return (
     <>
