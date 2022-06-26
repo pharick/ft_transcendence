@@ -26,7 +26,7 @@ const Aside: FC = () => {
           isVisible ? 'side-panel-button-visible' : ''
         }`}
       >
-        Hide the list
+        Notification
       </button>
       <aside className={`side-panel ${isVisible ? 'side-panel-visible' : ''}`}>
         <userContext.Consumer>
