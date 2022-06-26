@@ -78,61 +78,70 @@ const NotificationsList: FC<NotificationsListProps> = ({ user }) => {
 
   return (
     <section>
-      <ul className="notification-list">
-        {currentGames.map((game) => (
-          <li key={game.gameId}>
-            <p>
-              Game <b>{game.player1 ? game.player1.username : 'Mr. Wall'}</b> vs{' '}
-              <b>{game.player2 ? game.player2.username : 'Mr. Wall'}</b>
-            </p>
-            <Link href={`/games/${game.gameId}`}>
-              <a className="button">Play</a>
-            </Link>
-          </li>
-        ))}
+      {hostGames.length > 0 ||
+      guestGames.length > 0 ||
+      currentGames.length > 0 ? (
+        <ul className="notification-list">
+          {currentGames.map((game) => (
+            <li key={game.gameId}>
+              <p>
+                Game <b>{game.player1 ? game.player1.username : 'Mr. Wall'}</b>{' '}
+                vs <b>{game.player2 ? game.player2.username : 'Mr. Wall'}</b>
+              </p>
+              <Link href={`/games/${game.gameId}`}>
+                <a className="button">Play</a>
+              </Link>
+            </li>
+          ))}
 
-        {guestGames.map((game) => (
-          <li key={game.id}>
-            <p>
-              <b>{game.hostUser.username}</b> invites you
-            </p>
-            <div>
-              <button
-                className="success-button"
-                onClick={() => {
-                  handleAccept(game.id).then();
-                }}
-              >
-                Accept
-              </button>
+          {guestGames.map((game) => (
+            <li key={game.id}>
+              <p>
+                <b>{game.hostUser.username}</b> invites you
+              </p>
+              <div>
+                <button
+                  className="success-button"
+                  onClick={() => {
+                    handleAccept(game.id).then();
+                  }}
+                >
+                  Accept
+                </button>
+                <button
+                  className="error-button"
+                  onClick={() => {
+                    handleRemove(game.id).then();
+                  }}
+                >
+                  Decline
+                </button>
+              </div>
+            </li>
+          ))}
+
+          {hostGames.map((game) => (
+            <li key={game.id}>
+              <p>
+                Waiting for <b>{game.guestUser.username}</b>
+              </p>
               <button
                 className="error-button"
                 onClick={() => {
                   handleRemove(game.id).then();
                 }}
               >
-                Decline
+                Cancel
               </button>
-            </div>
-          </li>
-        ))}
-
-        {hostGames.map((game) => (
-          <li key={game.id}>
-            <p>
-              Waiting for <b>{game.guestUser.username}</b>
-            </p>
-            <button
-              className="error-button"
-              onClick={() => {
-                handleRemove(game.id).then();
-              }}
-            >
-              Cancel
-            </button>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>
+          You don&apos;t have any invitations to the game, take the first step
+          😉
+        </p>
+      )}
     </section>
   );
 };
