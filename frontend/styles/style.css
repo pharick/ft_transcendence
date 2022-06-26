@@ -107,10 +107,11 @@ button:disabled {
 .container {
     position: relative;
     min-height: 96vh;
-    /*overflow: hidden;*/
+    overflow: hidden;
 }
 
-/*@media TODO*/
+/* Aside panel */
+
 .side-panel {
     z-index: 100;
     position: absolute;
