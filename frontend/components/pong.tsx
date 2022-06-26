@@ -120,8 +120,8 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   }, [gameInfo.gameId]);
 
   const keyDownHandler = (e: KeyboardEvent) => {
-    if (e.code != 'ArrowUp' && e.code != 'ArrowDown') return;
-    const up = e.code == 'ArrowUp';
+    if (e.code != 'KeyW' && e.code != 'KeyS') return;
+    const up = e.code == 'KeyW';
 
     if (gameInfo.player1?.id == user?.id || gameInfo.player2?.id == user?.id) {
       const gameId = gameInfo.gameId;
@@ -130,7 +130,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   };
 
   const keyUpHandler = (e: KeyboardEvent) => {
-    if (e.code != 'ArrowUp' && e.code != 'ArrowDown') return;
+    if (e.code != 'KeyW' && e.code != 'KeyS') return;
 
     if (gameInfo.player1?.id == user?.id || gameInfo.player2?.id == user?.id) {
       const gameId = gameInfo.gameId;
