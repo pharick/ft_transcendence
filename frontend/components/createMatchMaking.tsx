@@ -1,13 +1,11 @@
 import { FC } from 'react';
 
 const MatchMakingModeButton: FC = () => {
-  const createGame = async () => { // Post запрос
-    const response = await fetch('/api/games/', {
+  const createGame = async () => {
+    const response = await fetch('/api/matchMaking', {
       method: 'PUT',
     });
     const data = await response.json();
-    //console.log('Matching')
-    //console.log(data)
   }
   return <button onClick={createGame}>Play with someone</button>;
 };
