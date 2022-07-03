@@ -3,7 +3,6 @@ import Head from 'next/head';
 import {CompletedGameInfo, UserInfo} from '../../types/interfaces';
 import { userContext } from '../../components/userProvider';
 import Invite from '../../components/invite';
-import Link from "next/link";
 
 interface UserPageProps {
   userInfo: UserInfo;

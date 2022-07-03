@@ -8,6 +8,8 @@ import { HttpModule } from '@nestjs/axios';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { CompletedGamesModule } from '../completedGames/completedGames.module';
+import { PendingGamesModule } from '../pendingGames/pendingGames.module';
+import { PendingGamesGateway } from '../pendingGames/pendingGames.gateway';
 
 @Module({
   imports: [
@@ -16,8 +18,9 @@ import { CompletedGamesModule } from '../completedGames/completedGames.module';
     AuthModule,
     UsersModule,
     CompletedGamesModule,
+    PendingGamesModule,
   ],
-  providers: [GamesService, GamesGateway],
+  providers: [GamesService, GamesGateway, PendingGamesGateway],
   controllers: [GamesController],
   exports: [GamesService],
 })
