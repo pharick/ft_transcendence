@@ -22,7 +22,9 @@ class Game {
   private readonly fieldHeight: number = 600;
   private readonly ballRadius: number = 4;
   private readonly clubWidth: number = 8;
-  private readonly moveClubDelta: number = 10;
+  private readonly moveClubDelta: number = 20;
+
+  private readonly frame_delta: number = 40;
 
   private ballX: number;
   private ballY: number;
@@ -46,7 +48,7 @@ class Game {
   private gameTimer: NodeJS.Timer;
 
   constructor(player1Id: number | null, player2Id: number | null) {
-    this.ballSpeed = 5;
+    this.ballSpeed = 20;
     this.club1Pos = this.fieldHeight / 2;
     this.club2Pos = this.fieldHeight / 2;
     this.club1Delta = 0;
@@ -197,7 +199,6 @@ class Game {
       this.ballLeft = this.club1Right;
       this.ballDirection =
         newBallDirection(this.club1Bottom - this.ballTop) - this.ballDirection;
-      // this.ballDirection = 180 - this.ballDirection;
     }
     if (
       this.ballRight > this.club2Left &&
@@ -207,7 +208,6 @@ class Game {
       this.ballRight = this.club2Left;
       this.ballDirection =
         newBallDirection(this.club1Bottom - this.ballTop) - this.ballDirection;
-      // this.ballDirection = 180 - this.ballDirection;
     }
   }
 
@@ -252,7 +252,7 @@ class Game {
     if (this.gameTimer) return;
     this.gameTimer = setInterval(() => {
       this.calculateNextFrame();
-    }, 10);
+    }, this.frame_delta);
   }
 
   pauseGame(): void {
@@ -300,14 +300,13 @@ export class GamesService {
 
   async findMy(userId): Promise<GameInfo[]> {
     if (!(userId in this.users)) return [];
-    this.logger.log(this.users[userId]);
     return await Promise.all(
       this.users[userId].map(async (gameId) => await this.findOne(gameId)),
     );
   }
 
   async findOne(gameId: string): Promise<GameInfo> {
-    if (!(gameId in this.games)) return null;
+    if (!(gameId in this.games) || !this.games[gameId]) return null;
 
     const player1Id = this.games[gameId].player1Id;
     const player2Id = this.games[gameId].player2Id;
@@ -324,7 +323,7 @@ export class GamesService {
   }
 
   private saveGameForUser(userId: number, gameId: string) {
-    if (!(userId in this.users)) this.users[userId] = [];
+    if (!(userId in this.users) || !this.games[gameId]) this.users[userId] = [];
     this.users[userId].push(gameId);
   }
 
@@ -356,7 +355,7 @@ export class GamesService {
   }
 
   getNextFrame(gameId: string): FrameInfo | null {
-    if (!(gameId in this.games)) return null;
+    if (!(gameId in this.games) || !this.games[gameId]) return null;
     return this.games[gameId].getNextFrame();
   }
 
@@ -375,15 +374,15 @@ export class GamesService {
   }
 
   connectToGame(gameId: string, clientId: string) {
-    if (!(gameId in this.games)) {
+    if (!(gameId in this.games) || !this.games[gameId]) {
       this.logger.log(`Don't add gameId = ${gameId} - game doesn't exist`);
       return;
     }
     this.clientIdGameId[clientId] = gameId;
   }
 
-  resumeGame(gameId: string) {
-    if (!(gameId in this.games)) return;
+  startGame(gameId: string) {
+    if (!(gameId in this.games) || !this.games[gameId]) return;
     if (!this.games[gameId].isGameRunning) {
       this.games[gameId].resumeGame();
     }
@@ -394,19 +393,19 @@ export class GamesService {
   }
 
   pauseGame(gameId: string) {
-    if (!(gameId in this.games)) return;
+    if (!(gameId in this.games) || !this.games[gameId]) return;
     if (this.games[gameId].isGameRunning) {
       this.games[gameId].pauseGame();
     }
   }
 
   moveClubStart(gameId: number, playerId: number, up: boolean): void {
-    if (!(gameId in this.games)) return;
+    if (!(gameId in this.games) || !this.games[gameId]) return;
     this.games[gameId].moveClubStart(playerId, up);
   }
 
   moveClubStop(gameId: number, playerId: number): void {
-    if (!(gameId in this.games)) return;
+    if (!(gameId in this.games) || !this.games[gameId]) return;
     this.games[gameId].moveClubStop(playerId);
   }
 }

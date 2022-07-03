@@ -12,12 +12,16 @@ import {
 
 import { GamesService } from './games.service';
 import { GameInfo } from './games.interfaces';
+import { PendingGamesGateway } from '../pendingGames/pendingGames.gateway';
 
 @Controller('games')
 export class GamesController {
   private logger: Logger = new Logger('GamesController');
 
-  constructor(private gamesService: GamesService) {}
+  constructor(
+    private gamesService: GamesService,
+    private pendingGamesGateway: PendingGamesGateway,
+  ) {}
 
   @Get()
   findAll(): Promise<GameInfo[]> {
@@ -51,6 +55,8 @@ export class GamesController {
     if (!userId) {
       throw new UnauthorizedException();
     }
-    return await this.gamesService.createNewGame(userId, null);
+    const game = await this.gamesService.createNewGame(userId, null);
+    this.pendingGamesGateway.server.emit('update');
+    return game;
   }
 }

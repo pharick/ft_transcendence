@@ -1,8 +1,8 @@
 import type { NextPage } from 'next';
 import { GetServerSideProps } from 'next';
 import { GameInfo } from '../../types/interfaces';
-
-// import { userContext } from '../../components/userProvider';
+import GameList from '../../components/gameList';
+import { userContext } from '../../components/userProvider';
 
 interface GamesPageProps {
   games: GameInfo[],
@@ -16,22 +16,11 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 const HomePage: NextPage<GamesPageProps> = ({ games }) => {
   return (
-    <ul className="game-list">
-      {games.map((game) => (
-        <li key={game.gameId}>
-          <article className="game-card">
-            <div className="game-card-part">
-              <p className="game-card-score">{game.scores.player1}</p>
-              <p className="game-card-player">{game.player1 ? game.player1.username : 'Mr. Wall'}</p>
-            </div>
-            <div className="game-card-part">
-              <p className="game-card-score">{game.scores.player2}</p>
-              <p className="game-card-player">{game.player2 ? game.player2.username : 'Mr. Wall'}</p>
-            </div>
-          </article>
-        </li>
-      ))}
-    </ul>
+    <userContext.Consumer>
+      {({ user }) => (
+        <GameList games={games} user={user}/>
+      )}
+    </userContext.Consumer>
   );
 };
 

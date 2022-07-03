@@ -19,7 +19,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private logger: Logger = new Logger('GamesGateway');
 
   private readonly max_score: number = 11;
-  private readonly frame_delta: number = 32;
+  private readonly frame_delta: number = 40;
 
   private timers: Record<string, NodeJS.Timer> = {};
 

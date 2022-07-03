@@ -1,5 +1,5 @@
 import { userContext } from './userProvider';
-import NotificationsList from './notificationsList';
+import NotificationList from './notificationList';
 import { FC, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
@@ -26,11 +26,11 @@ const Aside: FC = () => {
           isVisible ? 'side-panel-button-visible' : ''
         }`}
       >
-        Notification
+        Notifications
       </button>
       <aside className={`side-panel ${isVisible ? 'side-panel-visible' : ''}`}>
         <userContext.Consumer>
-          {({ user }) => <NotificationsList user={user} />}
+          {({ user }) => <NotificationList user={user} />}
         </userContext.Consumer>
       </aside>
     </>
