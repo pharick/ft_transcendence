@@ -8,6 +8,7 @@ import {
 
 import { PendingGame } from '../pendingGames/pendingGame.entity';
 import { CompletedGame } from '../completedGames/completedGame.entity';
+import { ChatRoom } from '../chat/chatRoom.entity';
 
 @Entity()
 export class User {
@@ -21,8 +22,6 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
-  // User.pendingHostGames()
-  // SELECT * FROM pendingGames WHERE hostUser = 2;
   @OneToMany(() => PendingGame, (hostGame) => hostGame.hostUser)
   pendingHostGames: PendingGame[];
 
@@ -34,4 +33,10 @@ export class User {
 
   @OneToMany(() => CompletedGame, (guestGame) => guestGame.hostUser)
   completedGuestGames: CompletedGame[];
+
+  @OneToMany(() => ChatRoom, (room) => room.hostUser)
+  hostPrivateChats: ChatRoom[];
+
+  @OneToMany(() => ChatRoom, (room) => room.guestUser)
+  guestPrivateChats: ChatRoom[];
 }

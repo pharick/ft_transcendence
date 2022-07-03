@@ -10,6 +10,8 @@ import { PendingGame } from './pendingGames/pendingGame.entity';
 import { PendingGamesModule } from './pendingGames/pendingGames.module';
 import { CompletedGame } from './completedGames/completedGame.entity';
 import { ChatModule } from './chat/chat.module';
+import { ChatRoom } from './chat/chatRoom.entity';
+import { ChatMessage } from './chat/chatMessage.entity';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { ChatModule } from './chat/chat.module';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      entities: [User, PendingGame, CompletedGame],
+      entities: [User, PendingGame, CompletedGame, ChatRoom, ChatMessage],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([User]),
