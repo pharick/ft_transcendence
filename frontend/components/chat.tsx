@@ -4,9 +4,10 @@ import { ChatMessage, UserInfo } from '../types/interfaces';
 
 interface ChatProps {
   user: UserInfo | undefined;
+  userSessionId: string | undefined;
 }
 
-const Chat: FC<ChatProps> = ({ user }) => {
+const Chat: FC<ChatProps> = ({ user, userSessionId }) => {
   const socket = useRef<Socket>();
   const [messageText, setMessageText] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -31,7 +32,7 @@ const Chat: FC<ChatProps> = ({ user }) => {
   const handleMessageSubmit = (event: FormEvent) => {
     event.preventDefault();
     if (!messageText) return;
-    socket.current?.emit('msgToServer', {userId: user?.id, text: messageText});
+    socket.current?.emit('msgToServer', {sessionId: userSessionId, text: messageText});
     setMessageText('');
   };
 
@@ -45,7 +46,7 @@ const Chat: FC<ChatProps> = ({ user }) => {
 
       <ul>
         {messages.map((message) => (
-          <li key={message.text}>{message.userId} - {message.text}</li>
+          <li key={message.id}>{message.user.username} - {message.text}</li>
         ))}
       </ul>
 

@@ -10,8 +10,8 @@ const HomePage: NextPage<HomePageProps> = () => {
   return (
     <>
       <userContext.Consumer>
-        {({ user}) => (
-          <Chat user={user} />
+        {({ user, userSessionId}) => (
+          <Chat user={user} userSessionId={userSessionId} />
         )}
       </userContext.Consumer>
 

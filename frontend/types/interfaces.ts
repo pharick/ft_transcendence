@@ -50,6 +50,7 @@ export interface CompletedGameInfo {
 }
 
 export interface ChatMessage {
-  userId: number;
+  id: number;
+  user: UserInfo;
   text: string;
 }
