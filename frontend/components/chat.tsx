@@ -44,16 +44,23 @@ const Chat: FC<ChatProps> = ({ user, userSessionId }) => {
     <>
       <h1>Chat</h1>
 
-      <ul>
-        {messages.map((message) => (
-          <li key={message.id}>{message.user.username} - {message.text}</li>
-        ))}
-      </ul>
+      <section className="chat">
+        <ul className="chat-list">
+          {messages.map((message) => (
+            <li key={message.id}>
+              <article className="chat-message">
+                <p className="chat-message-text">{message.text}</p>
+                <p className="chat-message-user">{message.user.username}</p>
+              </article>
+            </li>
+          ))}
+        </ul>
 
-      <form onSubmit={handleMessageSubmit}>
-        <input type="text" value={messageText} onChange={(event) => {handleMessageChange(event.target.value)}} />
-        <button type="submit">Send</button>
-      </form>
+        <form className="chat-form" onSubmit={handleMessageSubmit}>
+          <input className="chat-form-input" type="text" placeholder="New message" value={messageText} onChange={(event) => {handleMessageChange(event.target.value)}} />
+          <button type="submit">Send</button>
+        </form>
+      </section>
     </>
   );
 }
