@@ -382,7 +382,7 @@ export class GamesService {
     this.clientIdGameId[clientId] = gameId;
   }
 
-  startGame(gameId: string) {
+  resumeGame(gameId: string) {
     if (!(gameId in this.games)) return;
     if (!this.games[gameId].isGameRunning) {
       this.games[gameId].resumeGame();
