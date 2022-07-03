@@ -3,11 +3,11 @@ import { GameInfo, PendingGame, UserInfo } from '../types/interfaces';
 import Link from 'next/link';
 import { io, Socket } from 'socket.io-client';
 
-interface NotificationsListProps {
+interface NotificationListProps {
   user?: UserInfo;
 }
 
-const NotificationsList: FC<NotificationsListProps> = ({ user }) => {
+const NotificationList: FC<NotificationListProps> = ({ user }) => {
   const socket = useRef<Socket>();
   const [hostGames, setHostGames] = useState<PendingGame[]>([]);
   const [guestGames, setGuestGames] = useState<PendingGame[]>([]);
@@ -137,13 +137,19 @@ const NotificationsList: FC<NotificationsListProps> = ({ user }) => {
           ))}
         </ul>
       ) : (
-        <p>
-          You don&apos;t have any invitations to the game, take the first step
-          😉
-        </p>
+        <>
+          <p>You don&apos;t have any invitations to the game, take the first step 😉</p>
+          <ul>
+            <li>
+              <Link href="/users">
+                <a>Invite someone</a>
+              </Link>
+            </li>
+          </ul>
+        </>
       )}
     </section>
   );
 };
 
-export default NotificationsList;
+export default NotificationList;
