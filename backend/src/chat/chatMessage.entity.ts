@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from '../users/user.entity';
 import { ChatRoom } from './chatRoom.entity';
 
@@ -6,6 +12,9 @@ import { ChatRoom } from './chatRoom.entity';
 export class ChatMessage {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @CreateDateColumn()
+  date: Date;
 
   @ManyToOne(() => User)
   user: User;

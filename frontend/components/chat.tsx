@@ -1,6 +1,7 @@
-import { FC, FormEvent, useEffect, useRef, useState } from 'react';
+import { FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { ChatMessage, UserInfo } from '../types/interfaces';
+import { format } from 'date-fns';
 
 interface ChatProps {
   user: UserInfo | undefined;
@@ -12,7 +13,15 @@ const Chat: FC<ChatProps> = ({ user, userSessionId }) => {
   const [messageText, setMessageText] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
+  const getMessages = useCallback(async () => {
+    const messagesResponse = await fetch('/api/chat/common');
+    const messages = await messagesResponse.json();
+    setMessages(messages);
+  }, []);
+
   useEffect(() => {
+    getMessages().then();
+
     if (socket.current && socket.current?.active) return;
 
     socket.current = io(
@@ -50,7 +59,10 @@ const Chat: FC<ChatProps> = ({ user, userSessionId }) => {
             <li key={message.id}>
               <article className="chat-message">
                 <p className="chat-message-text">{message.text}</p>
-                <p className="chat-message-user">{message.user.username}</p>
+                <footer className="chat-message-footer">
+                  <p className="chat-message-user">{message.user.username}</p>
+                  <p className="chat-message-date">{message.date}</p>
+                </footer>
               </article>
             </li>
           ))}

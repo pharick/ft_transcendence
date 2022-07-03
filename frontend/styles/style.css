@@ -318,6 +318,8 @@ button.side-panel-button-visible {
     border: 1px solid black;
     list-style: none;
     padding: 1em;
+    height: 500px;
+    overflow-y: auto;
 }
 
 .chat-message {

@@ -30,4 +30,16 @@ export class ChatService {
     });
     return await this.chatMessageRepository.save(message);
   }
+
+  findAllCommon(): Promise<ChatMessage[]> {
+    return this.chatMessageRepository.find({
+      where: {
+        room: null,
+      },
+      order: {
+        date: 'ASC',
+      },
+      relations: ['user'],
+    });
+  }
 }

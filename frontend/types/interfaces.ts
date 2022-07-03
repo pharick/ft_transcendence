@@ -51,6 +51,7 @@ export interface CompletedGameInfo {
 
 export interface ChatMessage {
   id: number;
+  date: Date;
   user: UserInfo;
   text: string;
 }
