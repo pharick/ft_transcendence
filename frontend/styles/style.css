@@ -60,6 +60,18 @@ button:disabled {
     background-color: #dc3545;
 }
 
+.text-center {
+    text-align: center;
+}
+
+.avatar-placeholder {
+    background-color: lightgray;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    border: 1px solid dodgerblue;
+}
+
 /* Header */
 
 .header {
@@ -263,4 +275,27 @@ button.side-panel-button-visible {
 .score.score2 {
     top: 20px;
     right: 25%;
+}
+
+/* Completed game */
+
+.completed-game-scores {
+    display: flex;
+    justify-content: center;
+}
+
+.completed-game-part {
+    margin: 0 3em;
+    text-align: center;
+}
+
+.completed-game-score {
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 30px;
+    margin: 1em 0 0.5em 0;
+}
+
+.completed-game-player {
+    margin: 0;
+    font-weight: bold;
 }

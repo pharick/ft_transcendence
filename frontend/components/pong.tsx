@@ -110,7 +110,6 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     });
 
     socket.current?.on('endGame', (completedGameInfo: CompletedGameInfo) => {
-      console.log('EndGame!');
       window.location.replace(`/completed/${completedGameInfo.id}`);
     });
 
