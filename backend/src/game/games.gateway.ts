@@ -44,6 +44,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   private async sendNextFrame(gameId: string): Promise<void> {
+    if (!(gameId in this.timers) || !this.timers[gameId]) return;
     const frame: FrameInfo = this.gamesService.getNextFrame(gameId);
     if (!frame) return;
     if (
