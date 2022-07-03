@@ -1,4 +1,15 @@
-import { Controller, Get, Logger, Param, ParseIntPipe, Put, Session, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Logger,
+  Param,
+  ParseIntPipe,
+  Put,
+  Session,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { MatchMakingGamesService } from './matchMakingGames.service';
 import { GameInfo } from '../game/games.interfaces';
 
@@ -9,19 +20,28 @@ export class MatchMakingGamesController {
   constructor(private matchMakingGamesService: MatchMakingGamesService) {}
 
   @Get('gamer/:userId')
-  findByOne(@Param('userId', new ParseIntPipe()) userId: number): number {
+  async findByOne(
+    @Param('userId', new ParseIntPipe()) userId: number,
+  ): Promise<HttpStatus.OK> {
     this.logger.log(`search the game for the user ${userId}`);
-    return this.matchMakingGamesService.findByOne(userId);
+    await this.matchMakingGamesService.findByOne(userId);
+    return HttpStatus.OK;
   }
 
   @Put()
   async createMatchMakingGame(
     @Session() session: Record<string, any>,
-  ): Promise<GameInfo> {
+  ): Promise<HttpStatus.OK> {
     const userId = session.userId;
     if (!userId) {
       throw new UnauthorizedException();
     }
-    return await this.matchMakingGamesService.createMatchMakingGame(userId);
+    await this.matchMakingGamesService.createMatchMakingGame(userId);
+    return HttpStatus.OK;
+  }
+
+  @Delete(':userId')
+  remove(@Param('userId') userId: number) {
+    this.matchMakingGamesService.remove(userId);
   }
 }
