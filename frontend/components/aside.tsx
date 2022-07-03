@@ -9,7 +9,6 @@ const Aside: FC = () => {
 
   const toggle = () => {
     setIsVisible(!isVisible);
-    console.log('hide button');
   };
 
   useEffect(() => {

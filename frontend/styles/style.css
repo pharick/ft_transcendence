@@ -72,6 +72,14 @@ button:disabled {
     border: 1px solid dodgerblue;
 }
 
+input[type=text] {
+    border: 2px solid lightgray;
+    border-radius: 3px;
+    font-size: 1em;
+    padding: 5px;
+    margin: 0;
+}
+
 /* Header */
 
 .header {
@@ -298,4 +306,45 @@ button.side-panel-button-visible {
 .completed-game-player {
     margin: 0;
     font-weight: bold;
+}
+
+/* Chat */
+
+.chat {
+    margin-bottom: 1em;
+}
+
+.chat-list {
+    border: 1px solid black;
+    list-style: none;
+    padding: 1em;
+}
+
+.chat-message {
+    border: 1px solid dodgerblue;
+    width: 20em;
+    padding: 1em;
+    margin: 0.5em 0;
+    border-radius: 0.5em;
+    background-color: #eeeeee;
+    box-shadow: 1px 1px 5px 1px gray;
+}
+
+.chat-message-text {
+    margin: 0;
+}
+
+.chat-message-user {
+    font-weight: bold;
+    border-top: 1px solid black;
+    margin: 0.5em 0 0;
+    padding-top: 0.5em;
+}
+
+.chat-form {
+    display: flex;
+}
+
+.chat-form-input {
+    flex: 1;
 }
