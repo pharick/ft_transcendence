@@ -1,10 +1,15 @@
 import { FC, FormEvent, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { ChatMessage, UserInfo } from '../types/interfaces';
 
-const Chat: FC = () => {
+interface ChatProps {
+  user: UserInfo | undefined;
+}
+
+const Chat: FC<ChatProps> = ({ user }) => {
   const socket = useRef<Socket>();
   const [messageText, setMessageText] = useState('');
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
     if (socket.current && socket.current?.active) return;
@@ -18,7 +23,7 @@ const Chat: FC = () => {
     );
     socket.current?.connect();
 
-    socket.current?.on('msgToClient', (message: string) => {
+    socket.current?.on('msgToClient', (message: ChatMessage) => {
       setMessages((oldMessages) => [...oldMessages, message]);
     })
   });
@@ -26,7 +31,7 @@ const Chat: FC = () => {
   const handleMessageSubmit = (event: FormEvent) => {
     event.preventDefault();
     if (!messageText) return;
-    socket.current?.emit('msgToServer', messageText);
+    socket.current?.emit('msgToServer', {userId: user?.id, text: messageText});
     setMessageText('');
   };
 
@@ -40,7 +45,7 @@ const Chat: FC = () => {
 
       <ul>
         {messages.map((message) => (
-          <li key={message}>{message}</li>
+          <li key={message.text}>{message.userId} - {message.text}</li>
         ))}
       </ul>
 

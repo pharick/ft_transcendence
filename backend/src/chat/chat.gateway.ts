@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
+import { ChatMessage } from './chat.interfaces';
 
 @WebSocketGateway({ namespace: 'chat', cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -16,8 +17,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private logger: Logger = new Logger('ChatGateway');
 
   @SubscribeMessage('msgToServer')
-  handleMessage(client: Socket, message: string): void {
-    this.logger.log(`New message: ${message}`);
+  handleMessage(client: Socket, message: ChatMessage): void {
+    this.logger.log(`New message from ${message.userId}: ${message.text}`);
     this.server.emit('msgToClient', message);
   }
 

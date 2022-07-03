@@ -48,3 +48,8 @@ export interface CompletedGameInfo {
   hostUser: UserInfo;
   guestUser: UserInfo;
 }
+
+export interface ChatMessage {
+  userId: number;
+  text: string;
+}
