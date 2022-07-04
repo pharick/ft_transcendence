@@ -39,6 +39,7 @@ export interface FrameInfo {
   club2Pos: number;
   scores: ScoreInfo;
   isPause: boolean;
+  isPlayer1Turn: boolean;
 }
 
 export interface CompletedGameInfo {

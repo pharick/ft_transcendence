@@ -45,6 +45,8 @@ class Game {
   private score1: number;
   private score2: number;
 
+  private player1Turn: boolean;
+
   private gameTimer: NodeJS.Timer;
 
   constructor(player1Id: number | null, player2Id: number | null) {
@@ -57,7 +59,10 @@ class Game {
     this._player2Id = player2Id;
     this.score1 = 0;
     this.score2 = 0;
-    this.newRound(!!random(0, 1));
+
+    this.player1Turn = !!random(0, 1);
+    this.newRound();
+
     this.clubHeightLeft = player1Id === null ? this.fieldHeight : 80;
     this.clubHeightRight = player2Id === null ? this.fieldHeight : 80;
   }
@@ -158,10 +163,10 @@ class Game {
     else if (playerId == this.player2Id) this.club2Delta = 0;
   }
 
-  private newRound(player1Wins: boolean): void {
+  private newRound(): void {
     this.ballX = this.fieldWidth / 2;
     this.ballY = this.fieldHeight / 2;
-    this.ballDirection = player1Wins
+    this.ballDirection = this.player1Turn
       ? random(-30, 30)
       : random(180 - 30, 180 + 30);
     this.pauseGame();
@@ -214,11 +219,13 @@ class Game {
   private checkGoals(): void {
     if (this.ballLeft > this.fieldWidth) {
       this.score1++;
-      this.newRound(true);
+      this.player1Turn = true;
+      this.newRound();
     }
     if (this.ballRight < 0) {
       this.score2++;
-      this.newRound(false);
+      this.player1Turn = false;
+      this.newRound();
     }
   }
 
@@ -274,6 +281,7 @@ class Game {
       club2Pos: this.club2Pos,
       scores: this.scores,
       isPause: !this.gameTimer,
+      isPlayer1Turn: this.player1Turn,
     };
   }
 }
