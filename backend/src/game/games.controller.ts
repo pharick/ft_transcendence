@@ -7,7 +7,8 @@ import {
   NotFoundException,
   Session,
   Put,
-  UnauthorizedException, ForbiddenException,
+  UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 
 import { GamesService } from './games.service';
