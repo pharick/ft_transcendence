@@ -1,6 +1,7 @@
 import type { GetServerSideProps, NextPage } from 'next';
 
 import { CompletedGameInfo } from '../../types/interfaces';
+import Head from 'next/head';
 
 interface CompletedGamePageProps {
   completedGameInfo: CompletedGameInfo;
@@ -22,6 +23,12 @@ const CompletedGamePage: NextPage<CompletedGamePageProps> = ({
 }) => {
   return (
     <>
+      <Head>
+        <title>
+          Game {completedGameInfo.hostUser ? completedGameInfo.hostUser.username : 'Mr. Wall'} vs. {completedGameInfo.guestUser ? completedGameInfo.guestUser.username : 'Mr.Wall'} is completed
+        </title>
+      </Head>
+
       <h1 className="text-center">
         Game{' '}
         <b>
