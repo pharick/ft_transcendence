@@ -64,10 +64,18 @@ button:disabled {
     text-align: center;
 }
 
-.avatar-placeholder {
+.avatar-placeholder-big {
     background-color: lightgray;
     width: 250px;
     height: 250px;
+    border-radius: 50%;
+    border: 1px solid dodgerblue;
+}
+
+.avatar-placeholder-small {
+    background-color: lightgray;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     border: 1px solid dodgerblue;
 }
@@ -293,6 +301,30 @@ button.side-panel-button-visible {
     width: 100%;
     text-align: center;
     font-size: 1.4em;
+}
+
+.pong-players {
+    display: flex;
+}
+
+.pong-players-part {
+    padding: 1em 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pong-players-part.current {
+    background-color: #dddddd;
+}
+
+.pong-players-part.current .pong-players-name {
+    font-weight: bold;
+}
+
+.pong-players-name {
+    margin: 0.5em 0 0 0;
 }
 
 /* Completed game */

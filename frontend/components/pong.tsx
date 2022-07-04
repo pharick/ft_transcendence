@@ -175,6 +175,17 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
           ref={canvasRef}
         ></canvas>
       </div>
+
+      <div className="pong-players" style={{width: gameInfo.field.width}}>
+        <div className={`pong-players-part ${player1Turn ? 'current' : ''}`}>
+          <div className="avatar-placeholder-small"></div>
+          <p className="pong-players-name">{gameInfo.player1.username}</p>
+        </div>
+        <div className={`pong-players-part ${!player1Turn ? 'current' : ''}`}>
+          <div className="avatar-placeholder-small"></div>
+          <p className="pong-players-name">{gameInfo.player2.username}</p>
+        </div>
+      </div>
     </>
   );
 };
