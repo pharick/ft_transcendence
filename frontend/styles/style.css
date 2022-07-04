@@ -320,27 +320,49 @@ button.side-panel-button-visible {
     padding: 1em;
     height: 500px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .chat-message {
-    border: 1px solid dodgerblue;
+    border: 1px solid rgb(189, 215, 255);
     width: 20em;
     padding: 1em;
     margin: 0.5em 0;
     border-radius: 0.5em;
     background-color: #eeeeee;
-    box-shadow: 1px 1px 5px 1px gray;
+    box-shadow: 1px 1px 5px 1px #cccccc;
+}
+
+.chat-message-my {
+    align-self: flex-end;
+}
+
+.chat-message-my .chat-message {
+    background-color: powderblue;
 }
 
 .chat-message-text {
     margin: 0;
 }
 
-.chat-message-user {
-    font-weight: bold;
+.chat-message-footer {
+    display: flex;
+    justify-content: space-between;
     border-top: 1px solid black;
     margin: 0.5em 0 0;
     padding-top: 0.5em;
+    font-size: 0.9em;
+    color: gray;
+}
+
+.chat-message-user {
+    margin: 0;
+    font-style: italic;
+}
+
+.chat-message-date {
+    margin: 0;
 }
 
 .chat-form {

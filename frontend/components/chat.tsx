@@ -37,7 +37,7 @@ const Chat: FC<ChatProps> = ({ user, userSessionId }) => {
     socket.current?.on('msgToClient', (message: ChatMessage) => {
       setMessages((oldMessages) => [...oldMessages, message]);
     })
-  });
+  }, [getMessages]);
 
   const handleMessageSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -57,7 +57,7 @@ const Chat: FC<ChatProps> = ({ user, userSessionId }) => {
       <section className="chat">
         <ul className="chat-list">
           {messages.map((message) => (
-            <li key={message.id}>
+            <li key={message.id} className={message.user.id == user?.id ? 'chat-message-my' : ''}>
               <article className="chat-message">
                 <p className="chat-message-text">{message.text}</p>
                 <footer className="chat-message-footer">
