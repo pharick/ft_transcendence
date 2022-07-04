@@ -7,7 +7,7 @@ import {
   NotFoundException,
   Session,
   Put,
-  UnauthorizedException,
+  UnauthorizedException, ForbiddenException,
 } from '@nestjs/common';
 
 import { GamesService } from './games.service';
@@ -42,9 +42,13 @@ export class GamesController {
   }
 
   @Post(':gameId/resume')
-  resumeGame(@Param('gameId') gameId: string) {
-    this.logger.log(`Toggle game start: ${gameId}`);
-    this.gamesService.resumeGame(gameId);
+  resumeGame(
+    @Param('gameId') gameId: string,
+    @Session() session: Record<string, any>,
+  ) {
+    const userId = session.userId;
+    if (!this.gamesService.resumeGame(gameId, userId))
+      throw new ForbiddenException();
   }
 
   @Put()

@@ -255,11 +255,17 @@ class Game {
     this.moveClubs();
   }
 
-  resumeGame(): void {
+  resumeGame(userId: number): boolean {
+    if (
+      (this.player1Turn && this.player1Id != userId) ||
+      (!this.player1Turn && this.player2Id != userId)
+    )
+      return false;
     if (this.gameTimer) return;
     this.gameTimer = setInterval(() => {
       this.calculateNextFrame();
     }, this.frame_delta);
+    return true;
   }
 
   pauseGame(): void {
@@ -390,10 +396,10 @@ export class GamesService {
     this.clientIdGameId[clientId] = gameId;
   }
 
-  resumeGame(gameId: string) {
-    if (!(gameId in this.games) || !this.games[gameId]) return;
+  resumeGame(gameId: string, userId: number): boolean {
+    if (!(gameId in this.games) || !this.games[gameId]) return false;
     if (!this.games[gameId].isGameRunning) {
-      this.games[gameId].resumeGame();
+      return this.games[gameId].resumeGame(userId);
     }
   }
 
