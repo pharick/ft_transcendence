@@ -28,4 +28,5 @@ export interface FrameInfo {
   club1Pos: number;
   club2Pos: number;
   scores: ScoreInfo;
+  isPause: boolean;
 }

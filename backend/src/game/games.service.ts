@@ -273,6 +273,7 @@ class Game {
       club1Pos: this.club1Pos,
       club2Pos: this.club2Pos,
       scores: this.scores,
+      isPause: !this.gameTimer,
     };
   }
 }
@@ -381,7 +382,7 @@ export class GamesService {
     this.clientIdGameId[clientId] = gameId;
   }
 
-  startGame(gameId: string) {
+  resumeGame(gameId: string) {
     if (!(gameId in this.games) || !this.games[gameId]) return;
     if (!this.games[gameId].isGameRunning) {
       this.games[gameId].resumeGame();

@@ -285,6 +285,16 @@ button.side-panel-button-visible {
     right: 25%;
 }
 
+.pause-message {
+    position: absolute;
+    color: white;
+    font-family: "Press Start 2P", sans-serif;
+    top: 38%;
+    width: 100%;
+    text-align: center;
+    font-size: 1.4em;
+}
+
 /* Completed game */
 
 .completed-game-scores {
@@ -325,7 +335,7 @@ button.side-panel-button-visible {
 }
 
 .chat-message {
-    border: 1px solid rgb(189, 215, 255);
+    border: 2px solid rgb(189, 215, 255);
     width: 20em;
     padding: 1em;
     margin: 0.5em 0;
@@ -349,7 +359,7 @@ button.side-panel-button-visible {
 .chat-message-footer {
     display: flex;
     justify-content: space-between;
-    border-top: 1px solid black;
+    border-top: 1px solid gray;
     margin: 0.5em 0 0;
     padding-top: 0.5em;
     font-size: 0.9em;

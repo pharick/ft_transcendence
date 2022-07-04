@@ -20,6 +20,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   const socket = useRef<Socket>();
   const [score1, setScore1] = useState(0);
   const [score2, setScore2] = useState(0);
+  const [pause, setPause] = useState(true);
 
   const renderField = ({
     ballX,
@@ -31,7 +32,10 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     club1Pos,
     club2Pos,
     scores,
+    isPause,
   }: FrameInfo) => {
+    setPause(isPause);
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -86,8 +90,8 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     );
   };
 
-  const toggleGameRunning = async () => {
-    const response = await fetch(`/api/games/${gameInfo.gameId}/toggle`, {
+  const resumeGame = async () => {
+    const response = await fetch(`/api/games/${gameInfo.gameId}/resume`, {
       method: 'POST',
     });
   };
@@ -119,6 +123,11 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   }, [gameInfo.gameId]);
 
   const keyDownHandler = (e: KeyboardEvent) => {
+    if (e.code == 'Space') {
+      resumeGame().then();
+      return;
+    }
+
     if (e.code != 'KeyW' && e.code != 'KeyS') return;
     const up = e.code == 'KeyW';
 
@@ -143,6 +152,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   return (
     <>
       <div className="field-wrapper">
+        {pause && <p className="pause-message">Press SPACE to continue</p>}
         <p className="score score1">{score1}</p>
         <p className="score score2">{score2}</p>
         <canvas
@@ -152,7 +162,6 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
           ref={canvasRef}
         ></canvas>
       </div>
-      <button onClick={toggleGameRunning}>Run</button>
     </>
   );
 };

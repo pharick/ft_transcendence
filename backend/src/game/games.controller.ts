@@ -41,10 +41,10 @@ export class GamesController {
     return gameInfo;
   }
 
-  @Post(':gameId/toggle')
-  startGame(@Param('gameId') gameId: string) {
+  @Post(':gameId/resume')
+  resumeGame(@Param('gameId') gameId: string) {
     this.logger.log(`Toggle game start: ${gameId}`);
-    this.gamesService.startGame(gameId);
+    this.gamesService.resumeGame(gameId);
   }
 
   @Put()
