@@ -126,7 +126,11 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   }, [gameInfo.gameId]);
 
   const keyDownHandler = (e: KeyboardEvent) => {
-    if (e.code == 'Space') {
+    if (
+      e.code == 'Space' &&
+      (gameInfo.player1.id == user?.id && player1Turn ||
+      gameInfo.player2.id == user?.id && !player1Turn)
+    ) {
       resumeGame().then();
       return;
     }
