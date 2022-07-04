@@ -2,6 +2,7 @@ import { FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { ChatMessage, UserInfo } from '../types/interfaces';
 import { format } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 
 interface ChatProps {
   user: UserInfo | undefined;
@@ -61,7 +62,9 @@ const Chat: FC<ChatProps> = ({ user, userSessionId }) => {
                 <p className="chat-message-text">{message.text}</p>
                 <footer className="chat-message-footer">
                   <p className="chat-message-user">{message.user.username}</p>
-                  <p className="chat-message-date">{message.date}</p>
+                  <p className="chat-message-date">
+                    {format(utcToZonedTime(message.date, 'Europe/Moscow'), 'dd.MM.yyyy h:mm:ss')}
+                  </p>
                 </footer>
               </article>
             </li>

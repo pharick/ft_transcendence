@@ -13,7 +13,7 @@ export class ChatMessage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   date: Date;
 
   @ManyToOne(() => User)
