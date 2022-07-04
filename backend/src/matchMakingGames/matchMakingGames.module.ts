@@ -3,10 +3,11 @@ import { MatchMakingGamesController } from './matchMakingGames.controller';
 import { MatchMakingGamesService } from './matchMakingGames.service';
 import { GamesModule } from '../game/games.module';
 import { UsersModule } from '../users/users.module';
+import { MatchMakingGamesGateway } from './matchMakingGames.gateway';
 
 @Module({
   imports: [GamesModule, UsersModule],
-  providers: [MatchMakingGamesService],
+  providers: [MatchMakingGamesService, MatchMakingGamesGateway],
   controllers: [MatchMakingGamesController],
 })
 export class MatchMakingGamesModule {}

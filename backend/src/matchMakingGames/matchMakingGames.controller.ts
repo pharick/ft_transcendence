@@ -22,26 +22,26 @@ export class MatchMakingGamesController {
   @Get('gamer/:userId')
   async findByOne(
     @Param('userId', new ParseIntPipe()) userId: number,
-  ): Promise<HttpStatus.OK> {
+  ): Promise<HttpStatus.CREATED> {
     this.logger.log(`search the game for the user ${userId}`);
     await this.matchMakingGamesService.findByOne(userId);
-    return HttpStatus.OK;
+    return HttpStatus.CREATED;
   }
 
   @Put()
   async createMatchMakingGame(
     @Session() session: Record<string, any>,
-  ): Promise<HttpStatus.OK> {
+  ): Promise<HttpStatus.CREATED> {
     const userId = session.userId;
     if (!userId) {
       throw new UnauthorizedException();
     }
     await this.matchMakingGamesService.createMatchMakingGame(userId);
-    return HttpStatus.OK;
+    return HttpStatus.CREATED;
   }
 
-  @Delete(':userId')
-  remove(@Param('userId') userId: number) {
-    this.matchMakingGamesService.remove(userId);
+  @Delete()
+  remove(@Session() session: Record<string, any>) {
+    this.matchMakingGamesService.remove(session.userId);
   }
 }
