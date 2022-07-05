@@ -22,6 +22,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   const [score2, setScore2] = useState(0);
   const [pause, setPause] = useState(true);
   const [player1Turn, setPlayer1Turn] = useState(false);
+  const [duration, setDuration] = useState(0);
 
   const renderField = ({
     ballX,
@@ -35,9 +36,11 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     scores,
     isPause,
     isPlayer1Turn,
+    durationMs,
   }: FrameInfo) => {
     setPause(isPause);
     setPlayer1Turn(isPlayer1Turn);
+    setDuration(Math.round(durationMs / 1000));
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -166,6 +169,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
             'Waiting for opponent'
           }
         </p>}
+        <p className="pong-time">Time: {duration}</p>
         <p className="score score1">{score1}</p>
         <p className="score score2">{score2}</p>
         <canvas

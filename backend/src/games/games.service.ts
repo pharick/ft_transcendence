@@ -24,14 +24,14 @@ class Game {
   private readonly clubWidth: number = 8;
   private readonly moveClubDelta: number = 20;
 
-  private readonly frame_delta: number = 40;
+  private readonly frameDelta: number = 40;
 
   private ballX: number;
   private ballY: number;
   private ballDirection: number;
   private ballSpeed: number;
-  private clubHeightRight: number;
-  private clubHeightLeft: number;
+  private readonly clubHeightRight: number;
+  private readonly clubHeightLeft: number;
 
   private club1Pos: number;
   private club2Pos: number;
@@ -48,6 +48,7 @@ class Game {
   private player1Turn: boolean;
 
   private gameTimer: NodeJS.Timer;
+  private _durationMs: number;
 
   constructor(player1Id: number | null, player2Id: number | null) {
     this.ballSpeed = 20;
@@ -65,6 +66,8 @@ class Game {
 
     this.clubHeightLeft = player1Id === null ? this.fieldHeight : 80;
     this.clubHeightRight = player2Id === null ? this.fieldHeight : 80;
+
+    this._durationMs = 0;
   }
 
   private get ballLeft(): number {
@@ -121,6 +124,10 @@ class Game {
 
   private get club2Left(): number {
     return this.fieldWidth - this.ballRadius * 2 - this.clubWidth;
+  }
+
+  get durationMs(): number {
+    return this._durationMs;
   }
 
   get isGameRunning(): boolean {
@@ -253,6 +260,8 @@ class Game {
     this.checkClubsCollisions();
     this.checkGoals();
     this.moveClubs();
+
+    this._durationMs += this.frameDelta;
   }
 
   resumeGame(userId: number): boolean {
@@ -264,7 +273,7 @@ class Game {
     if (this.gameTimer) return;
     this.gameTimer = setInterval(() => {
       this.calculateNextFrame();
-    }, this.frame_delta);
+    }, this.frameDelta);
     return true;
   }
 
@@ -288,6 +297,7 @@ class Game {
       scores: this.scores,
       isPause: !this.gameTimer,
       isPlayer1Turn: this.player1Turn,
+      durationMs: this._durationMs,
     };
   }
 }
@@ -334,6 +344,7 @@ export class GamesService {
       player1: player1,
       player2: player2,
       scores: this.games[gameId].scores,
+      durationMs: this.games[gameId].durationMs,
     };
   }
 
@@ -380,7 +391,7 @@ export class GamesService {
     const completedGame: CompletedGameDto = {
       score1: game.scores.player1,
       score2: game.scores.player2,
-      duration: 0, // TODO
+      duration: Math.round(game.durationMs / 1000),
       hostUser: game.player1,
       guestUser: game.player2,
     };

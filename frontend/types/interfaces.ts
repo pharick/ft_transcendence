@@ -40,6 +40,7 @@ export interface FrameInfo {
   scores: ScoreInfo;
   isPause: boolean;
   isPlayer1Turn: boolean;
+  durationMs: number;
 }
 
 export interface CompletedGameInfo {

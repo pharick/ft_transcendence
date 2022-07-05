@@ -293,6 +293,16 @@ button.side-panel-button-visible {
     right: 25%;
 }
 
+.pong-time {
+    position: absolute;
+    color: white;
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 20px;
+    bottom: 15px;
+    left: 10px;
+    margin: 0;
+}
+
 .pause-message {
     position: absolute;
     color: white;
