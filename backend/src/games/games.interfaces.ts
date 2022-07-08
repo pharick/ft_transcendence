@@ -16,6 +16,7 @@ export interface GameInfo {
   player1: User;
   player2: User;
   scores: ScoreInfo;
+  durationMs: number;
 }
 
 export interface FrameInfo {
@@ -28,4 +29,7 @@ export interface FrameInfo {
   club1Pos: number;
   club2Pos: number;
   scores: ScoreInfo;
+  isPause: boolean;
+  isPlayer1Turn: boolean;
+  durationMs: number;
 }

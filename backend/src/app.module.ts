@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { GamesModule } from './game/games.module';
+import { GamesModule } from './games/games.module';
 import { PendingGame } from './pendingGames/pendingGame.entity';
 import { PendingGamesModule } from './pendingGames/pendingGames.module';
 import { CompletedGame } from './completedGames/completedGame.entity';

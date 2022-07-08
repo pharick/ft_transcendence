@@ -7,6 +7,7 @@ import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
 import { ChatService } from './chat.service';
 import { User } from '../users/user.entity';
+import { ChatController } from './chat.controller';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { User } from '../users/user.entity';
     UsersModule,
   ],
   providers: [ChatGateway, ChatService],
-  controllers: [],
+  controllers: [ChatController],
   exports: [],
 })
 export class ChatModule {}

@@ -23,8 +23,9 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo, completedGames }) => {
   return (
     <>
       <Head>
-        <title>User</title>
+        <title>Player {userInfo.username}</title>
       </Head>
+
       <h1> {userInfo.username} </h1>
       <userContext.Consumer>
         {({ user }) => (

@@ -24,14 +24,14 @@ class Game {
   private readonly clubWidth: number = 8;
   private readonly moveClubDelta: number = 20;
 
-  private readonly frame_delta: number = 40;
+  private readonly frameDelta: number = 40;
 
   private ballX: number;
   private ballY: number;
   private ballDirection: number;
   private ballSpeed: number;
-  private clubHeightRight: number;
-  private clubHeightLeft: number;
+  private readonly clubHeightRight: number;
+  private readonly clubHeightLeft: number;
 
   private club1Pos: number;
   private club2Pos: number;
@@ -45,7 +45,10 @@ class Game {
   private score1: number;
   private score2: number;
 
+  private player1Turn: boolean;
+
   private gameTimer: NodeJS.Timer;
+  private _durationMs: number;
 
   constructor(player1Id: number | null, player2Id: number | null) {
     this.ballSpeed = 20;
@@ -57,9 +60,14 @@ class Game {
     this._player2Id = player2Id;
     this.score1 = 0;
     this.score2 = 0;
-    this.newRound(!!random(0, 1));
+
+    this.player1Turn = !!random(0, 1);
+    this.newRound();
+
     this.clubHeightLeft = player1Id === null ? this.fieldHeight : 80;
     this.clubHeightRight = player2Id === null ? this.fieldHeight : 80;
+
+    this._durationMs = 0;
   }
 
   private get ballLeft(): number {
@@ -118,6 +126,10 @@ class Game {
     return this.fieldWidth - this.ballRadius * 2 - this.clubWidth;
   }
 
+  get durationMs(): number {
+    return this._durationMs;
+  }
+
   get isGameRunning(): boolean {
     return !!this.gameTimer;
   }
@@ -158,10 +170,10 @@ class Game {
     else if (playerId == this.player2Id) this.club2Delta = 0;
   }
 
-  private newRound(player1Wins: boolean): void {
+  private newRound(): void {
     this.ballX = this.fieldWidth / 2;
     this.ballY = this.fieldHeight / 2;
-    this.ballDirection = player1Wins
+    this.ballDirection = this.player1Turn
       ? random(-30, 30)
       : random(180 - 30, 180 + 30);
     this.pauseGame();
@@ -214,11 +226,13 @@ class Game {
   private checkGoals(): void {
     if (this.ballLeft > this.fieldWidth) {
       this.score1++;
-      this.newRound(true);
+      this.player1Turn = true;
+      this.newRound();
     }
     if (this.ballRight < 0) {
       this.score2++;
-      this.newRound(false);
+      this.player1Turn = false;
+      this.newRound();
     }
   }
 
@@ -246,13 +260,21 @@ class Game {
     this.checkClubsCollisions();
     this.checkGoals();
     this.moveClubs();
+
+    this._durationMs += this.frameDelta;
   }
 
-  resumeGame(): void {
+  resumeGame(userId: number): boolean {
+    if (
+      (this.player1Turn && this.player1Id != userId) ||
+      (!this.player1Turn && this.player2Id != userId)
+    )
+      return false;
     if (this.gameTimer) return;
     this.gameTimer = setInterval(() => {
       this.calculateNextFrame();
-    }, this.frame_delta);
+    }, this.frameDelta);
+    return true;
   }
 
   pauseGame(): void {
@@ -273,6 +295,9 @@ class Game {
       club1Pos: this.club1Pos,
       club2Pos: this.club2Pos,
       scores: this.scores,
+      isPause: !this.gameTimer,
+      isPlayer1Turn: this.player1Turn,
+      durationMs: this._durationMs,
     };
   }
 }
@@ -319,6 +344,7 @@ export class GamesService {
       player1: player1,
       player2: player2,
       scores: this.games[gameId].scores,
+      durationMs: this.games[gameId].durationMs,
     };
   }
 
@@ -365,7 +391,7 @@ export class GamesService {
     const completedGame: CompletedGameDto = {
       score1: game.scores.player1,
       score2: game.scores.player2,
-      duration: 0, // TODO
+      duration: Math.round(game.durationMs / 1000),
       hostUser: game.player1,
       guestUser: game.player2,
     };
@@ -381,10 +407,10 @@ export class GamesService {
     this.clientIdGameId[clientId] = gameId;
   }
 
-  startGame(gameId: string) {
-    if (!(gameId in this.games) || !this.games[gameId]) return;
+  resumeGame(gameId: string, userId: number): boolean {
+    if (!(gameId in this.games) || !this.games[gameId]) return false;
     if (!this.games[gameId].isGameRunning) {
-      this.games[gameId].resumeGame();
+      return this.games[gameId].resumeGame(userId);
     }
   }
 
