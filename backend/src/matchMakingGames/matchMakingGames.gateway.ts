@@ -14,8 +14,8 @@ export class MatchMakingGamesGateway implements OnGatewayConnection {
   private logger: Logger = new Logger('MatchMakingGamesGateway');
 
   @SubscribeMessage('cancel')
-  handleMessage(client: Socket, payload: string): void {
-    this.server.emit('cancel', payload);
+  handleMessage(client: Socket, ...args): void {
+    //this.server.emit('updateMatchMaking', args[0], args[1], args[2]);
   }
 
   handleConnection(client: Socket, ...args: any[]): void {

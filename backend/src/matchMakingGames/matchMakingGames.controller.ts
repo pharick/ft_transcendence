@@ -11,7 +11,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { MatchMakingGamesService } from './matchMakingGames.service';
-import { GameInfo } from '../game/games.interfaces';
 
 @Controller('matchMaking')
 export class MatchMakingGamesController {

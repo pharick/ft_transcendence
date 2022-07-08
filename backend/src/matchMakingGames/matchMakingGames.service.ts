@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GamesService } from '../game/games.service';
 import { UsersService } from '../users/users.service';
+import { MatchMakingGamesGateway } from './matchMakingGames.gateway';
 
 @Injectable()
 export class MatchMakingGamesService {
@@ -11,6 +12,7 @@ export class MatchMakingGamesService {
   constructor(
     private gamesService: GamesService,
     private usersService: UsersService,
+    private matchMakingGamesGateway: MatchMakingGamesGateway,
   ) {
     const timeoutId = setInterval(() => {
       this.choosePlayer();
@@ -29,6 +31,11 @@ export class MatchMakingGamesService {
   private async choosePlayer() {
     let tempId: number = null;
     let rankId: number = null;
+
+    function informEveryone(tempId: number, item: number, gameId: string) {
+      this.matchMakingGamesGateway.handleMessage(tempId, item, gameId);
+    }
+
     for (const [rank, setId] of Object.entries(this.match)) {
       if (setId) {
         for (const item of setId.values()) {
@@ -37,7 +44,8 @@ export class MatchMakingGamesService {
             rankId = parseInt(rank, 10);
             this.match[rank].delete(item);
           } else {
-            await this.gamesService.createNewGame(tempId, item);
+            const game = await this.gamesService.createNewGame(tempId, item);
+            informEveryone(tempId, item, game.gameId);
             this.match[rank].delete(item);
             this.match[rankId].delete(tempId);
             tempId = null;
@@ -48,7 +56,6 @@ export class MatchMakingGamesService {
     if (tempId) {
       this.match[rankId].add(tempId);
     }
-    console.log(`${this.match}`);
   }
 
   async createMatchMakingGame(userId: number) {
