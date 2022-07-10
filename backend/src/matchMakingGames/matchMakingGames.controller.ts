@@ -1,11 +1,7 @@
 import {
   Controller,
   Delete,
-  Get,
-  HttpStatus,
   Logger,
-  Param,
-  ParseIntPipe,
   Put,
   Session,
   UnauthorizedException,
@@ -18,29 +14,23 @@ export class MatchMakingGamesController {
 
   constructor(private matchMakingGamesService: MatchMakingGamesService) {}
 
-  @Get('gamer/:userId')
-  async findByOne(
-    @Param('userId', new ParseIntPipe()) userId: number,
-  ): Promise<HttpStatus.CREATED> {
-    this.logger.log(`search the game for the user ${userId}`);
-    await this.matchMakingGamesService.findByOne(userId);
-    return HttpStatus.CREATED;
-  }
-
   @Put()
-  async createMatchMakingGame(
-    @Session() session: Record<string, any>,
-  ): Promise<HttpStatus.CREATED> {
+  async addUserToQueue(@Session() session: Record<string, any>): Promise<void> {
     const userId = session.userId;
     if (!userId) {
       throw new UnauthorizedException();
     }
-    await this.matchMakingGamesService.createMatchMakingGame(userId);
-    return HttpStatus.CREATED;
+    await this.matchMakingGamesService.addUserToQueue(userId);
   }
 
   @Delete()
-  remove(@Session() session: Record<string, any>) {
-    this.matchMakingGamesService.remove(session.userId);
+  async removeUserFromQueue(
+    @Session() session: Record<string, any>,
+  ): Promise<void> {
+    const userId = session.userId;
+    if (!userId) {
+      throw new UnauthorizedException();
+    }
+    await this.matchMakingGamesService.removeUserFromQueue(userId);
   }
 }

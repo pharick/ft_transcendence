@@ -491,7 +491,8 @@ button.side-panel-button-visible {
     flex: 1;
 }
 
-/*modal window style*/
+/* Match Making Modal */
+
 .modal {
   position: fixed;
   left: 0;

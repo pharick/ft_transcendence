@@ -7,66 +7,51 @@ import { MatchMakingGamesGateway } from './matchMakingGames.gateway';
 export class MatchMakingGamesService {
   private logger: Logger = new Logger('MatchMakingGamesService');
 
-  private readonly stepUpdate = 5000;
-  private match: Record<number, Set<number>> = {};
+  private readonly matchMakingDelta = 5000;
+  private rankedQueue: Record<number, Set<number>> = {};
+
   constructor(
     private gamesService: GamesService,
     private usersService: UsersService,
-    private matchMakingGamesGateway: MatchMakingGamesGateway,
+    private matchMakingGateway: MatchMakingGamesGateway,
   ) {
-    const timeoutId = setInterval(() => {
-      this.choosePlayer();
-    }, this.stepUpdate);
+    setInterval(() => {
+      this.matchPlayers().then();
+    }, this.matchMakingDelta);
   }
 
-  async findByOne(userId: number) {
-    this.logger.log(`need a pair for ${userId}`);
-    const userRank = (await this.usersService.findOne(userId)).rank;
-    if (!(userRank in this.match)) {
-      this.match[userRank] = new Set();
-    }
-    this.match[userRank].add(userId);
+  async addUserToQueue(userId: number): Promise<void> {
+    const user = await this.usersService.findOne(userId);
+    if (!this.rankedQueue[user.rank]) this.rankedQueue[user.rank] = new Set();
+    this.rankedQueue[user.rank].add(userId);
+    console.log(this.rankedQueue);
   }
 
-  private async choosePlayer() {
-    let tempId: number = null;
-    let rankId: number = null;
+  private async matchPlayers() {
+    for (const [rankStr, playerIds] of Object.entries(this.rankedQueue)) {
+      const rank: number = parseInt(rankStr, 10);
 
-    function informEveryone(tempId: number, item: number, gameId: string) {
-      this.matchMakingGamesGateway.handleMessage(tempId, item, gameId);
-    }
-
-    for (const [rank, setId] of Object.entries(this.match)) {
-      if (setId) {
-        for (const item of setId.values()) {
-          if (tempId === null) {
-            tempId = item;
-            rankId = parseInt(rank, 10);
-            this.match[rank].delete(item);
-          } else {
-            const game = await this.gamesService.createNewGame(tempId, item);
-            informEveryone(tempId, item, game.gameId);
-            this.match[rank].delete(item);
-            this.match[rankId].delete(tempId);
-            tempId = null;
-          }
-        }
+      if (playerIds) {
+        this.rankedQueue[rank] = await this.matchOneRankPlayers(playerIds);
       }
     }
-    if (tempId) {
-      this.match[rankId].add(tempId);
-    }
   }
 
-  async createMatchMakingGame(userId: number) {
-    await this.findByOne(userId);
-    this.logger.log(`MatchMaking ${userId}`);
+  private async matchOneRankPlayers(
+    playerIds: Set<number>,
+  ): Promise<Set<number>> {
+    const playerIdsArray = Array.from(playerIds);
+    while (playerIdsArray.length >= 2) {
+      const player1Id = playerIdsArray.pop();
+      const player2Id = playerIdsArray.pop();
+      const game = await this.gamesService.createNewGame(player1Id, player2Id);
+      this.matchMakingGateway.server.emit('newMatch', game);
+    }
+    return new Set(playerIdsArray);
   }
 
-  async remove(userId: number) {
-    const userRank = (await this.usersService.findOne(userId)).rank;
-    if (this.match[userRank].has(userId)) {
-      this.match[userRank].delete(userId);
-    }
+  async removeUserFromQueue(userId: number): Promise<void> {
+    const user = await this.usersService.findOne(userId);
+    this.rankedQueue[user.rank].delete(userId);
   }
 }

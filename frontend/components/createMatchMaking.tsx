@@ -1,40 +1,23 @@
-import {FC, useCallback, useEffect, useRef, useState} from 'react';
-import Modal from "./modalWindow";
+import React, {FC, useEffect, useRef, useState} from 'react';
 import {io, Socket} from "socket.io-client";
+import useEventListener from '../hooks/use_event_listener';
+import { FrameInfo, GameInfo } from '../types/interfaces';
 
-const MatchMakingModeButton: FC = () => {
+interface MatchMakingModalProps {
+  onClose: () => void;
+}
 
-  const [show, setShow] = useState(false)
-  const socket = useRef<Socket>()
+const MatchMakingModal: FC<MatchMakingModalProps> = ({ onClose }) => {
 
-  const createMatchMaking = async () => {
-    const response = await fetch('/api/matchMaking', {
-      method: 'PUT',
-    });
-    const data = await response.json();
-    console.log(data);
-  }
+  const socket = useRef<Socket>();
 
-  const cancelMatchMaking = async () => {
-    setShow(false);
-    const response = await fetch('/api/matchMaking', {
-      method: 'DELETE',
-    });
-  }
-
-  async function cancelMatching(): Promise<boolean> {
-    setShow(false);
-    await cancelMatchMaking();
-    return false;
-  }
-
-  function matchMakingUpdate(id1: number, id2: number, gameId: string) {
-    console.log(`matchMaking ${id1}, ${id2}, ${gameId}`);
-    // TODO socket получить данные (прочитать данные из сокета и понять это нас касается или нет)
-  }
+  const keyDownHandler = (e: KeyboardEvent) => {
+    if (e.code == 'Escape') {
+      onClose();
+    }
+  };
 
   useEffect(() => {
-
     if (socket.current && socket.current?.active) return;
     socket.current = io(
       `${
@@ -45,28 +28,56 @@ const MatchMakingModeButton: FC = () => {
     );
     socket.current?.connect();
 
-    //socket.current?.on('updateMatchMaking', (...args) => {
-      //matchMakingUpdate(args[0], args[1], args[2]);
-   // });
+    socket.current?.on('newMatch', (game: GameInfo) => {
+      console.log(game);
+    });
+  }, []);
 
-  }, [matchMakingUpdate]);
+  useEventListener('keydown', keyDownHandler, document);
 
   return (
-    <section>
-      <div>
-        <button
-          onClick={() => {
-            setShow(true);
-            createMatchMaking().then();
-          }}
-        >
-          MatchMakingMode
-        </button>
-        <Modal onClose={() => cancelMatching() } show={show} />
+    <div className="modal">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h4 className="modal-title">Trying to find an opponent</h4>
+        </div>
+        <div className="modal-body">
+          spinner
+        </div>
+        <div className="modal-footer">
+          <button onClick={onClose} className="error-button">Cancel</button>
+        </div>
       </div>
-    </section>
+    </div>
   )
-  //<button onClick={createGame}>Play with someone</button>;
+}
+
+const MatchMakingModeButton: FC = () => {
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const createMatchMaking = async () => {
+    const response = await fetch('/api/matchMaking', {
+      method: 'PUT',
+    });
+    setIsOpen(true);
+  };
+
+  const cancelMatchMaking = async () => {
+    const response = await fetch('/api/matchMaking', {
+      method: 'DELETE',
+    });
+    setIsOpen(false);
+  };
+
+  return (
+    <>
+      <button onClick={createMatchMaking}>
+        MatchMakingMode
+      </button>
+      {isOpen && <MatchMakingModal onClose={cancelMatchMaking} />}
+    </>
+  )
 };
 
 export default MatchMakingModeButton;
