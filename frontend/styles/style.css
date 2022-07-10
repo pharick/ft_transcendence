@@ -49,7 +49,7 @@ button:not(:disabled):active, .button:active {
 }
 
 button:disabled {
-    opacity: 80%;
+    opacity: 40%;
 }
 
 .success-button {
@@ -523,4 +523,11 @@ button.side-panel-button-visible {
   padding: 10px;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
+}
+
+.modal-body-button-play {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }

@@ -8,6 +8,7 @@ export class MatchMakingGamesService {
   private logger: Logger = new Logger('MatchMakingGamesService');
 
   private readonly matchMakingDelta = 5000;
+  private readonly maxRankDelta = 23;
   private rankedQueue: Record<number, Set<number>> = {};
 
   constructor(
@@ -35,6 +36,7 @@ export class MatchMakingGamesService {
         this.rankedQueue[rank] = await this.matchOneRankPlayers(playerIds);
       }
     }
+    this.matchDifferentRankPlayers();
   }
 
   private async matchOneRankPlayers(
@@ -48,6 +50,35 @@ export class MatchMakingGamesService {
       this.matchMakingGateway.server.emit('newMatch', game);
     }
     return new Set(playerIdsArray);
+  }
+
+  private async matchDifferentRankPlayers() {
+    let tempRank: number;
+    let tempId: number;
+    for (const [rankStr, playerIds] of Object.entries(this.rankedQueue)) {
+      if (playerIds) {
+        const rank: number = parseInt(rankStr, 10);
+        if (tempRank) {
+          if (rank - tempRank < this.maxRankDelta) {
+            const game = await this.gamesService.createNewGame(
+              tempId,
+              Array.from(playerIds)[0],
+            );
+            this.matchMakingGateway.server.emit('newMatch', game);
+            this.rankedQueue[tempRank].delete(tempId);
+            this.rankedQueue[rank].delete(Array.from(playerIds)[0]);
+            tempId = null;
+            tempRank = null;
+          } else {
+            tempId = Array.from(playerIds)[0];
+            tempRank = rank;
+          }
+        } else {
+          tempId = Array.from(playerIds)[0];
+          tempRank = rank;
+        }
+      }
+    }
   }
 
   async removeUserFromQueue(userId: number): Promise<void> {

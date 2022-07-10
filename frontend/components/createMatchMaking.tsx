@@ -1,14 +1,15 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
 import {io, Socket} from "socket.io-client";
 import useEventListener from '../hooks/use_event_listener';
-import { GameInfo, UserInfo } from '../types/interfaces';
+import {GameInfo, UserInfo} from '../types/interfaces';
+import Link from "next/link";
 
 interface MatchMakingModalProps {
   user: UserInfo | undefined;
   onClose: () => void;
 }
 
-const MatchMakingModal: FC<MatchMakingModalProps> = ({ user, onClose }) => {
+const MatchMakingModal: FC<MatchMakingModalProps> = ({user, onClose}) => {
 
   const socket = useRef<Socket>();
   const [game, setGame] = useState<GameInfo | undefined>();
@@ -67,7 +68,12 @@ const MatchMakingModal: FC<MatchMakingModalProps> = ({ user, onClose }) => {
         </div>
         <div className="modal-body">
           {game
-            ? <p>Game created: {game.player1.username} vs. {game.player2.username}</p>
+            ? <div className="modal-body-button-play">
+              <p>Game created: <b>{game.player1.username}</b> vs. <b>{game.player2.username}</b></p>
+               <p><Link href={`/games/${game.gameId}`}>
+                <a className="button">Play</a>
+               </Link></p>
+            </div>
             : <p>spinner</p>
           }
         </div>
@@ -83,16 +89,20 @@ interface MatchMakingModeButtonProps {
   user: UserInfo | undefined;
 }
 
-const MatchMakingModeButton: FC<MatchMakingModeButtonProps> = ({ user }) => {
+const MatchMakingModeButton: FC<MatchMakingModeButtonProps> = ({user}) => {
 
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <button onClick={() => { setIsOpen(true) }}>
+      <button onClick={() => {
+        setIsOpen(true)
+      }}>
         MatchMakingMode
       </button>
-      {isOpen && <MatchMakingModal user={user} onClose={() => { setIsOpen(false) }} />}
+      {isOpen && <MatchMakingModal user={user} onClose={() => {
+        setIsOpen(false)
+      }}/>}
     </>
   )
 };
