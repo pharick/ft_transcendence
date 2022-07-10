@@ -23,6 +23,8 @@ class Game {
   private readonly ballRadius: number = 4;
   private readonly clubWidth: number = 8;
   private readonly moveClubDelta: number = 20;
+  private readonly startingBallSpeed: number = 20;
+  private readonly ballSpeedDelta = 0.5;
 
   private readonly frameDelta: number = 40;
 
@@ -51,7 +53,7 @@ class Game {
   private _durationMs: number;
 
   constructor(player1Id: number | null, player2Id: number | null) {
-    this.ballSpeed = 20;
+    this.ballSpeed = this.startingBallSpeed;
     this.club1Pos = this.fieldHeight / 2;
     this.club2Pos = this.fieldHeight / 2;
     this.club1Delta = 0;
@@ -170,6 +172,7 @@ class Game {
   }
 
   private newRound(): void {
+    this.ballSpeed = this.startingBallSpeed;
     this.ballX = this.fieldWidth / 2;
     this.ballY = this.fieldHeight / 2;
     if (!this.player2Id) {
@@ -187,10 +190,11 @@ class Game {
     if (this.ballTop < 0) {
       this.ballTop = 0;
       this.ballDirection = -this.ballDirection;
-    }
-    if (this.ballBottom > this.fieldHeight) {
+      this.ballSpeed += this.ballSpeedDelta;
+    } else if (this.ballBottom > this.fieldHeight) {
       this.ballBottom = this.fieldHeight;
       this.ballDirection = -this.ballDirection;
+      this.ballSpeed += this.ballSpeedDelta;
     }
   }
 
