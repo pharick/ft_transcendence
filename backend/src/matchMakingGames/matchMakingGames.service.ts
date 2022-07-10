@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GamesService } from '../game/games.service';
+import { GamesService } from '../games/games.service';
 import { UsersService } from '../users/users.service';
 import { MatchMakingGamesGateway } from './matchMakingGames.gateway';
 

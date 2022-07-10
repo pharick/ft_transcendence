@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MatchMakingGamesController } from './matchMakingGames.controller';
 import { MatchMakingGamesService } from './matchMakingGames.service';
-import { GamesModule } from '../game/games.module';
+import { GamesModule } from '../games/games.module';
 import { UsersModule } from '../users/users.module';
 import { MatchMakingGamesGateway } from './matchMakingGames.gateway';
 
