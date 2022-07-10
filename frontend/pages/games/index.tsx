@@ -3,6 +3,7 @@ import { GetServerSideProps } from 'next';
 import { GameInfo } from '../../types/interfaces';
 import GameList from '../../components/gameList';
 import { userContext } from '../../components/userProvider';
+import Head from 'next/head';
 
 interface GamesPageProps {
   games: GameInfo[],
@@ -16,11 +17,17 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 const HomePage: NextPage<GamesPageProps> = ({ games }) => {
   return (
-    <userContext.Consumer>
-      {({ user }) => (
-        <GameList games={games} user={user}/>
-      )}
-    </userContext.Consumer>
+    <>
+      <Head>
+        <title>Ongoing games</title>
+      </Head>
+
+      <userContext.Consumer>
+        {({ user }) => (
+          <GameList games={games} user={user}/>
+        )}
+      </userContext.Consumer>
+    </>
   );
 };
 

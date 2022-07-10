@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import { GetServerSideProps } from 'next';
 import { UserInfo } from '../../types/interfaces';
 import Link from 'next/link';
+import Head from 'next/head';
 
 interface UsersPageProps {
   users: UserInfo[],
@@ -16,7 +17,11 @@ export const getServerSideProps: GetServerSideProps = async () => {
 const UsersPage: NextPage<UsersPageProps> = ({ users }) => {
   return (
     <>
-      <h1>Users</h1>
+      <Head>
+        <title>Players</title>
+      </Head>
+
+      <h1>Players</h1>
       <ul>
         {users.map((user) => (
           <li key={user.id}>

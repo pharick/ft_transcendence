@@ -20,6 +20,9 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   const socket = useRef<Socket>();
   const [score1, setScore1] = useState(0);
   const [score2, setScore2] = useState(0);
+  const [pause, setPause] = useState(true);
+  const [player1Turn, setPlayer1Turn] = useState(false);
+  const [duration, setDuration] = useState(0);
 
   const renderField = ({
     ballX,
@@ -31,7 +34,14 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     club1Pos,
     club2Pos,
     scores,
+    isPause,
+    isPlayer1Turn,
+    durationMs,
   }: FrameInfo) => {
+    setPause(isPause);
+    setPlayer1Turn(isPlayer1Turn);
+    setDuration(Math.round(durationMs / 1000));
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -86,8 +96,8 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     );
   };
 
-  const toggleGameRunning = async () => {
-    const response = await fetch(`/api/games/${gameInfo.gameId}/toggle`, {
+  const resumeGame = async () => {
+    const response = await fetch(`/api/games/${gameInfo.gameId}/resume`, {
       method: 'POST',
     });
   };
@@ -110,7 +120,6 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     });
 
     socket.current?.on('endGame', (completedGameInfo: CompletedGameInfo) => {
-      console.log('EndGame!');
       window.location.replace(`/completed/${completedGameInfo.id}`);
     });
 
@@ -120,6 +129,15 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   }, [gameInfo.gameId]);
 
   const keyDownHandler = (e: KeyboardEvent) => {
+    if (
+      e.code == 'Space' &&
+      (gameInfo.player1.id == user?.id && player1Turn ||
+      gameInfo.player2.id == user?.id && !player1Turn)
+    ) {
+      resumeGame().then();
+      return;
+    }
+
     if (e.code != 'KeyW' && e.code != 'KeyS') return;
     const up = e.code == 'KeyW';
 
@@ -144,6 +162,14 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   return (
     <>
       <div className="field-wrapper">
+        {pause && <p className="pause-message">
+          {gameInfo.player1.id == user?.id && player1Turn ||
+           gameInfo.player2.id == user?.id && !player1Turn ?
+            'Press SPACE to continue' :
+            'Waiting for opponent'
+          }
+        </p>}
+        <p className="pong-time">Time: {duration}</p>
         <p className="score score1">{score1}</p>
         <p className="score score2">{score2}</p>
         <canvas
@@ -153,7 +179,17 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
           ref={canvasRef}
         ></canvas>
       </div>
-      <button onClick={toggleGameRunning}>Run</button>
+
+      <div className="pong-players" style={{width: gameInfo.field.width}}>
+        <div className={`pong-players-part ${player1Turn ? 'current' : ''}`}>
+          <div className="avatar-placeholder-small"></div>
+          <p className="pong-players-name">{gameInfo.player1.username}</p>
+        </div>
+        <div className={`pong-players-part ${!player1Turn ? 'current' : ''}`}>
+          <div className="avatar-placeholder-small"></div>
+          <p className="pong-players-name">{gameInfo.player2.username}</p>
+        </div>
+      </div>
     </>
   );
 };

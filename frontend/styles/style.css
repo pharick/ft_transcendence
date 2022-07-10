@@ -60,6 +60,34 @@ button:disabled {
     background-color: #dc3545;
 }
 
+.text-center {
+    text-align: center;
+}
+
+.avatar-placeholder-big {
+    background-color: lightgray;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    border: 1px solid dodgerblue;
+}
+
+.avatar-placeholder-small {
+    background-color: lightgray;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid dodgerblue;
+}
+
+input[type=text] {
+    border: 2px solid lightgray;
+    border-radius: 3px;
+    font-size: 1em;
+    padding: 5px;
+    margin: 0;
+}
+
 /* Header */
 
 .header {
@@ -263,6 +291,204 @@ button.side-panel-button-visible {
 .score.score2 {
     top: 20px;
     right: 25%;
+}
+
+.pong-time {
+    position: absolute;
+    color: white;
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 20px;
+    bottom: 15px;
+    left: 10px;
+    margin: 0;
+}
+
+.pause-message {
+    position: absolute;
+    color: white;
+    font-family: "Press Start 2P", sans-serif;
+    top: 38%;
+    width: 100%;
+    text-align: center;
+    font-size: 1.4em;
+}
+
+.pong-players {
+    display: flex;
+}
+
+.pong-players-part {
+    padding: 1em 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pong-players-part.current {
+    background-color: #dddddd;
+}
+
+.pong-players-part.current .pong-players-name {
+    font-weight: bold;
+}
+
+.pong-players-name {
+    margin: 0.5em 0 0 0;
+}
+
+/* Completed game */
+
+.completed-game-scores {
+    display: flex;
+    justify-content: center;
+}
+
+.completed-game-part {
+    margin: 0 3em;
+    text-align: center;
+}
+
+.completed-game-score {
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 30px;
+    margin: 1em 0 0.5em 0;
+}
+
+.completed-game-player {
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Chat */
+
+.chat {
+    margin-bottom: 1em;
+}
+
+.chat-list {
+    border: 1px solid black;
+    list-style: none;
+    padding: 1em;
+    height: 500px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-message {
+    border: 2px solid rgb(189, 215, 255);
+    width: 20em;
+    padding: 1em;
+    margin: 0.5em 0;
+    border-radius: 0.5em;
+    background-color: #eeeeee;
+    box-shadow: 1px 1px 5px 1px #cccccc;
+    word-break: break-word;
+}
+
+.chat-message-my {
+    align-self: flex-end;
+}
+
+.chat-message-my .chat-message {
+    background-color: powderblue;
+}
+
+.chat-message-text {
+    margin: 0;
+}
+
+.chat-message-footer {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid gray;
+    margin: 0.5em 0 0;
+    padding-top: 0.5em;
+    font-size: 0.9em;
+    color: gray;
+}
+
+.chat-message-user {
+    margin: 0;
+    font-style: italic;
+}
+
+.chat-message-date {
+    margin: 0;
+}
+
+.chat-form {
+    display: flex;
+}
+
+.chat-form-input {
+    flex: 1;
+}
+
+/* Chat */
+
+.chat {
+    margin-bottom: 1em;
+}
+
+.chat-list {
+    border: 1px solid black;
+    list-style: none;
+    padding: 1em;
+    height: 500px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-message {
+    border: 2px solid rgb(189, 215, 255);
+    width: 20em;
+    padding: 1em;
+    margin: 0.5em 0;
+    border-radius: 0.5em;
+    background-color: #eeeeee;
+    box-shadow: 1px 1px 5px 1px #cccccc;
+}
+
+.chat-message-my {
+    align-self: flex-end;
+}
+
+.chat-message-my .chat-message {
+    background-color: powderblue;
+}
+
+.chat-message-text {
+    margin: 0;
+}
+
+.chat-message-footer {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid gray;
+    margin: 0.5em 0 0;
+    padding-top: 0.5em;
+    font-size: 0.9em;
+    color: gray;
+}
+
+.chat-message-user {
+    margin: 0;
+    font-style: italic;
+}
+
+.chat-message-date {
+    margin: 0;
+}
+
+.chat-form {
+    display: flex;
+}
+
+.chat-form-input {
+    flex: 1;
 }
 
 /*modal window style*/

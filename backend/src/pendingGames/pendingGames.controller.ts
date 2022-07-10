@@ -20,8 +20,8 @@ import { PendingGame } from './pendingGame.entity';
 import { CreatePendingGameDto } from './pendingGames.dto';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
-import { GamesService } from '../game/games.service';
-import { GameInfo } from '../game/games.interfaces';
+import { GamesService } from '../games/games.service';
+import { GameInfo } from '../games/games.interfaces';
 import { PendingGamesGateway } from './pendingGames.gateway';
 
 @Controller('pending')

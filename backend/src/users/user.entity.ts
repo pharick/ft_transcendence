@@ -8,6 +8,7 @@ import {
 
 import { PendingGame } from '../pendingGames/pendingGame.entity';
 import { CompletedGame } from '../completedGames/completedGame.entity';
+import { ChatRoom } from '../chat/chatRoom.entity';
 
 @Entity()
 export class User {
@@ -37,4 +38,10 @@ export class User {
 
   @OneToMany(() => CompletedGame, (guestGame) => guestGame.hostUser)
   completedGuestGames: CompletedGame[];
+
+  @OneToMany(() => ChatRoom, (room) => room.hostUser)
+  hostPrivateChats: ChatRoom[];
+
+  @OneToMany(() => ChatRoom, (room) => room.guestUser)
+  guestPrivateChats: ChatRoom[];
 }

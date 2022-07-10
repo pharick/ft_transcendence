@@ -4,7 +4,7 @@ import { PendingGame } from './pendingGame.entity';
 import { User } from '../users/user.entity';
 import { PendingGamesController } from './pendingGames.controller';
 import { PendingGamesService } from './pendingGames.service';
-import { GamesModule } from '../game/games.module';
+import { GamesModule } from '../games/games.module';
 import { UsersModule } from '../users/users.module';
 import { PendingGamesGateway } from './pendingGames.gateway';
 

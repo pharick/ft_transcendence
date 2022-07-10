@@ -38,6 +38,9 @@ export interface FrameInfo {
   club1Pos: number;
   club2Pos: number;
   scores: ScoreInfo;
+  isPause: boolean;
+  isPlayer1Turn: boolean;
+  durationMs: number;
 }
 
 export interface CompletedGameInfo {
@@ -47,4 +50,11 @@ export interface CompletedGameInfo {
   duration: number;
   hostUser: UserInfo;
   guestUser: UserInfo;
+}
+
+export interface ChatMessage {
+  id: number;
+  date: Date;
+  user: UserInfo;
+  text: string;
 }

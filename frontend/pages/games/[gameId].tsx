@@ -30,6 +30,7 @@ const GamePage: NextPage<GamePageProps> = ({ gameInfo }) => {
           {gameInfo.player2 ? gameInfo.player2.username : 'Mr. Wall'}
         </title>
       </Head>
+
       <h1>
         Game <b>{gameInfo.player1 ? gameInfo.player1.username : 'Mr. Wall'}</b>{' '}
         vs <b>{gameInfo.player2 ? gameInfo.player2.username : 'Mr. Wall'}</b>

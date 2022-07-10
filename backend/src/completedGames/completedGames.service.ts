@@ -19,7 +19,6 @@ export class CompletedGamesService {
     return this.completedGamesRepository.save(completedGame);
   }
 
-  // SELECT * FROM completedGames WHERE id = ?;
   findOne(id: number): Promise<CompletedGame> {
     return this.completedGamesRepository.findOne({
       where: { id },
@@ -41,7 +40,7 @@ export class CompletedGamesService {
             id: userId,
           },
         },
-      ]
+      ],
     });
   }
 }
