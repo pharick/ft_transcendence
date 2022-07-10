@@ -61,7 +61,6 @@ class Game {
     this.score1 = 0;
     this.score2 = 0;
 
-    this.player1Turn = !!random(0, 1);
     this.newRound();
 
     this.clubHeightLeft = player1Id === null ? this.fieldHeight : 80;
@@ -173,6 +172,11 @@ class Game {
   private newRound(): void {
     this.ballX = this.fieldWidth / 2;
     this.ballY = this.fieldHeight / 2;
+    if (!this.player2Id) {
+      this.player1Turn = true;
+    } else {
+      this.player1Turn = !!random(0, 1);
+    }
     this.ballDirection = this.player1Turn
       ? random(-30, 30)
       : random(180 - 30, 180 + 30);
@@ -226,12 +230,10 @@ class Game {
   private checkGoals(): void {
     if (this.ballLeft > this.fieldWidth) {
       this.score1++;
-      this.player1Turn = true;
       this.newRound();
     }
     if (this.ballRight < 0) {
       this.score2++;
-      this.player1Turn = false;
       this.newRound();
     }
   }

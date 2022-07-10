@@ -25,19 +25,19 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   const [duration, setDuration] = useState(0);
 
   const renderField = ({
-    ballX,
-    ballY,
-    ballRadius,
-    clubWidth,
-    clubHeightLeft,
-    clubHeightRight,
-    club1Pos,
-    club2Pos,
-    scores,
-    isPause,
-    isPlayer1Turn,
-    durationMs,
-  }: FrameInfo) => {
+                         ballX,
+                         ballY,
+                         ballRadius,
+                         clubWidth,
+                         clubHeightLeft,
+                         clubHeightRight,
+                         club1Pos,
+                         club2Pos,
+                         scores,
+                         isPause,
+                         isPlayer1Turn,
+                         durationMs,
+                       }: FrameInfo) => {
     setPause(isPause);
     setPlayer1Turn(isPlayer1Turn);
     setDuration(Math.round(durationMs / 1000));
@@ -132,7 +132,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     if (
       e.code == 'Space' &&
       (gameInfo.player1.id == user?.id && player1Turn ||
-      gameInfo.player2.id == user?.id && !player1Turn)
+        gameInfo.player2.id == user?.id && !player1Turn)
     ) {
       resumeGame().then();
       return;
@@ -161,33 +161,39 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
 
   return (
     <>
-      <div className="field-wrapper">
-        {pause && <p className="pause-message">
-          {gameInfo.player1.id == user?.id && player1Turn ||
-           gameInfo.player2.id == user?.id && !player1Turn ?
-            'Press SPACE to continue' :
-            'Waiting for opponent'
+      <div className='field-wrapper'>
+        {pause && <p className='pause-message'>
+          {
+            !gameInfo.player1 || !gameInfo.player2 ||
+            gameInfo.player1.id == user?.id && player1Turn ||
+            gameInfo.player2.id == user?.id && !player1Turn ?
+              'Press SPACE to continue' :
+              'Waiting for opponent'
           }
         </p>}
-        <p className="pong-time">Time: {duration}</p>
-        <p className="score score1">{score1}</p>
-        <p className="score score2">{score2}</p>
+        <p className='pong-time'>Time: {duration}</p>
+        <p className='score score1'>{score1}</p>
+        <p className='score score2'>{score2}</p>
         <canvas
           width={gameInfo.field.width}
           height={gameInfo.field.height}
-          className="field"
+          className='field'
           ref={canvasRef}
         ></canvas>
       </div>
 
-      <div className="pong-players" style={{width: gameInfo.field.width}}>
+      <div className='pong-players' style={{ width: gameInfo.field.width }}>
         <div className={`pong-players-part ${player1Turn ? 'current' : ''}`}>
-          <div className="avatar-placeholder-small"></div>
-          <p className="pong-players-name">{gameInfo.player1.username}</p>
+          <div className='avatar-placeholder-small'></div>
+          <p className='pong-players-name'>
+            {gameInfo.player1 ? gameInfo.player1.username : 'Mr. Wall'}
+          </p>
         </div>
         <div className={`pong-players-part ${!player1Turn ? 'current' : ''}`}>
-          <div className="avatar-placeholder-small"></div>
-          <p className="pong-players-name">{gameInfo.player2.username}</p>
+          <div className='avatar-placeholder-small'></div>
+          <p className='pong-players-name'>
+            {gameInfo.player2 ? gameInfo.player2.username : 'Mr. Wall'}
+          </p>
         </div>
       </div>
     </>
