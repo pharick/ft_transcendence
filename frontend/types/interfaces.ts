@@ -2,6 +2,8 @@ export interface UserInfo {
   id: number;
   username: string;
   isActive: boolean;
+  rank: number;
+  oldRank: number;
 }
 
 export interface PendingGame {

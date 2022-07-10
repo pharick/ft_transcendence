@@ -2,6 +2,7 @@ import type { GetServerSideProps, NextPage } from 'next';
 
 import { CompletedGameInfo } from '../../types/interfaces';
 import Head from 'next/head';
+import PlayerBlock from '../../components/playerBlock';
 
 interface CompletedGamePageProps {
   completedGameInfo: CompletedGameInfo;
@@ -14,47 +15,49 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   );
   if (response.status == 404) return { notFound: true };
   const completedGameInfo: CompletedGameInfo = await response.json();
-  console.log(completedGameInfo);
   return { props: { completedGameInfo } };
 };
 
 const CompletedGamePage: NextPage<CompletedGamePageProps> = ({
-  completedGameInfo,
-}) => {
+                                                               completedGameInfo,
+                                                             }) => {
   return (
     <>
       <Head>
         <title>
-          Game {completedGameInfo.hostUser ? completedGameInfo.hostUser.username : 'Mr. Wall'} vs. {completedGameInfo.guestUser ? completedGameInfo.guestUser.username : 'Mr.Wall'} is completed
+          Game {completedGameInfo.hostUser ? completedGameInfo.hostUser.username : 'Mr. Wall'} vs. {completedGameInfo.guestUser ? completedGameInfo.guestUser.username : 'Mr.Wall'} is
+          completed
         </title>
       </Head>
 
-      <h1 className="text-center">
+      <h1 className='text-center'>
         Game{' '}
         <b>
-          {completedGameInfo.hostUser
-            ? completedGameInfo.hostUser.username
-            : 'Mr. Wall'}
+          {
+            completedGameInfo.hostUser
+              ? completedGameInfo.hostUser.username
+              : 'Mr. Wall'
+          }
         </b>{' '}
         vs.{' '}
         <b>
-          {completedGameInfo.guestUser
-            ? completedGameInfo.guestUser.username
-            : 'Mr.Wall'}
+          {
+            completedGameInfo.guestUser
+              ? completedGameInfo.guestUser.username
+              : 'Mr.Wall'
+          }
         </b>{' '}
         is completed
       </h1>
 
-      <div className="completed-game-scores">
-        <div className="completed-game-part">
-          <div className="avatar-placeholder-big"></div>
-          <p className="completed-game-score">{completedGameInfo.score1}</p>
-          <p className="completed-game-player">{completedGameInfo.hostUser ? completedGameInfo.hostUser.username : 'Mr. Wall'}</p>
+      <div className='completed-game-scores'>
+        <div className='completed-game-part'>
+          <PlayerBlock user={completedGameInfo.hostUser} />
+          <p className='completed-game-score'>{completedGameInfo.score1}</p>
         </div>
-        <div className="completed-game-part">
-          <div className="avatar-placeholder-big"></div>
-          <p className="completed-game-score">{completedGameInfo.score2}</p>
-          <p className="completed-game-player">{completedGameInfo.guestUser ? completedGameInfo.guestUser.username : 'Mr. Wall'}</p>
+        <div className='completed-game-part'>
+          <PlayerBlock user={completedGameInfo.guestUser} />
+          <p className='completed-game-score'>{completedGameInfo.score2}</p>
         </div>
       </div>
     </>

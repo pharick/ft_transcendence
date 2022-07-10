@@ -402,6 +402,14 @@ export class GamesService {
       guestUser: game.player2,
     };
     this.removeGame(gameId);
+    await this.usersService.updateRank(
+      game.player1.id,
+      game.scores.player1 - game.scores.player2,
+    );
+    await this.usersService.updateRank(
+      game.player2.id,
+      game.scores.player2 - game.scores.player1,
+    );
     return await this.completedGamesService.create(completedGame);
   }
 
