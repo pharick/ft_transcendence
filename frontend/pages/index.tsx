@@ -22,7 +22,13 @@ const HomePage: NextPage<HomePageProps> = () => {
       </userContext.Consumer>
 
       <TrainingModeButton />
-      <MatchMakingModeButton />
+
+      <userContext.Consumer>
+        {({ user}) => (
+          <MatchMakingModeButton user={user} />
+        )}
+      </userContext.Consumer>
+
     </>
   );
 };
