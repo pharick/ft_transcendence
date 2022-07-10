@@ -18,9 +18,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return { props: { completedGameInfo } };
 };
 
-const CompletedGamePage: NextPage<CompletedGamePageProps> = ({
-                                                               completedGameInfo,
-                                                             }) => {
+const CompletedGamePage: NextPage<CompletedGamePageProps> = ({ completedGameInfo}) => {
   return (
     <>
       <Head>
@@ -31,23 +29,7 @@ const CompletedGamePage: NextPage<CompletedGamePageProps> = ({
       </Head>
 
       <h1 className='text-center'>
-        Game{' '}
-        <b>
-          {
-            completedGameInfo.hostUser
-              ? completedGameInfo.hostUser.username
-              : 'Mr. Wall'
-          }
-        </b>{' '}
-        vs.{' '}
-        <b>
-          {
-            completedGameInfo.guestUser
-              ? completedGameInfo.guestUser.username
-              : 'Mr.Wall'
-          }
-        </b>{' '}
-        is completed
+        Game <b>{completedGameInfo.hostUser.username}</b> vs. <b>{completedGameInfo.guestUser.username}</b> is completed
       </h1>
 
       <div className='completed-game-scores'>

@@ -47,6 +47,7 @@ export interface FrameInfo {
 
 export interface CompletedGameInfo {
   id: number;
+  date: Date;
   score1: number;
   score2: number;
   duration: number;
