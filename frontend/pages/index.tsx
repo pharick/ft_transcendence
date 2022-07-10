@@ -4,6 +4,7 @@ import TrainingModeButton from '../components/createTestGame';
 import Chat from '../components/chat';
 import { userContext } from '../components/userProvider';
 import Head from 'next/head';
+import MatchMakingModeButton from "../components/createMatchMaking";
 
 interface HomePageProps {}
 
@@ -21,6 +22,13 @@ const HomePage: NextPage<HomePageProps> = () => {
       </userContext.Consumer>
 
       <TrainingModeButton />
+
+      <userContext.Consumer>
+        {({ user}) => (
+          <MatchMakingModeButton user={user} />
+        )}
+      </userContext.Consumer>
+
     </>
   );
 };

@@ -22,6 +22,11 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ default: 0 })
+  rank: number;
+
+  // User.pendingHostGames()
+  // SELECT * FROM pendingGames WHERE hostUser = 2;
   @OneToMany(() => PendingGame, (hostGame) => hostGame.hostUser)
   pendingHostGames: PendingGame[];
 

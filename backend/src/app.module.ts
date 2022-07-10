@@ -9,6 +9,7 @@ import { GamesModule } from './games/games.module';
 import { PendingGame } from './pendingGames/pendingGame.entity';
 import { PendingGamesModule } from './pendingGames/pendingGames.module';
 import { CompletedGame } from './completedGames/completedGame.entity';
+import { MatchMakingGamesModule } from './matchMakingGames/matchMakingGames.module';
 import { ChatModule } from './chat/chat.module';
 import { ChatRoom } from './chat/chatRoom.entity';
 import { ChatMessage } from './chat/chatMessage.entity';
@@ -31,6 +32,7 @@ import { ChatMessage } from './chat/chatMessage.entity';
     UsersModule,
     GamesModule,
     PendingGamesModule,
+    MatchMakingGamesModule,
     ChatModule,
   ],
   controllers: [],
