@@ -10,7 +10,7 @@ const PlayerBlock: FC<PlayerBlockProps> = ({ user }) => {
     <article>
       <div className='avatar-placeholder-big'></div>
       <p className='player-block-username'>
-        {user?.username} (Rank: {user?.rank})
+        {user ? `${user.username} (Rank: ${user.rank})` : 'Mr. Wall'}
       </p>
     </article>
   );
