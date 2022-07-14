@@ -3,6 +3,8 @@ import type { GetServerSideProps, NextPage } from 'next';
 import { CompletedGameInfo } from '../../types/interfaces';
 import Head from 'next/head';
 import PlayerBlock from '../../components/playerBlock';
+import { format } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 
 interface CompletedGamePageProps {
   completedGameInfo: CompletedGameInfo;
@@ -18,7 +20,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return { props: { completedGameInfo } };
 };
 
-const CompletedGamePage: NextPage<CompletedGamePageProps> = ({ completedGameInfo}) => {
+const CompletedGamePage: NextPage<CompletedGamePageProps> = ({ completedGameInfo }) => {
   return (
     <>
       <Head>
@@ -29,7 +31,8 @@ const CompletedGamePage: NextPage<CompletedGamePageProps> = ({ completedGameInfo
       </Head>
 
       <h1 className='text-center'>
-        Game <b>{completedGameInfo.hostUser.username}</b> vs. <b>{completedGameInfo.guestUser.username}</b> is completed
+        Game <b>{completedGameInfo.hostUser ? completedGameInfo.hostUser.username : 'Mr. Wall'}</b> vs. <b>{completedGameInfo.guestUser ? completedGameInfo.guestUser.username : 'Mr.Wall'}</b> is
+        completed
       </h1>
 
       <div className='completed-game-scores'>
@@ -42,6 +45,9 @@ const CompletedGamePage: NextPage<CompletedGamePageProps> = ({ completedGameInfo
           <p className='completed-game-score'>{completedGameInfo.score2}</p>
         </div>
       </div>
+
+      <p>Duration: {completedGameInfo.duration}s</p>
+      <p>Date: {format(utcToZonedTime(completedGameInfo.date, 'Europe/Moscow'), 'dd.MM.yyyy h:mm:ss')}</p>
     </>
   );
 };
