@@ -6,4 +6,5 @@ export class CompletedGameDto {
   duration: number;
   guestUser: User;
   hostUser: User;
+  isRanked: boolean;
 }

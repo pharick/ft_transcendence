@@ -60,7 +60,7 @@ export class GamesController {
     if (!userId) {
       throw new UnauthorizedException();
     }
-    const game = await this.gamesService.createNewGame(userId, null);
+    const game = await this.gamesService.createNewGame(userId, null, false);
     this.pendingGamesGateway.server.emit('update');
     return game;
   }

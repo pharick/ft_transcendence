@@ -51,8 +51,13 @@ class Game {
 
   private gameTimer: NodeJS.Timer;
   private _durationMs: number;
+  private _isRanked: boolean;
 
-  constructor(player1Id: number | null, player2Id: number | null) {
+  constructor(
+    player1Id: number | null,
+    player2Id: number | null,
+    isRanked: boolean,
+  ) {
     this.ballSpeed = this.startingBallSpeed;
     this.club1Pos = this.fieldHeight / 2;
     this.club2Pos = this.fieldHeight / 2;
@@ -69,6 +74,7 @@ class Game {
     this.clubHeightRight = player2Id === null ? this.fieldHeight : 80;
 
     this._durationMs = 0;
+    this._isRanked = isRanked;
   }
 
   private get ballLeft(): number {
@@ -129,6 +135,10 @@ class Game {
 
   get durationMs(): number {
     return this._durationMs;
+  }
+
+  get isRanked(): boolean {
+    return this._isRanked;
   }
 
   get isGameRunning(): boolean {
@@ -351,6 +361,7 @@ export class GamesService {
       player2: player2,
       scores: this.games[gameId].scores,
       durationMs: this.games[gameId].durationMs,
+      isRanked: this.games[gameId].isRanked,
     };
   }
 
@@ -374,9 +385,10 @@ export class GamesService {
   async createNewGame(
     player1Id: number | null,
     player2Id: number | null,
+    isRanked: boolean,
   ): Promise<GameInfo> {
     const gameId: string = uuid4();
-    this.games[gameId] = new Game(player1Id, player2Id);
+    this.games[gameId] = new Game(player1Id, player2Id, isRanked);
     if (player1Id !== null) {
       this.saveGameForUser(player1Id, gameId);
     }
@@ -400,16 +412,21 @@ export class GamesService {
       duration: Math.round(game.durationMs / 1000),
       hostUser: game.player1,
       guestUser: game.player2,
+      isRanked: game.isRanked,
     };
     this.removeGame(gameId);
-    await this.usersService.updateRank(
-      game.player1.id,
-      game.scores.player1 - game.scores.player2,
-    );
-    await this.usersService.updateRank(
-      game.player2.id,
-      game.scores.player2 - game.scores.player1,
-    );
+
+    if (game.isRanked) {
+      await this.usersService.updateRank(
+        game.player1.id,
+        game.scores.player1 - game.scores.player2,
+      );
+      await this.usersService.updateRank(
+        game.player2.id,
+        game.scores.player2 - game.scores.player1,
+      );
+    }
+
     return await this.completedGamesService.create(completedGame);
   }
 

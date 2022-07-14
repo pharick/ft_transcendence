@@ -17,6 +17,7 @@ export interface GameInfo {
   player2: User;
   scores: ScoreInfo;
   durationMs: number;
+  isRanked: boolean;
 }
 
 export interface FrameInfo {
