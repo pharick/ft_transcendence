@@ -15,7 +15,7 @@ const Chat: FC<ChatProps> = ({ user, userSessionId }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const getMessages = useCallback(async () => {
-    const messagesResponse = await fetch('/api/chat/common');
+    const messagesResponse = await fetch('/api/chat/messages/common');
     const messages = await messagesResponse.json();
     setMessages(messages);
   }, []);

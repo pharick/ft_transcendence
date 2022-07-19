@@ -8,7 +8,7 @@ import {
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { ChatMessageDto } from './chatMessage.dto';
-import { ChatService } from './chat.service';
+import { ChatMessagesService } from './chatMessages.service';
 
 @WebSocketGateway({ namespace: 'chat', cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -17,7 +17,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private logger: Logger = new Logger('ChatGateway');
 
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatMessagesService) {}
 
   @SubscribeMessage('msgToServer')
   async handleMessage(client: Socket, message: ChatMessageDto): Promise<void> {

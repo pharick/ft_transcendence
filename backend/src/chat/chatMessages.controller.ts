@@ -1,12 +1,12 @@
 import { Controller, Get, Logger } from '@nestjs/common';
-import { ChatService } from './chat.service';
+import { ChatMessagesService } from './chatMessages.service';
 import { ChatMessage } from './chatMessage.entity';
 
-@Controller('chat')
-export class ChatController {
+@Controller('chat/messages')
+export class ChatMessagesController {
   private logger: Logger = new Logger('CompletedGamesController');
 
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatMessagesService) {}
 
   @Get('common')
   findAllCommon(): Promise<ChatMessage[]> {

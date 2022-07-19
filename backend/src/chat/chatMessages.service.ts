@@ -8,7 +8,7 @@ import { AuthService } from '../auth/auth.service';
 import { ChatMessageDto } from './chatMessage.dto';
 
 @Injectable()
-export class ChatService {
+export class ChatMessagesService {
   private logger: Logger = new Logger('UsersService');
 
   constructor(
