@@ -29,7 +29,7 @@ const PrivateChatPage: NextPage<PrivateChatPageProps> = ({ chatRoom }) => {
 
       <userContext.Consumer>
         {({ user, userSessionId}) => (
-          <>{user.id}</>
+          <Chat user={user} userSessionId={userSessionId} room={chatRoom} />
         )}
       </userContext.Consumer>
     </>

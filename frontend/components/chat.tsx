@@ -28,7 +28,7 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
     const messages = await messagesResponse.json();
     console.log(roomPostfix);
     setMessages(messages);
-  }, []);
+  }, [user, room]);
 
   useEffect(() => {
     getMessages().then();
