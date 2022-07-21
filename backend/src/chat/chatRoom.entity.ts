@@ -13,10 +13,10 @@ export class ChatRoom {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   isPrivate: boolean;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, select: false })
   passwordHash: string;
 
   @ManyToOne(() => User, (user) => user.hostPrivateChats, { nullable: true })

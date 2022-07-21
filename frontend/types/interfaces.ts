@@ -61,3 +61,10 @@ export interface ChatMessage {
   user: UserInfo;
   text: string;
 }
+
+export interface ChatRoom {
+  id: number;
+  isPrivate: boolean;
+  hostUser: UserInfo;
+  guestUser: UserInfo;
+}

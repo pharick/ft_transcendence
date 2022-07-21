@@ -1,22 +1,32 @@
 import { FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { ChatMessage, UserInfo } from '../types/interfaces';
+import { ChatMessage, ChatRoom, UserInfo } from '../types/interfaces';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 
 interface ChatProps {
-  user: UserInfo | undefined;
-  userSessionId: string | undefined;
+  user?: UserInfo;
+  userSessionId?: string;
+  room?: ChatRoom;
 }
 
-const Chat: FC<ChatProps> = ({ user, userSessionId }) => {
+const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
   const socket = useRef<Socket>();
   const [messageText, setMessageText] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const getMessages = useCallback(async () => {
-    const messagesResponse = await fetch('/api/chat/messages/common');
+    let roomPostfix = 'common';
+    if (room?.isPrivate && user) {
+      console.log(`${user.id} == ${room.hostUser.id}`)
+      const companion = user.id == room.hostUser.id ? room.guestUser : room.hostUser;
+      console.log(companion);
+      roomPostfix = `private/${companion.id}`;
+    }
+
+    const messagesResponse = await fetch(`/api/chat/messages/${roomPostfix}`);
     const messages = await messagesResponse.json();
+    console.log(roomPostfix);
     setMessages(messages);
   }, []);
 
@@ -36,13 +46,13 @@ const Chat: FC<ChatProps> = ({ user, userSessionId }) => {
 
     socket.current?.on('msgToClient', (message: ChatMessage) => {
       setMessages((oldMessages) => [...oldMessages, message]);
-    })
+    });
   }, [getMessages]);
 
   const handleMessageSubmit = (event: FormEvent) => {
     event.preventDefault();
     if (!messageText) return;
-    socket.current?.emit('msgToServer', {sessionId: userSessionId, text: messageText});
+    socket.current?.emit('msgToServer', { sessionId: userSessionId, text: messageText });
     setMessageText('');
   };
 
@@ -52,17 +62,22 @@ const Chat: FC<ChatProps> = ({ user, userSessionId }) => {
 
   return (
     <>
-      <h1>Chat</h1>
+      <h1>
+        {room
+          ? <>Private chat <b>{room.hostUser.username}</b> and <b>{room.guestUser.username}</b></>
+          : 'Common chat'
+        }
+      </h1>
 
-      <section className="chat">
-        <ul className="chat-list">
+      <section className='chat'>
+        <ul className='chat-list'>
           {messages.map((message) => (
             <li key={message.id} className={message.user.id == user?.id ? 'chat-message-my' : ''}>
-              <article className="chat-message">
-                <p className="chat-message-text">{message.text}</p>
-                <footer className="chat-message-footer">
-                  <p className="chat-message-user">{message.user.username}</p>
-                  <p className="chat-message-date">
+              <article className='chat-message'>
+                <p className='chat-message-text'>{message.text}</p>
+                <footer className='chat-message-footer'>
+                  <p className='chat-message-user'>{message.user.username}</p>
+                  <p className='chat-message-date'>
                     {format(utcToZonedTime(message.date, 'Europe/Moscow'), 'dd.MM.yyyy h:mm:ss')}
                   </p>
                 </footer>
@@ -71,13 +86,16 @@ const Chat: FC<ChatProps> = ({ user, userSessionId }) => {
           ))}
         </ul>
 
-        <form className="chat-form" onSubmit={handleMessageSubmit}>
-          <input className="chat-form-input" type="text" placeholder="New message" value={messageText} onChange={(event) => {handleMessageChange(event.target.value)}} />
-          <button type="submit">Send</button>
+        <form className='chat-form' onSubmit={handleMessageSubmit}>
+          <input className='chat-form-input' type='text' placeholder='New message' value={messageText}
+                 onChange={(event) => {
+                   handleMessageChange(event.target.value);
+                 }} />
+          <button type='submit'>Send</button>
         </form>
       </section>
     </>
   );
-}
+};
 
 export default Chat;
