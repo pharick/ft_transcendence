@@ -1,7 +1,7 @@
 import { User } from '../users/user.entity';
 
 export class ChatRoomDto {
-  id: number;
+  id?: number;
   isPrivate: boolean;
   hostUser: User;
   guestUser: User;

@@ -3,11 +3,10 @@ import { UserInfo } from '../types/interfaces';
 import { CreatePendingGameDto } from '../types/dtos';
 
 interface InviteProps {
-  currentUser?: UserInfo;
   userInfo: UserInfo;
 }
 
-const Invite: FC<InviteProps> = ({ currentUser, userInfo }) => {
+const Invite: FC<InviteProps> = ({ userInfo }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -34,15 +33,9 @@ const Invite: FC<InviteProps> = ({ currentUser, userInfo }) => {
   const text = isSuccess ? 'Invited' : isError ? 'Already invited' : 'Invite to the game';
 
   return (
-    <>
-      {currentUser?.id == userInfo.id ? (
-        <p>It&apos;s you</p>
-      ) : (
-        <button disabled={isSuccess || isError} className={className} onClick={handleGameInvite}>
-          {text}
-        </button>
-      )}
-    </>
+    <button disabled={isSuccess || isError} className={className} onClick={handleGameInvite}>
+      {text}
+    </button>
   );
 };
 
