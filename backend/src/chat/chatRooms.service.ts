@@ -12,6 +12,13 @@ export class ChatRoomsService {
     private chatRoomRepository: Repository<ChatRoom>,
   ) {}
 
+  findOne(id: number): Promise<ChatRoom> {
+    return this.chatRoomRepository.findOne({
+      where: { id },
+      relations: ['hostUser', 'guestUser'],
+    });
+  }
+
   findOnePrivate(user1Id: number, user2Id: number): Promise<ChatRoom> {
     return this.chatRoomRepository.findOne({
       where: [

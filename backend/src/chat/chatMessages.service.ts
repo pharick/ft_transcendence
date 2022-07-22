@@ -1,12 +1,13 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ChatMessage } from './chatMessage.entity';
 import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { AuthService } from '../auth/auth.service';
 import { ChatMessageDto } from './chatMessage.dto';
 import { ChatRoomsService } from './chatRooms.service';
+import { ChatRoom } from './chatRoom.entity';
 
 @Injectable()
 export class ChatMessagesService {
@@ -25,9 +26,23 @@ export class ChatMessagesService {
       chatMessageDto.sessionId,
     );
     const user: User = await this.usersService.findOne(userId);
-    if (!user) return null;
+    const room: ChatRoom = chatMessageDto.roomId
+      ? await this.chatRoomsService.findOne(chatMessageDto.roomId)
+      : null;
+
+    if (!user) {
+      this.logger.log(`No user`);
+      return null;
+    }
+    console.log(room);
+    if (room && room.guestUser.id != user.id && room.hostUser.id != user.id) {
+      this.logger.log(`Forbidden`);
+      return;
+    }
+
     const message = this.chatMessageRepository.create({
       user,
+      room: room,
       text: chatMessageDto.text,
     });
     return await this.chatMessageRepository.save(message);

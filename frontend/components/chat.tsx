@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { ChatMessage, ChatRoom, UserInfo } from '../types/interfaces';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
+import { ChatMessageDto } from '../types/dtos';
 
 interface ChatProps {
   user?: UserInfo;
@@ -43,6 +44,7 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
       }/chat`,
     );
     socket.current?.connect();
+    socket.current?.emit('connectToRoom', room);
 
     socket.current?.on('msgToClient', (message: ChatMessage) => {
       setMessages((oldMessages) => [...oldMessages, message]);
@@ -52,7 +54,12 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
   const handleMessageSubmit = (event: FormEvent) => {
     event.preventDefault();
     if (!messageText) return;
-    socket.current?.emit('msgToServer', { sessionId: userSessionId, text: messageText });
+    const message: ChatMessageDto = {
+      sessionId: userSessionId,
+      roomId: room?.id,
+      text: messageText,
+    }
+    socket.current?.emit('msgToServer', message);
     setMessageText('');
   };
 
