@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { User } from './user.entity';
+import UserInfo from './userInfo.interface';
+import { UserStatusService } from '../notifications/userStatus.service';
 
 @Injectable()
 export class UsersService {
@@ -11,6 +13,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private userStatusService: UserStatusService,
   ) {}
 
   create(username: string): Promise<User> {
@@ -29,9 +32,14 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  findOne(id: number): Promise<User> {
+  async findOne(id: number): Promise<UserInfo> {
     if (!id) return null;
-    return this.usersRepository.findOneBy({ id });
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) return null;
+    return {
+      ...user,
+      isOnline: this.userStatusService.isUserOnline(id),
+    };
   }
 
   findOneByUsername(username: string): Promise<User> {

@@ -19,10 +19,10 @@ import { PendingGamesService } from './pendingGames.service';
 import { PendingGame } from './pendingGame.entity';
 import { CreatePendingGameDto } from './pendingGames.dto';
 import { UsersService } from '../users/users.service';
-import { User } from '../users/user.entity';
 import { GamesService } from '../games/games.service';
 import { GameInfo } from '../games/games.interfaces';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
+import UserInfo from '../users/userInfo.interface';
 
 @Controller('pending')
 export class PendingGamesController {
@@ -62,8 +62,8 @@ export class PendingGamesController {
     const hostUserId: number = session.userId;
     const guestUserId: number = createPendingGameDto.guestUserId;
 
-    const hostUser: User = await this.usersService.findOne(hostUserId);
-    const guestUser: User = await this.usersService.findOne(guestUserId);
+    const hostUser: UserInfo = await this.usersService.findOne(hostUserId);
+    const guestUser: UserInfo = await this.usersService.findOne(guestUserId);
 
     if (!hostUserId) throw new UnauthorizedException();
     const pending = this.pendingGamesService

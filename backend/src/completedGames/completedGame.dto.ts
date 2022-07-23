@@ -1,10 +1,10 @@
-import { User } from '../users/user.entity';
+import UserInfo from '../users/userInfo.interface';
 
 export class CompletedGameDto {
   score1: number;
   score2: number;
   duration: number;
-  guestUser: User;
-  hostUser: User;
+  guestUser: UserInfo;
+  hostUser: UserInfo;
   isRanked: boolean;
 }

@@ -4,10 +4,10 @@ import { v4 as uuid4 } from 'uuid';
 import { FieldInfo, GameInfo, ScoreInfo } from './games.interfaces';
 import { FrameInfo } from './games.interfaces';
 import { UsersService } from '../users/users.service';
-import { User } from '../users/user.entity';
 import { CompletedGamesService } from '../completedGames/completedGames.service';
 import { CompletedGameDto } from '../completedGames/completedGame.dto';
 import { CompletedGame } from '../completedGames/completedGame.entity';
+import UserInfo from '../users/userInfo.interface';
 
 const radians = (degrees: number) => {
   return degrees * (Math.PI / 180);
@@ -351,8 +351,8 @@ export class GamesService {
 
     const player1Id = this.games[gameId].player1Id;
     const player2Id = this.games[gameId].player2Id;
-    const player1: User = await this.usersService.findOne(player1Id);
-    const player2: User = await this.usersService.findOne(player2Id);
+    const player1: UserInfo = await this.usersService.findOne(player1Id);
+    const player2: UserInfo = await this.usersService.findOne(player2Id);
 
     return {
       gameId: gameId,

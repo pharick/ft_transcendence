@@ -2,12 +2,12 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ChatMessage } from './chatMessage.entity';
-import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { AuthService } from '../auth/auth.service';
 import { ChatMessageDto } from './chatMessage.dto';
 import { ChatRoomsService } from './chatRooms.service';
 import { ChatRoom } from './chatRoom.entity';
+import UserInfo from '../users/userInfo.interface';
 
 @Injectable()
 export class ChatMessagesService {
@@ -25,7 +25,7 @@ export class ChatMessagesService {
     const userId: number = this.authService.getUserIdBySessionId(
       chatMessageDto.sessionId,
     );
-    const user: User = await this.usersService.findOne(userId);
+    const user: UserInfo = await this.usersService.findOne(userId);
     const room: ChatRoom = chatMessageDto.roomId
       ? await this.chatRoomsService.findOne(chatMessageDto.roomId)
       : null;

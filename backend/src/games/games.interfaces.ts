@@ -1,4 +1,4 @@
-import { User } from '../users/user.entity';
+import UserInfo from '../users/userInfo.interface';
 
 export interface FieldInfo {
   width: number;
@@ -13,8 +13,8 @@ export interface ScoreInfo {
 export interface GameInfo {
   gameId: string;
   field: FieldInfo;
-  player1: User;
-  player2: User;
+  player1: UserInfo;
+  player2: UserInfo;
   scores: ScoreInfo;
   durationMs: number;
   isRanked: boolean;

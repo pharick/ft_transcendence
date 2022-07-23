@@ -4,6 +4,7 @@ export interface UserInfo {
   isActive: boolean;
   rank: number;
   oldRank: number;
+  isOnline: boolean;
 }
 
 export interface PendingGame {

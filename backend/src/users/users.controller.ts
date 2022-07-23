@@ -9,6 +9,7 @@ import {
 
 import { UsersService } from './users.service';
 import { User } from './user.entity';
+import UserInfo from './userInfo.interface';
 
 @Controller('users')
 export class UsersController {
@@ -24,8 +25,8 @@ export class UsersController {
   @Get(':userId')
   async findOne(
     @Param('userId', new ParseIntPipe()) userId: number,
-  ): Promise<User> {
-    const user: User = await this.usersService.findOne(userId);
+  ): Promise<UserInfo> {
+    const user: UserInfo = await this.usersService.findOne(userId);
     if (!user) throw new NotFoundException();
     return user;
   }

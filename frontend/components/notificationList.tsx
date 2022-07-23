@@ -46,7 +46,8 @@ const NotificationList: FC<NotificationListProps> = ({ user }) => {
   useEffect(() => {
     handleUpdate().then();
 
-    if (socket.current && socket.current?.active) return;
+    if (socket.current && socket.current?.active || !user) return;
+
     socket.current = io(
       `${
         process.env.NODE_ENV == 'development'
@@ -55,6 +56,7 @@ const NotificationList: FC<NotificationListProps> = ({ user }) => {
       }/notifications`,
     );
     socket.current?.connect();
+    socket.current?.emit('introduce', user.id);
 
     socket.current?.on('update', () => {
       handleUpdate().then();
@@ -63,7 +65,7 @@ const NotificationList: FC<NotificationListProps> = ({ user }) => {
     return () => {
       socket.current?.disconnect();
     };
-  }, [handleUpdate]);
+  }, [handleUpdate, user]);
 
   return (
     <section>
