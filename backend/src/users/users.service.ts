@@ -18,6 +18,13 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
+  async updateRank(userId: number, rankDelta: number): Promise<void> {
+    const user = await this.findOne(userId);
+    user.oldRank = user.rank;
+    user.rank += rankDelta;
+    await this.usersRepository.save(user);
+  }
+
   findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }

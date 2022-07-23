@@ -46,7 +46,11 @@ export class MatchMakingGamesService {
     while (playerIdsArray.length >= 2) {
       const player1Id = playerIdsArray.pop();
       const player2Id = playerIdsArray.pop();
-      const game = await this.gamesService.createNewGame(player1Id, player2Id);
+      const game = await this.gamesService.createNewGame(
+        player1Id,
+        player2Id,
+        true,
+      );
       this.matchMakingGateway.server.emit('newMatch', game);
     }
     return new Set(playerIdsArray);

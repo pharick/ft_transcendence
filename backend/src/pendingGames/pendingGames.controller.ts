@@ -91,6 +91,7 @@ export class PendingGamesController {
     const game = this.gamesService.createNewGame(
       pending.hostUser.id,
       pending.guestUser.id,
+      false,
     );
     this.pendingGamesGateway.server.emit('update');
     return game;

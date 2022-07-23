@@ -64,6 +64,16 @@ button:disabled {
     text-align: center;
 }
 
+input[type=text] {
+    border: 2px solid lightgray;
+    border-radius: 3px;
+    font-size: 1em;
+    padding: 5px;
+    margin: 0;
+}
+
+/* Player Block */
+
 .avatar-placeholder-big {
     background-color: lightgray;
     width: 250px;
@@ -80,12 +90,10 @@ button:disabled {
     border: 1px solid dodgerblue;
 }
 
-input[type=text] {
-    border: 2px solid lightgray;
-    border-radius: 3px;
-    font-size: 1em;
-    padding: 5px;
-    margin: 0;
+.player-block-username {
+    margin: 0.5em 0 0 0;
+    font-weight: bold;
+    font-size: 1.5em;
 }
 
 /* Header */
@@ -353,11 +361,6 @@ button.side-panel-button-visible {
     font-family: "Press Start 2P", sans-serif;
     font-size: 30px;
     margin: 1em 0 0.5em 0;
-}
-
-.completed-game-player {
-    margin: 0;
-    font-weight: bold;
 }
 
 /* Chat */
