@@ -400,6 +400,7 @@ button.side-panel-button-visible {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    scroll-behavior: smooth;
 }
 
 .chat-message {

@@ -13,7 +13,7 @@ interface ChatProps {
 
 const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
   const socket = useRef<Socket>();
-  const bottomElement = useRef<HTMLLIElement>(null);
+  const messageList = useRef<HTMLUListElement>(null);
   const [messageText, setMessageText] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
@@ -50,8 +50,8 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
   }, [getMessages, room]);
 
   useEffect(() => {
-    if (bottomElement.current)
-      bottomElement.current.scrollIntoView({ behavior: 'smooth' });
+    if (messageList.current)
+      messageList.current.scrollTop = messageList.current.scrollHeight;
   }, [messages]);
 
   const handleMessageSubmit = (event: FormEvent) => {
@@ -82,7 +82,7 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
       </h1>
 
       <section className='chat'>
-        <ul className='chat-list'>
+        <ul className='chat-list' ref={messageList}>
           {messages.map((message) => (
             <li key={message.id} className={message.user.id == user?.id ? 'chat-message-my' : ''}>
               <article className='chat-message'>
@@ -96,7 +96,6 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
               </article>
             </li>
           ))}
-          <li ref={bottomElement}></li>
         </ul>
 
         <form className='chat-form' onSubmit={handleMessageSubmit}>
