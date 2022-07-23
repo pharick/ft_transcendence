@@ -74,7 +74,7 @@ const MatchMakingModal: FC<MatchMakingModalProps> = ({user, onClose}) => {
                 <a className="button">Play</a>
                </Link></p>
             </div>
-            : <p>spinner</p>
+            : <div className="loader"></div>
           }
         </div>
         <div className="modal-footer">

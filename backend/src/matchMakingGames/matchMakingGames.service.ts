@@ -25,7 +25,21 @@ export class MatchMakingGamesService {
     const user = await this.usersService.findOne(userId);
     if (!this.rankedQueue[user.rank]) this.rankedQueue[user.rank] = new Set();
     this.rankedQueue[user.rank].add(userId);
+    console.log(`rankQueue is`);
     console.log(this.rankedQueue);
+  }
+
+  private async createGame(
+    player1Id: number,
+    player2Id: number,
+  ): Promise<void> {
+    const game = await this.gamesService.createNewGame(
+      player1Id,
+      player2Id,
+      true,
+    );
+    console.log(game);
+    this.matchMakingGateway.server.emit('newMatch', game);
   }
 
   private async matchPlayers() {
@@ -33,56 +47,67 @@ export class MatchMakingGamesService {
       const rank: number = parseInt(rankStr, 10);
 
       if (playerIds) {
-        this.rankedQueue[rank] = await this.matchOneRankPlayers(playerIds);
+        await this.matchOneRankPlayers(playerIds, rank);
       }
     }
-    this.matchDifferentRankPlayers();
+
+    for (const [rankStr, playerIds] of Object.entries(this.rankedQueue)) {
+      const rank: number = parseInt(rankStr, 10);
+      if (playerIds.size > 0) {
+        await this.matchDifferentRankPlayers(playerIds, rank);
+      }
+    }
   }
 
   private async matchOneRankPlayers(
     playerIds: Set<number>,
-  ): Promise<Set<number>> {
+    rank: number,
+  ): Promise<void> {
     const playerIdsArray = Array.from(playerIds);
     while (playerIdsArray.length >= 2) {
       const player1Id = playerIdsArray.pop();
       const player2Id = playerIdsArray.pop();
-      const game = await this.gamesService.createNewGame(
-        player1Id,
-        player2Id,
-        true,
-      );
-      this.matchMakingGateway.server.emit('newMatch', game);
+      await this.createGame(player1Id, player2Id);
+      this.rankedQueue[rank].delete(player1Id);
+      this.rankedQueue[rank].delete(player2Id);
     }
-    return new Set(playerIdsArray);
   }
 
-  private async matchDifferentRankPlayers() {
-    let tempRank: number;
-    let tempId: number;
-    for (const [rankStr, playerIds] of Object.entries(this.rankedQueue)) {
-      if (playerIds) {
-        const rank: number = parseInt(rankStr, 10);
-        if (tempRank) {
-          if (rank - tempRank < this.maxRankDelta) {
-            const game = await this.gamesService.createNewGame(
-              tempId,
-              Array.from(playerIds)[0],
-            );
-            this.matchMakingGateway.server.emit('newMatch', game);
-            this.rankedQueue[tempRank].delete(tempId);
-            this.rankedQueue[rank].delete(Array.from(playerIds)[0]);
-            tempId = null;
-            tempRank = null;
-          } else {
-            tempId = Array.from(playerIds)[0];
-            tempRank = rank;
-          }
-        } else {
-          tempId = Array.from(playerIds)[0];
-          tempRank = rank;
-        }
-      }
-    }
+  private async matchDifferentRankPlayers(
+    playerIds: Set<number>,
+    rank: number,
+  ): Promise<Set<number>> {
+    const ranks = Object.entries(this.rankedQueue).filter(
+      ([currentRank, playerIds]) =>
+        playerIds.size > 0 && parseInt(currentRank) != rank,
+    );
+
+    const deltas = ranks.map(([currentRank]) => [
+      parseInt(currentRank, 10),
+      Math.abs(parseInt(currentRank) - rank),
+    ]);
+
+    if (deltas.length <= 0) return;
+
+    const [matchedRank, delta] = deltas.reduce((prev, current) => {
+      if (!prev) return current;
+      const [, currentDelta] = current;
+      const [, prevDelta] = prev;
+      return currentDelta < prevDelta ? current : prev;
+    });
+
+    console.log(matchedRank);
+    console.log(delta);
+
+    const playerIdsArray = Array.from(playerIds);
+    const userId = playerIdsArray.pop();
+    this.rankedQueue[matchedRank].delete(userId);
+
+    const matchedPlayerIdsArray = Array.from(this.rankedQueue[matchedRank]);
+    const matchedUserId = matchedPlayerIdsArray.pop();
+    this.rankedQueue[matchedRank].delete(matchedUserId);
+
+    await this.createGame(userId, matchedUserId);
   }
 
   async removeUserFromQueue(userId: number): Promise<void> {
