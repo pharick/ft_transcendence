@@ -21,6 +21,11 @@ const Header: FC = () => {
             <a>Players</a>
           </Link>
         </li>
+        <li>
+          <Link href="/chat">
+            <a>Chats</a>
+          </Link>
+        </li>
       </ul>
 
       <userContext.Consumer>

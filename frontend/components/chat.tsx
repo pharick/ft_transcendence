@@ -13,21 +13,19 @@ interface ChatProps {
 
 const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
   const socket = useRef<Socket>();
+  const bottomElement = useRef<HTMLLIElement>(null);
   const [messageText, setMessageText] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const getMessages = useCallback(async () => {
     let roomPostfix = 'common';
     if (room?.isPrivate && user) {
-      console.log(`${user.id} == ${room.hostUser.id}`)
       const companion = user.id == room.hostUser.id ? room.guestUser : room.hostUser;
-      console.log(companion);
       roomPostfix = `private/${companion.id}`;
     }
 
     const messagesResponse = await fetch(`/api/chat/messages/${roomPostfix}`);
     const messages = await messagesResponse.json();
-    console.log(roomPostfix);
     setMessages(messages);
   }, [user, room]);
 
@@ -49,7 +47,11 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
     socket.current?.on('msgToClient', (message: ChatMessage) => {
       setMessages((oldMessages) => [...oldMessages, message]);
     });
-  }, [getMessages]);
+  }, [getMessages, room]);
+
+  useEffect(() => {
+    if (bottomElement.current) bottomElement.current.scrollIntoView();
+  }, [messages]);
 
   const handleMessageSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -91,6 +93,7 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
               </article>
             </li>
           ))}
+          <li ref={bottomElement}></li>
         </ul>
 
         <form className='chat-form' onSubmit={handleMessageSubmit}>
