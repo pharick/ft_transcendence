@@ -1,8 +1,9 @@
 export class CreatePendingGameDto {
-  guestUserId: number | undefined;
+  guestUserId?: number;
 }
 
 export class ChatMessageDto {
-  sessionId: string | undefined;
-  text: string | undefined;
+  sessionId?: string;
+  roomId?: number;
+  text?: string;
 }

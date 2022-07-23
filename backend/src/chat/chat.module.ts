@@ -5,9 +5,11 @@ import { ChatMessage } from './chatMessage.entity';
 import { ChatRoom } from './chatRoom.entity';
 import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
-import { ChatService } from './chat.service';
+import { ChatMessagesService } from './chatMessages.service';
 import { User } from '../users/user.entity';
-import { ChatController } from './chat.controller';
+import { ChatMessagesController } from './chatMessages.controller';
+import { ChatRoomsService } from './chatRooms.service';
+import { ChatRoomsController } from './chatRooms.controller';
 
 @Module({
   imports: [
@@ -15,8 +17,8 @@ import { ChatController } from './chat.controller';
     AuthModule,
     UsersModule,
   ],
-  providers: [ChatGateway, ChatService],
-  controllers: [ChatController],
+  providers: [ChatGateway, ChatMessagesService, ChatRoomsService],
+  controllers: [ChatMessagesController, ChatRoomsController],
   exports: [],
 })
 export class ChatModule {}

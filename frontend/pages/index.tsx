@@ -1,25 +1,16 @@
 import type { NextPage } from 'next';
-
-import TrainingModeButton from '../components/createTestGame';
-import Chat from '../components/chat';
-import { userContext } from '../components/userProvider';
 import Head from 'next/head';
+
+import { userContext } from '../components/userProvider';
 import MatchMakingModeButton from "../components/createMatchMaking";
+import TrainingModeButton from '../components/createTestGame';
 
-interface HomePageProps {}
-
-const HomePage: NextPage<HomePageProps> = () => {
+const HomePage: NextPage = () => {
   return (
     <>
       <Head>
         <title>Main page</title>
       </Head>
-
-      <userContext.Consumer>
-        {({ user, userSessionId}) => (
-          <Chat user={user} userSessionId={userSessionId} />
-        )}
-      </userContext.Consumer>
 
       <TrainingModeButton />
 

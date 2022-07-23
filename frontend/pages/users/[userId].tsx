@@ -1,8 +1,9 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import {CompletedGameInfo, UserInfo} from '../../types/interfaces';
+import { CompletedGameInfo, UserInfo } from '../../types/interfaces';
 import { userContext } from '../../components/userProvider';
 import Invite from '../../components/invite';
+import Link from 'next/link';
 
 interface UserPageProps {
   userInfo: UserInfo;
@@ -29,7 +30,16 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo, completedGames }) => {
       <h1> {userInfo.username} </h1>
       <userContext.Consumer>
         {({ user }) => (
-          <Invite currentUser={user} userInfo={userInfo} />
+          <>
+            { user?.id != userInfo.id &&
+              <>
+                <Invite userInfo={userInfo} />
+                <Link href={`/chat/private/${userInfo.id}`}>
+                  <a className="button">Private chat</a>
+                </Link>
+              </>
+            }
+          </>
         )}
       </userContext.Consumer>
       <ul>

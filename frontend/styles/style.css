@@ -100,11 +100,12 @@ input[type=text] {
 
 .header {
     background-color: #000000;
-    padding: 5px 10px;
+    padding: 5px 35px;
     height: 40px;
     color: #ffffff;
     display: flex;
     align-items: center;
+    border-bottom: 4px solid dodgerblue;
 }
 
 .brand {
@@ -120,14 +121,13 @@ input[type=text] {
     padding: 0;
     display: flex;
     height: 100%;
-    box-sizing: border-box;
 }
 
 .main-menu a {
     display: flex;
     align-items: center;
     height: 100%;
-    padding: 0 10px;
+    padding: 0 1em;
     color: lightgray;
 }
 
@@ -136,14 +136,37 @@ input[type=text] {
     text-shadow: 0 0 5px dodgerblue;
 }
 
-.main-menu li:not(:last-child) {
-    border-right: 1px solid lightgray;
+.main-menu li:not(:last-child) a {
+    border-right: 1px solid #343434;
 }
 
 .container {
     position: relative;
     min-height: 96vh;
     overflow: hidden;
+}
+
+/* Secondary menu */
+
+.secondary-menu {
+    background-color: #eeeeee;
+    padding: 0;
+}
+
+.secondary-menu-list {
+    list-style: none;
+    padding: 0.5em;
+    display: flex;
+    margin: 0;
+}
+
+.secondary-menu-link {
+    display: block;
+    padding: 0.5em 1em;
+}
+
+.secondary-menu-list li:not(:last-child) a {
+    border-right: 1px solid #d2d2d2;
 }
 
 /* Aside panel */
@@ -183,7 +206,7 @@ button.side-panel-button-visible {
 }
 
 .main {
-    padding: 10px 30px;
+    padding: 0 30px;
 }
 
 /* User Block */
@@ -377,6 +400,7 @@ button.side-panel-button-visible {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    scroll-behavior: smooth;
 }
 
 .chat-message {
