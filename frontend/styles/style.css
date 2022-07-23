@@ -49,7 +49,7 @@ button:not(:disabled):active, .button:active {
 }
 
 button:disabled {
-    opacity: 80%;
+    opacity: 40%;
 }
 
 .success-button {
@@ -559,4 +559,28 @@ button.side-panel-button-visible {
   padding: 10px;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
+}
+
+.modal-body-button-play {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/*spinner*/
+.loader {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid dodgerblue;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 2s linear infinite;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

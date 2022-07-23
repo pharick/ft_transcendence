@@ -25,6 +25,9 @@ export class UsersService {
     const user = await this.findOne(userId);
     user.oldRank = user.rank;
     user.rank += rankDelta;
+    if (user.rank < 0) {
+      user.rank = 0;
+    }
     await this.usersRepository.save(user);
   }
 
