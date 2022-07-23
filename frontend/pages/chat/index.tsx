@@ -3,6 +3,7 @@ import Head from 'next/head';
 
 import { userContext } from '../../components/userProvider';
 import Chat from '../../components/chat';
+import SecondaryMenu from '../../components/secondaryMenu';
 
 const CommonChatPage: NextPage = () => {
   return (
@@ -10,6 +11,8 @@ const CommonChatPage: NextPage = () => {
       <Head>
         <title>Common chat</title>
       </Head>
+
+      <SecondaryMenu />
 
       <userContext.Consumer>
         {({ user, userSessionId}) => (

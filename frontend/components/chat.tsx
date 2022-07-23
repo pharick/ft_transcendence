@@ -50,7 +50,8 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
   }, [getMessages, room]);
 
   useEffect(() => {
-    if (bottomElement.current) bottomElement.current.scrollIntoView();
+    if (bottomElement.current)
+      bottomElement.current.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const handleMessageSubmit = (event: FormEvent) => {
