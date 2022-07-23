@@ -72,6 +72,15 @@ input[type=text] {
     margin: 0;
 }
 
+.warning-message {
+    margin: 0;
+    background-color: #dc3545;
+    border: 1px solid #91232d;
+    padding: 0.5em 1em;
+    border-radius: 3px;
+    width: 100%;
+}
+
 /* Player Block */
 
 .avatar-placeholder-big {

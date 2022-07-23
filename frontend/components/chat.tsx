@@ -99,11 +99,18 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
         </ul>
 
         <form className='chat-form' onSubmit={handleMessageSubmit}>
-          <input className='chat-form-input' type='text' placeholder='New message' value={messageText}
-                 onChange={(event) => {
-                   handleMessageChange(event.target.value);
-                 }} />
-          <button type='submit'>Send</button>
+          {user
+            ?
+            <>
+              <input className='chat-form-input' type='text' placeholder='New message' value={messageText}
+                     onChange={(event) => {
+                       handleMessageChange(event.target.value);
+                     }} />
+              <button type='submit'>Send</button>
+            </>
+            :
+            <p className='warning-message'>Please login to send messages</p>
+          }
         </form>
       </section>
     </>

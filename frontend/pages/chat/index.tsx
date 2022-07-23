@@ -15,7 +15,7 @@ const CommonChatPage: NextPage = () => {
       <userContext.Consumer>
         {({ user, userSessionId}) => (
           <>
-            <ChatRoomsMenu user={user} />
+            {user && <ChatRoomsMenu user={user} />}
             <Chat user={user} userSessionId={userSessionId} />
           </>
         )}
