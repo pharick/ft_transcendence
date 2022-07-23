@@ -6,15 +6,16 @@ import { PendingGamesController } from './pendingGames.controller';
 import { PendingGamesService } from './pendingGames.service';
 import { GamesModule } from '../games/games.module';
 import { UsersModule } from '../users/users.module';
-import { PendingGamesGateway } from './pendingGames.gateway';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([PendingGame, User]),
     forwardRef(() => GamesModule),
     UsersModule,
+    NotificationsModule,
   ],
-  providers: [PendingGamesService, PendingGamesGateway],
+  providers: [PendingGamesService],
   controllers: [PendingGamesController],
 })
 export class PendingGamesModule {}

@@ -6,13 +6,13 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 
-@WebSocketGateway({ namespace: 'pending', cors: true })
-export class PendingGamesGateway implements OnGatewayConnection {
+@WebSocketGateway({ namespace: 'notifications', cors: true })
+export class NotificationsGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
-  private logger: Logger = new Logger('GamesGateway');
+  private logger: Logger = new Logger('NotificationsGateway');
 
   handleConnection(client: Socket, ...args: any[]): void {
-    this.logger.log(`Pending client connected: ${client.id}`);
+    this.logger.log(`Notifications client connected: ${client.id}`);
   }
 }

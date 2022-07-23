@@ -9,7 +9,7 @@ import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { CompletedGamesModule } from '../completedGames/completedGames.module';
 import { PendingGamesModule } from '../pendingGames/pendingGames.module';
-import { PendingGamesGateway } from '../pendingGames/pendingGames.gateway';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -19,8 +19,9 @@ import { PendingGamesGateway } from '../pendingGames/pendingGames.gateway';
     UsersModule,
     CompletedGamesModule,
     PendingGamesModule,
+    NotificationsModule,
   ],
-  providers: [GamesService, GamesGateway, PendingGamesGateway],
+  providers: [GamesService, GamesGateway],
   controllers: [GamesController],
   exports: [GamesService],
 })

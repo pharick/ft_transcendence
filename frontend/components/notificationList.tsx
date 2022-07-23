@@ -52,7 +52,7 @@ const NotificationList: FC<NotificationListProps> = ({ user }) => {
         process.env.NODE_ENV == 'development'
           ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
           : ''
-      }/pending`,
+      }/notifications`,
     );
     socket.current?.connect();
 

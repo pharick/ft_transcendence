@@ -13,7 +13,7 @@ import {
 
 import { GamesService } from './games.service';
 import { GameInfo } from './games.interfaces';
-import { PendingGamesGateway } from '../pendingGames/pendingGames.gateway';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 @Controller('games')
 export class GamesController {
@@ -21,7 +21,7 @@ export class GamesController {
 
   constructor(
     private gamesService: GamesService,
-    private pendingGamesGateway: PendingGamesGateway,
+    private notificationsGateway: NotificationsGateway,
   ) {}
 
   @Get()
@@ -61,7 +61,7 @@ export class GamesController {
       throw new UnauthorizedException();
     }
     const game = await this.gamesService.createNewGame(userId, null, false);
-    this.pendingGamesGateway.server.emit('update');
+    this.notificationsGateway.server.emit('update');
     return game;
   }
 }

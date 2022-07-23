@@ -22,7 +22,7 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
 import { GamesService } from '../games/games.service';
 import { GameInfo } from '../games/games.interfaces';
-import { PendingGamesGateway } from './pendingGames.gateway';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 @Controller('pending')
 export class PendingGamesController {
@@ -32,7 +32,7 @@ export class PendingGamesController {
     private pendingGamesService: PendingGamesService,
     private gamesService: GamesService,
     private usersService: UsersService,
-    private pendingGamesGateway: PendingGamesGateway,
+    private notificationsGateway: NotificationsGateway,
   ) {}
 
   @Get()
@@ -72,7 +72,7 @@ export class PendingGamesController {
         this.logger.error(error);
         throw new ConflictException();
       });
-    this.pendingGamesGateway.server.emit('update');
+    this.notificationsGateway.server.emit('update');
     return pending;
   }
 
@@ -93,7 +93,7 @@ export class PendingGamesController {
       pending.guestUser.id,
       false,
     );
-    this.pendingGamesGateway.server.emit('update');
+    this.notificationsGateway.server.emit('update');
     return game;
   }
 
@@ -108,6 +108,6 @@ export class PendingGamesController {
     if (pending.hostUser.id != userId && pending.guestUser.id != userId)
       throw new ForbiddenException();
     await this.pendingGamesService.remove(pendingGameId);
-    this.pendingGamesGateway.server.emit('update');
+    this.notificationsGateway.server.emit('update');
   }
 }
