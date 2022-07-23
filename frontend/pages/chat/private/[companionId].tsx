@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { ChatRoom } from '../../../types/interfaces';
 import Chat from '../../../components/chat';
 import { userContext } from '../../../components/userProvider';
+import ChatRoomsMenu from '../../../components/chatRoomsMenu';
 
 interface PrivateChatPageProps {
   chatRoom: ChatRoom;
@@ -29,7 +30,10 @@ const PrivateChatPage: NextPage<PrivateChatPageProps> = ({ chatRoom }) => {
 
       <userContext.Consumer>
         {({ user, userSessionId}) => (
-          <Chat user={user} userSessionId={userSessionId} room={chatRoom} />
+          <>
+            <ChatRoomsMenu user={user} />
+            <Chat user={user} userSessionId={userSessionId} room={chatRoom} />
+          </>
         )}
       </userContext.Consumer>
     </>

@@ -25,6 +25,22 @@ export class ChatRoomsService {
     });
   }
 
+  findAllPrivate(userId: number): Promise<ChatRoom[]> {
+    return this.chatRoomRepository.find({
+      where: [
+        {
+          isPrivate: true,
+          hostUser: { id: userId },
+        },
+        {
+          isPrivate: true,
+          guestUser: { id: userId },
+        },
+      ],
+      relations: ['hostUser', 'guestUser'],
+    });
+  }
+
   findOnePrivate(user1Id: number, user2Id: number): Promise<ChatRoom> {
     return this.chatRoomRepository.findOne({
       where: [

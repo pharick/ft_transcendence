@@ -3,7 +3,7 @@ import Head from 'next/head';
 
 import { userContext } from '../../components/userProvider';
 import Chat from '../../components/chat';
-import SecondaryMenu from '../../components/secondaryMenu';
+import ChatRoomsMenu from '../../components/chatRoomsMenu';
 
 const CommonChatPage: NextPage = () => {
   return (
@@ -12,11 +12,12 @@ const CommonChatPage: NextPage = () => {
         <title>Common chat</title>
       </Head>
 
-      <SecondaryMenu />
-
       <userContext.Consumer>
         {({ user, userSessionId}) => (
-          <Chat user={user} userSessionId={userSessionId} />
+          <>
+            <ChatRoomsMenu user={user} />
+            <Chat user={user} userSessionId={userSessionId} />
+          </>
         )}
       </userContext.Consumer>
 

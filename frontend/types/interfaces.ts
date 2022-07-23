@@ -68,3 +68,8 @@ export interface ChatRoom {
   hostUser: UserInfo;
   guestUser: UserInfo;
 }
+
+export interface MenuItem {
+  text: string;
+  link: string;
+}

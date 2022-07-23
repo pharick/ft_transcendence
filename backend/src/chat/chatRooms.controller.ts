@@ -21,6 +21,13 @@ export class ChatRoomsController {
     private usersService: UsersService,
   ) {}
 
+  @Get('private')
+  findAllPrivate(@Session() session: Record<string, any>): Promise<ChatRoom[]> {
+    const userId = session.userId;
+    if (!userId) throw new UnauthorizedException();
+    return this.chatRoomsService.findAllPrivate(userId);
+  }
+
   @Get('private/:companionId')
   async findOnePrivate(
     @Param('companionId', new ParseIntPipe()) companionId: number,

@@ -1,28 +1,27 @@
 import { FC } from 'react';
-import UserBlock from '../components/userBlock';
-import { userContext } from './userProvider';
 import Link from 'next/link';
+import { MenuItem } from '../types/interfaces';
 
-const SecondaryMenu: FC = () => {
+interface SecondaryMenuProps {
+  items?: MenuItem[],
+}
+
+const SecondaryMenu: FC<SecondaryMenuProps> = ({ items }) => {
   return (
     <nav className="secondary-menu">
-      <ul className="secondary-menu-list">
-        <li>
-          <Link href="/games">
-            <a className="secondary-menu-link">Games</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="/users">
-            <a className="secondary-menu-link">Players</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="/chat">
-            <a className="secondary-menu-link">Chats</a>
-          </Link>
-        </li>
-      </ul>
+      {items &&
+        <ul className="secondary-menu-list">
+          {items.map((item, i) => (
+            <li key={i}>
+              <Link href={item.link}>
+                <a className="secondary-menu-link">
+                  {item.text}
+                </a>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      }
     </nav>
   );
 };

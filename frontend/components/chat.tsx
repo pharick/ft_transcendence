@@ -74,7 +74,9 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
     <>
       <h1>
         {room
-          ? <>Private chat <b>{room.hostUser.username}</b> and <b>{room.guestUser.username}</b></>
+          ? <>
+            Private chat with <b>{user?.id == room.hostUser.id ? room.guestUser.username : room.hostUser.username}</b>
+          </>
           : 'Common chat'
         }
       </h1>
