@@ -205,7 +205,7 @@ button.side-panel-button-visible {
     padding: 0;
 }
 
-.notification-list li {
+.notification-block {
     border-bottom: 1px solid lightgray;
     display: flex;
     align-items: center;

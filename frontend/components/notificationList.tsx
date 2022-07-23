@@ -2,6 +2,9 @@ import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { GameInfo, PendingGame, UserInfo } from '../types/interfaces';
 import Link from 'next/link';
 import { io, Socket } from 'socket.io-client';
+import ReadyGameBlock from './readyGameBlock';
+import InviteGameBlock from './inviteGameBlock';
+import WaitGameBlock from './waitGameBlock';
 
 interface NotificationListProps {
   user?: UserInfo;
@@ -12,20 +15,6 @@ const NotificationList: FC<NotificationListProps> = ({ user }) => {
   const [hostGames, setHostGames] = useState<PendingGame[]>([]);
   const [guestGames, setGuestGames] = useState<PendingGame[]>([]);
   const [currentGames, setCurrentGames] = useState<GameInfo[]>([]);
-
-  const handleAccept = async (pendingGameId: number) => {
-    const response = await fetch(`/api/pending/${pendingGameId}/accept`, {
-      method: 'POST',
-    });
-    console.log(response);
-  };
-
-  const handleRemove = async (pendingGameId: number) => {
-    const response = await fetch(`/api/pending/${pendingGameId}`, {
-      method: 'DELETE',
-    });
-    console.log(response);
-  };
 
   const getHostGames = useCallback(async () => {
     if (!user) return;
@@ -84,61 +73,28 @@ const NotificationList: FC<NotificationListProps> = ({ user }) => {
         <ul className="notification-list">
           {currentGames.map((game) => (
             <li key={game.gameId}>
-              <p>
-                Game <b>{game.player1 ? game.player1.username : 'Mr. Wall'}</b>{' '}
-                vs <b>{game.player2 ? game.player2.username : 'Mr. Wall'}</b>
-              </p>
-              <Link href={`/games/${game.gameId}`}>
-                <a className="button">Play</a>
-              </Link>
+              <ReadyGameBlock game={game} />
             </li>
           ))}
 
           {guestGames.map((game) => (
             <li key={game.id}>
-              <p>
-                <b>{game.hostUser.username}</b> invites you
-              </p>
-              <div>
-                <button
-                  className="success-button"
-                  onClick={() => {
-                    handleAccept(game.id).then();
-                  }}
-                >
-                  Accept
-                </button>
-                <button
-                  className="error-button"
-                  onClick={() => {
-                    handleRemove(game.id).then();
-                  }}
-                >
-                  Decline
-                </button>
-              </div>
+              <InviteGameBlock game={game} />
             </li>
           ))}
 
           {hostGames.map((game) => (
             <li key={game.id}>
-              <p>
-                Waiting for <b>{game.guestUser.username}</b>
-              </p>
-              <button
-                className="error-button"
-                onClick={() => {
-                  handleRemove(game.id).then();
-                }}
-              >
-                Cancel
-              </button>
+              <WaitGameBlock game={game} />
             </li>
           ))}
         </ul>
       ) : (
         <>
-          <p>You don&apos;t have any invitations to the game, take the first step 😉</p>
+          <p>
+            You don&apos;t have any invitations to the game, take the first step
+            😉
+          </p>
           <ul>
             <li>
               <Link href="/users">
