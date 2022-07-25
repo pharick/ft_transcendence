@@ -256,6 +256,15 @@ button.side-panel-button-visible {
     margin: 0 10px 0 0;
 }
 
+.user-block a{
+    color:  #ffffff;
+    text-decoration: none;
+}
+
+.user-block a:hover > .user-name {
+    color: dodgerblue;
+}
+
 /* Notification List */
 
 .notification-list {
@@ -593,4 +602,56 @@ button.side-panel-button-visible {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+}
+
+/* User's profile */
+
+.block-profile button {
+    margin-top: 5px;
+    border: 1px solid lightgray;
+    background-color: black;
+    color: white;
+    font-size: 0.825em;
+    border-radius: 3px;
+    transition: all 0.2s;
+    box-shadow: 1px 1px 5px 1px gray;
+    padding: 3px 5px;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.block-profile button:hover {
+    border-color: rgb(138, 196, 253);
+    box-shadow: 0 0 5px 2px rgb(66, 66, 66);
+    color: white;
+    cursor: pointer;
+}
+
+.avatar-profile {
+    margin-bottom: 15px;
+}
+
+.avatar-profile img {
+    background-color: lightgray;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    border: 2px solid rgb(106, 106, 106);
+}
+
+.block-profile p {
+    margin-bottom: 2px;
+}
+
+.online-status,
+.offline-status {
+    margin-top: -20px;
+}
+
+.online-status {
+    color: green;
+}
+
+.offline-status {
+    color: red;
 }

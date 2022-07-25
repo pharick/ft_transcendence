@@ -13,7 +13,7 @@ const UserBlock: FC<UserBlockProps> = ({ user, handleLogout }) => {
     <section className="user-block">
       {user ? (
         <>
-          <p className="user-name">{user.username}</p>
+          <a href={`/users/${user.id}`}><p className="user-name">{user.username}</p></a>
           <button onClick={handleLogout}>Logout</button>
         </>
       ) : (

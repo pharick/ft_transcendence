@@ -4,6 +4,7 @@ import { CompletedGameInfo, UserInfo } from '../../types/interfaces';
 import { userContext } from '../../components/users/userProvider';
 import Invite from '../../components/users/invite';
 import Link from 'next/link';
+import UserProfile from '../../components/users/userProfile';
 
 interface UserPageProps {
   userInfo: UserInfo;
@@ -28,6 +29,9 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo, completedGames }) => {
       </Head>
 
       <h1> {userInfo.username} </h1>
+
+      <UserProfile userInfo={userInfo}/>
+
       <userContext.Consumer>
         {({ user }) => (
           <>

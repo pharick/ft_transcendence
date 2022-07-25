@@ -19,6 +19,12 @@ export class User {
   @Column({ unique: true })
   username: string;
 
+  @Column({ default: '' })
+  displayName: string;
+
+  @Column({ default: '' })
+  avatar: string;
+
   @Column({ default: true })
   isActive: boolean;
 

@@ -6,9 +6,15 @@ interface PlayerBlockProps {
 }
 
 const PlayerBlock: FC<PlayerBlockProps> = ({ user }) => {
+  const avatarUrl =`/api/users/${user?.id}/avatar`;
+
   return (
     <article>
-      <div className='avatar-placeholder-big'></div>
+      <div className='avatar-placeholder-big'>
+        <picture>
+            <img src={avatarUrl} alt='Users avatar'/>
+          </picture>
+      </div>
       <p className='player-block-username'>
         {user ? `${user.username} (Rank: ${user.rank})` : 'Mr. Wall'}
       </p>
