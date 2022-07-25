@@ -27,7 +27,7 @@ const GameList: FC<GameListProps> = ({ games, user }) => {
                     </div>
                   </div>
                   <h2 className='game-card-header'>
-                    {user && (game.player1.id == user?.id || game.player2.id == user?.id) ? 'Play' : 'Watch'}
+                    {user && (game.player1?.id == user?.id || game.player2?.id == user?.id) ? 'Play' : 'Watch'}
                   </h2>
                 </article>
               </a>
