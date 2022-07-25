@@ -35,12 +35,6 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(client: Socket, ...args: any[]): any {
     this.logger.log(`Pong client disconnect ${client.id}`);
-    this.logger.log(
-      `Game has paused ${this.gamesService.getGameIdByClientId(client.id)}`,
-    );
-    this.gamesService.pauseGame(
-      this.gamesService.getGameIdByClientId(client.id),
-    );
   }
 
   private async sendNextFrame(gameId: string): Promise<void> {
