@@ -1,7 +1,7 @@
 import type { AppProps } from 'next/app';
-import UserProvider from '../components/userProvider';
+import UserProvider from '../components/users/userProvider';
 import '../styles/style.css';
-import Layout from '../components/layout';
+import Layout from '../components/layout/layout';
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
 

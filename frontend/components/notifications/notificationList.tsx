@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { GameInfo, PendingGame, UserInfo } from '../types/interfaces';
+import { GameInfo, PendingGame, UserInfo } from '../../types/interfaces';
 import Link from 'next/link';
 import { io, Socket } from 'socket.io-client';
 import ReadyGameBlock from './readyGameBlock';

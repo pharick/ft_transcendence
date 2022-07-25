@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { GameInfo } from '../types/interfaces';
+import { GameInfo } from '../../types/interfaces';
 import Link from 'next/link';
 
 interface ReadyGameBlockProps {

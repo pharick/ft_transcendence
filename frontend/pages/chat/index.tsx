@@ -1,9 +1,9 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 
-import { userContext } from '../../components/userProvider';
-import Chat from '../../components/chat';
-import ChatRoomsMenu from '../../components/chatRoomsMenu';
+import { userContext } from '../../components/users/userProvider';
+import Chat from '../../components/chats/chat';
+import ChatRoomsMenu from '../../components/chats/chatRoomsMenu';
 
 const CommonChatPage: NextPage = () => {
   return (

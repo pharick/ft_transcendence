@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { PendingGame } from '../types/interfaces';
+import { PendingGame } from '../../types/interfaces';
 
 interface InviteGameBlockProps {
   game: PendingGame;

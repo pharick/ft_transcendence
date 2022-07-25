@@ -1,7 +1,7 @@
 import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
 import {io, Socket} from "socket.io-client";
-import useEventListener from '../hooks/use_event_listener';
-import {GameInfo, UserInfo} from '../types/interfaces';
+import useEventListener from '../../hooks/use_event_listener';
+import {GameInfo, UserInfo} from '../../types/interfaces';
 import Link from "next/link";
 
 interface MatchMakingModalProps {
@@ -50,6 +50,10 @@ const MatchMakingModal: FC<MatchMakingModalProps> = ({user, onClose}) => {
     });
 
     createMatchMaking().then();
+
+    return () => {
+      socket.current?.disconnect();
+    };
   }, [createMatchMaking, user]);
 
   useEventListener('keydown', keyDownHandler, document);

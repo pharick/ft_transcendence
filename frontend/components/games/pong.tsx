@@ -1,13 +1,13 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-import useEventListener from '../hooks/use_event_listener';
+import useEventListener from '../../hooks/use_event_listener';
 import {
   CompletedGameInfo,
   FrameInfo,
   GameInfo,
   UserInfo,
-} from '../types/interfaces';
+} from '../../types/interfaces';
 
 interface PongProps {
   gameInfo: GameInfo;

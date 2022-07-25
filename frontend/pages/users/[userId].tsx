@@ -1,8 +1,8 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import { CompletedGameInfo, UserInfo } from '../../types/interfaces';
-import { userContext } from '../../components/userProvider';
-import Invite from '../../components/invite';
+import { userContext } from '../../components/users/userProvider';
+import Invite from '../../components/users/invite';
 import Link from 'next/link';
 
 interface UserPageProps {

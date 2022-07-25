@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import Link from 'next/link';
-import { MenuItem } from '../types/interfaces';
+import { MenuItem } from '../../types/interfaces';
 
 interface SecondaryMenuProps {
   items?: MenuItem[],

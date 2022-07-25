@@ -1,9 +1,9 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import { ChatRoom } from '../../../types/interfaces';
-import Chat from '../../../components/chat';
-import { userContext } from '../../../components/userProvider';
-import ChatRoomsMenu from '../../../components/chatRoomsMenu';
+import Chat from '../../../components/chats/chat';
+import { userContext } from '../../../components/users/userProvider';
+import ChatRoomsMenu from '../../../components/chats/chatRoomsMenu';
 
 interface PrivateChatPageProps {
   chatRoom: ChatRoom;

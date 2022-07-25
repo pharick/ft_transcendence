@@ -2,7 +2,7 @@ import type { GetServerSideProps, NextPage } from 'next';
 
 import { CompletedGameInfo } from '../../types/interfaces';
 import Head from 'next/head';
-import PlayerBlock from '../../components/playerBlock';
+import PlayerBlock from '../../components/users/playerBlock';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 

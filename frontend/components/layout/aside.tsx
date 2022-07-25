@@ -1,5 +1,5 @@
-import { userContext } from './userProvider';
-import NotificationList from './notificationList';
+import { userContext } from '../users/userProvider';
+import NotificationList from '../notifications/notificationList';
 import { FC, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 

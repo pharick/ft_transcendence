@@ -1,9 +1,9 @@
 import { FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { ChatMessage, ChatRoom, UserInfo } from '../types/interfaces';
+import { ChatMessage, ChatRoom, UserInfo } from '../../types/interfaces';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
-import { ChatMessageDto } from '../types/dtos';
+import { ChatMessageDto } from '../../types/dtos';
 
 interface ChatProps {
   user?: UserInfo;
@@ -45,6 +45,10 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
     socket.current?.on('msgToClient', (message: ChatMessage) => {
       setMessages((oldMessages) => [...oldMessages, message]);
     });
+
+    return () => {
+      socket.current?.disconnect();
+    };
   }, [getMessages, room]);
 
   useEffect(() => {

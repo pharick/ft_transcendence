@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
-import SecondaryMenu from './secondaryMenu';
-import { ChatRoom, MenuItem, UserInfo } from '../types/interfaces';
+import SecondaryMenu from '../layout/secondaryMenu';
+import { ChatRoom, MenuItem, UserInfo } from '../../types/interfaces';
 
 interface ChatRoomsMenuProps {
   user?: UserInfo;

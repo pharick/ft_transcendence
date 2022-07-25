@@ -1,8 +1,8 @@
 import type { NextPage } from 'next';
 import { GetServerSideProps } from 'next';
 import { GameInfo } from '../../types/interfaces';
-import GameList from '../../components/gameList';
-import { userContext } from '../../components/userProvider';
+import GameList from '../../components/games/gameList';
+import { userContext } from '../../components/users/userProvider';
 import Head from 'next/head';
 
 interface GamesPageProps {

@@ -1,5 +1,5 @@
 import { createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { UserInfo } from '../types/interfaces';
+import { UserInfo } from '../../types/interfaces';
 
 interface UserProviderProps {
   children?: ReactNode;

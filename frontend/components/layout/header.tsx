@@ -1,6 +1,6 @@
 import { FC } from 'react';
-import UserBlock from '../components/userBlock';
-import { userContext } from './userProvider';
+import UserBlock from '../users/userBlock';
+import { userContext } from '../users/userProvider';
 import Link from 'next/link';
 
 const Header: FC = () => {

@@ -1,9 +1,9 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 
-import { userContext } from '../components/userProvider';
-import MatchMakingModeButton from "../components/createMatchMaking";
-import TrainingModeButton from '../components/createTestGame';
+import { userContext } from '../components/users/userProvider';
+import MatchMakingModeButton from "../components/games/createMatchMaking";
+import TrainingModeButton from '../components/games/createTestGame';
 
 const HomePage: NextPage = () => {
   return (

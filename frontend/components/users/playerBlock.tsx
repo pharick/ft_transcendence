@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { UserInfo } from '../types/interfaces';
+import { UserInfo } from '../../types/interfaces';
 
 interface PlayerBlockProps {
   user?: UserInfo;

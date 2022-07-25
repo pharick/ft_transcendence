@@ -3,9 +3,9 @@ import dynamic from 'next/dynamic';
 import Head from 'next/head';
 
 import { GameInfo } from '../../types/interfaces';
-import { userContext } from '../../components/userProvider';
+import { userContext } from '../../components/users/userProvider';
 
-const Pong = dynamic(() => import('../../components/pong'), { ssr: false });
+const Pong = dynamic(() => import('../../components/games/pong'), { ssr: false });
 
 interface GamePageProps {
   gameInfo: GameInfo;
