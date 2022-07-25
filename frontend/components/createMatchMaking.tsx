@@ -31,10 +31,9 @@ const MatchMakingModal: FC<MatchMakingModalProps> = ({user, onClose}) => {
       method: 'DELETE',
     });
     onClose();
-  }, []);
+  }, [onClose]);
 
   useEffect(() => {
-    if (socket.current && socket.current?.active) return;
     socket.current = io(
       `${
         process.env.NODE_ENV == 'development'
@@ -51,7 +50,7 @@ const MatchMakingModal: FC<MatchMakingModalProps> = ({user, onClose}) => {
     });
 
     createMatchMaking().then();
-  }, [createMatchMaking]);
+  }, [createMatchMaking, user]);
 
   useEventListener('keydown', keyDownHandler, document);
 

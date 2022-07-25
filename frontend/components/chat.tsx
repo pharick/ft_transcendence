@@ -32,8 +32,6 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
   useEffect(() => {
     getMessages().then();
 
-    if (socket.current && socket.current?.active) return;
-
     socket.current = io(
       `${
         process.env.NODE_ENV == 'development'

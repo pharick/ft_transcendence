@@ -46,7 +46,7 @@ const NotificationList: FC<NotificationListProps> = ({ user }) => {
   useEffect(() => {
     handleUpdate().then();
 
-    if (socket.current && socket.current?.active || !user) return;
+    if (!user) return;
 
     socket.current = io(
       `${

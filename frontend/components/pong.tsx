@@ -103,8 +103,6 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   };
 
   useEffect(() => {
-    if (socket.current && socket.current?.active) return;
-
     socket.current = io(
       `${
         process.env.NODE_ENV == 'development'
