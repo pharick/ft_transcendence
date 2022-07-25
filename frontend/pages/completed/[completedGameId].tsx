@@ -47,7 +47,7 @@ const CompletedGamePage: NextPage<CompletedGamePageProps> = ({ completedGameInfo
       </div>
 
       <p>Duration: {completedGameInfo.duration}s</p>
-      <p>Date: {format(utcToZonedTime(completedGameInfo.date, 'Europe/Moscow'), 'dd.MM.yyyy h:mm:ss')}</p>
+      <p>Date: {format(utcToZonedTime(completedGameInfo.date, 'Europe/Moscow'), 'dd.MM.yyyy H:mm:ss')}</p>
     </>
   );
 };

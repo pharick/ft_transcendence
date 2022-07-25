@@ -88,7 +88,7 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
                 <footer className='chat-message-footer'>
                   <p className='chat-message-user'>{message.user.username}</p>
                   <p className='chat-message-date'>
-                    {format(utcToZonedTime(message.date, 'Europe/Moscow'), 'dd.MM.yyyy h:mm:ss')}
+                    {format(utcToZonedTime(message.date, 'Europe/Moscow'), 'dd.MM.yyyy H:mm:ss')}
                   </p>
                 </footer>
               </article>
