@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 import useEventListener from '../../hooks/use_event_listener';
 import {
@@ -15,9 +15,16 @@ interface PongProps {
   userSessionId: string | undefined;
 }
 
+const socket = io(
+  `${
+    process.env.NODE_ENV == 'development'
+      ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+      : ''
+  }/game`,
+);
+
 const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const socket = useRef<Socket>();
   const [score1, setScore1] = useState(0);
   const [score2, setScore2] = useState(0);
   const [pause, setPause] = useState(true);
@@ -103,26 +110,23 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   };
 
   useEffect(() => {
-    socket.current = io(
-      `${
-        process.env.NODE_ENV == 'development'
-          ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
-          : ''
-      }/game`,
-    );
-    socket.current?.connect();
-    socket.current?.emit('connectToGame', gameInfo.gameId);
+    socket.connect()
+    socket.emit('connectToGame', gameInfo.gameId);
 
-    socket.current?.on('nextFrame', (frame: FrameInfo) => {
+    socket.on('nextFrame', (frame: FrameInfo) => {
       renderField(frame);
     });
 
-    socket.current?.on('endGame', (completedGameInfo: CompletedGameInfo) => {
+    socket.on('endGame', (completedGameInfo: CompletedGameInfo) => {
       window.location.replace(`/completed/${completedGameInfo.id}`);
     });
 
+    console.log(socket);
+
     return () => {
-      socket.current?.disconnect();
+      socket.off('nextFrame');
+      socket.off('endGame');
+      socket.disconnect();
     };
   }, [gameInfo.gameId]);
 
@@ -141,7 +145,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
 
     if (gameInfo.player1?.id == user?.id || gameInfo.player2?.id == user?.id) {
       const gameId = gameInfo.gameId;
-      socket.current?.emit('moveClubStart', { gameId, userSessionId, up });
+      socket.emit('moveClubStart', { gameId, userSessionId, up });
     }
   };
 
@@ -150,7 +154,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
 
     if (gameInfo.player1?.id == user?.id || gameInfo.player2?.id == user?.id) {
       const gameId = gameInfo.gameId;
-      socket.current?.emit('moveClubStop', { gameId, userSessionId });
+      socket. emit('moveClubStop', { gameId, userSessionId });
     }
   };
 
