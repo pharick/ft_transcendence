@@ -1,9 +1,20 @@
 import { FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { ChatMessage, ChatRoom, UserInfo } from '../../types/interfaces';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import { ChatMessageDto } from '../../types/dtos';
+
+const socket = io(
+  `${
+    process.env.NODE_ENV == 'development'
+      ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+      : ''
+  }/chat`,
+  {
+    autoConnect: false,
+  },
+);
 
 interface ChatProps {
   user?: UserInfo;
@@ -12,7 +23,6 @@ interface ChatProps {
 }
 
 const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
-  const socket = useRef<Socket>();
   const messageList = useRef<HTMLUListElement>(null);
   const [messageText, setMessageText] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -32,22 +42,20 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
   useEffect(() => {
     getMessages().then();
 
-    socket.current = io(
-      `${
-        process.env.NODE_ENV == 'development'
-          ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
-          : ''
-      }/chat`,
-    );
-    socket.current?.connect();
-    socket.current?.emit('connectToRoom', room);
+    socket.connect();
 
-    socket.current?.on('msgToClient', (message: ChatMessage) => {
+    socket.on('connect', () => {
+      socket.emit('connectToRoom', room);
+    });
+
+    socket.on('msgToClient', (message: ChatMessage) => {
       setMessages((oldMessages) => [...oldMessages, message]);
     });
 
     return () => {
-      socket.current?.disconnect();
+      socket.off('connect');
+      socket.off('msgToClient');
+      socket.disconnect();
     };
   }, [getMessages, room]);
 
@@ -64,7 +72,7 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
       roomId: room?.id,
       text: messageText,
     }
-    socket.current?.emit('msgToServer', message);
+    socket.emit('msgToServer', message);
     setMessageText('');
   };
 

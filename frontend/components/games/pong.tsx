@@ -9,12 +9,6 @@ import {
   UserInfo,
 } from '../../types/interfaces';
 
-interface PongProps {
-  gameInfo: GameInfo;
-  user: UserInfo | undefined;
-  userSessionId: string | undefined;
-}
-
 const socket = io(
   `${
     process.env.NODE_ENV == 'development'
@@ -25,6 +19,12 @@ const socket = io(
     autoConnect: false,
   },
 );
+
+interface PongProps {
+  gameInfo: GameInfo;
+  user: UserInfo | undefined;
+  userSessionId: string | undefined;
+}
 
 const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -128,6 +128,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     });
 
     return () => {
+      socket.off('connect');
       socket.off('nextFrame');
       socket.off('endGame');
       socket.disconnect();

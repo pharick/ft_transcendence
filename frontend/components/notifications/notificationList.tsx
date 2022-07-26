@@ -1,31 +1,41 @@
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { GameInfo, PendingGame, UserInfo } from '../../types/interfaces';
 import Link from 'next/link';
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import ReadyGameBlock from './readyGameBlock';
 import InviteGameBlock from './inviteGameBlock';
 import WaitGameBlock from './waitGameBlock';
+
+const socket = io(
+  `${
+    process.env.NODE_ENV == 'development'
+      ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+      : ''
+  }/notifications`,
+  {
+    autoConnect: false,
+  },
+);
 
 interface NotificationListProps {
   user?: UserInfo;
 }
 
 const NotificationList: FC<NotificationListProps> = ({ user }) => {
-  const socket = useRef<Socket>();
   const [hostGames, setHostGames] = useState<PendingGame[]>([]);
   const [guestGames, setGuestGames] = useState<PendingGame[]>([]);
   const [currentGames, setCurrentGames] = useState<GameInfo[]>([]);
 
   const getHostGames = useCallback(async () => {
     if (!user) return;
-    const response = await fetch(`/api/pending/host/${user?.id}`);
+    const response = await fetch(`/api/pending/host/${user.id}`);
     const data = await response.json();
     setHostGames(data);
   }, [user]);
 
   const getGuestGames = useCallback(async () => {
     if (!user) return;
-    const response = await fetch(`/api/pending/guest/${user?.id}`);
+    const response = await fetch(`/api/pending/guest/${user.id}`);
     const data = await response.json();
     setGuestGames(data);
   }, [user]);
@@ -44,26 +54,23 @@ const NotificationList: FC<NotificationListProps> = ({ user }) => {
   }, [getCurrentGames, getGuestGames, getHostGames]);
 
   useEffect(() => {
+    if (!user) return;
     handleUpdate().then();
 
-    if (!user) return;
+    socket.connect();
 
-    socket.current = io(
-      `${
-        process.env.NODE_ENV == 'development'
-          ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
-          : ''
-      }/notifications`,
-    );
-    socket.current?.connect();
-    socket.current?.emit('introduce', user.id);
+    socket.on('connect', () => {
+      socket.emit('introduce', user.id);
+    });
 
-    socket.current?.on('update', () => {
+    socket.on('update', () => {
       handleUpdate().then();
     });
 
     return () => {
-      socket.current?.disconnect();
+      socket.off('connect');
+      socket.off('update');
+      socket.disconnect();
     };
   }, [handleUpdate, user]);
 
