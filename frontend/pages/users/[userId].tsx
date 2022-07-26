@@ -4,6 +4,7 @@ import { CompletedGameInfo, UserInfo } from '../../types/interfaces';
 import { userContext } from '../../components/users/userProvider';
 import Invite from '../../components/users/invite';
 import Link from 'next/link';
+import CompletedGameList from '../../components/games/completedGameList';
 
 interface UserPageProps {
   userInfo: UserInfo;
@@ -42,13 +43,8 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo, completedGames }) => {
           </>
         )}
       </userContext.Consumer>
-      <ul>
-        {completedGames.map((game) => (
-          <li key={game.id}>
-            {game.hostUser.username}: {game.score1} {game.guestUser.username}: {game.score2}
-          </li>
-        ))}
-      </ul>
+
+      <CompletedGameList games={completedGames} />
     </>
   );
 };
