@@ -21,6 +21,9 @@ const socket = io(
       ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
       : ''
   }/game`,
+  {
+    autoConnect: false,
+  },
 );
 
 const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
@@ -110,8 +113,11 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   };
 
   useEffect(() => {
-    socket.connect()
-    socket.emit('connectToGame', gameInfo.gameId);
+    socket.connect();
+
+    socket.on('connect', () => {
+      socket.emit('connectToGame', gameInfo.gameId);
+    });
 
     socket.on('nextFrame', (frame: FrameInfo) => {
       renderField(frame);
@@ -120,8 +126,6 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     socket.on('endGame', (completedGameInfo: CompletedGameInfo) => {
       window.location.replace(`/completed/${completedGameInfo.id}`);
     });
-
-    console.log(socket);
 
     return () => {
       socket.off('nextFrame');
