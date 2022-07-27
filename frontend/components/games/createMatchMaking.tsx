@@ -1,8 +1,19 @@
-import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
-import {io, Socket} from "socket.io-client";
+import React, {FC, useCallback, useEffect, useState} from 'react';
+import { io } from "socket.io-client";
 import useEventListener from '../../hooks/use_event_listener';
-import {GameInfo, UserInfo} from '../../types/interfaces';
+import { GameInfo, UserInfo } from '../../types/interfaces';
 import Link from "next/link";
+
+const socket = io(
+  `${
+    process.env.NODE_ENV == 'development'
+      ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+      : ''
+  }/matchmaking`,
+  {
+    autoConnect: false,
+  },
+);
 
 interface MatchMakingModalProps {
   user: UserInfo | undefined;
@@ -10,8 +21,6 @@ interface MatchMakingModalProps {
 }
 
 const MatchMakingModal: FC<MatchMakingModalProps> = ({user, onClose}) => {
-
-  const socket = useRef<Socket>();
   const [game, setGame] = useState<GameInfo | undefined>();
 
   const keyDownHandler = (e: KeyboardEvent) => {
@@ -34,16 +43,9 @@ const MatchMakingModal: FC<MatchMakingModalProps> = ({user, onClose}) => {
   }, [onClose]);
 
   useEffect(() => {
-    socket.current = io(
-      `${
-        process.env.NODE_ENV == 'development'
-          ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
-          : ''
-      }/matchmaking`,
-    );
-    socket.current?.connect();
+    socket.connect();
 
-    socket.current?.on('newMatch', (game: GameInfo) => {
+    socket.on('newMatch', (game: GameInfo) => {
       if (game.player1.id == user?.id || game.player2.id == user?.id) {
         setGame(game);
       }
@@ -52,7 +54,8 @@ const MatchMakingModal: FC<MatchMakingModalProps> = ({user, onClose}) => {
     createMatchMaking().then();
 
     return () => {
-      socket.current?.disconnect();
+      socket.off('newMatch');
+      socket.disconnect();
     };
   }, [createMatchMaking, user]);
 
