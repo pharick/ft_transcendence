@@ -28,11 +28,11 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo, completedGames }) => {
         <title>Player {userInfo.username}</title>
       </Head>
 
-      <h1> {userInfo.username} </h1>
+      <h1>{userInfo.username}</h1>
       <userContext.Consumer>
         {({ user }) => (
           <>
-            { user?.id != userInfo.id &&
+            {user?.id != userInfo.id &&
               <>
                 <Invite userInfo={userInfo} />
                 <Link href={`/chat/private/${userInfo.id}`}>
@@ -44,6 +44,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo, completedGames }) => {
         )}
       </userContext.Consumer>
 
+      <h2>Completed games</h2>
       <CompletedGameList games={completedGames} />
     </>
   );

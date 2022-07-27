@@ -54,6 +54,7 @@ export interface CompletedGameInfo {
   duration: number;
   hostUser: UserInfo;
   guestUser: UserInfo;
+  isRanked: boolean;
 }
 
 export interface ChatMessage {

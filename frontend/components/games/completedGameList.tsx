@@ -36,6 +36,10 @@ const CompletedGameList: FC<CompletedGameListProps> = ({ games }) => {
                   <div className='completed-game-card-part'>
                     {game.duration}s
                   </div>
+
+                  <div className='completed-game-card-part'>
+                    <b>{game.isRanked ? 'Ranked' : 'Not Ranked'}</b>
+                  </div>
                 </article>
               </a>
             </Link>

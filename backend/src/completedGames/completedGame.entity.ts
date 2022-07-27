@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from '../users/user.entity';
 
 @Entity()
@@ -23,4 +29,7 @@ export class CompletedGame {
 
   @ManyToOne(() => User, (user) => user.completedGuestGames)
   guestUser: User;
+
+  @Column()
+  isRanked: boolean;
 }
