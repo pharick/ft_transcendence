@@ -1,19 +1,29 @@
 import { FC } from 'react';
 import { UserInfo } from '../../types/interfaces';
+import Image from 'next/image'
 
 interface PlayerBlockProps {
   user?: UserInfo;
 }
 
 const PlayerBlock: FC<PlayerBlockProps> = ({ user }) => {
-  const avatarUrl =`/api/users/${user?.id}/avatar`;
+  const defaultAvatar = 'static/avatars/default_avatar.png'
+  const avatarImage = `${user?.avatar ? user?.avatar : defaultAvatar}`
+  const avatarUrl =`api/${avatarImage}`;
+
+  const avatarLoader = ({src, width, quality}: any) => {
+    return `http://localhost/${src}`
+  }
 
   return (
     <article>
       <div className='avatar-placeholder-big'>
-        <picture>
-            <img src={avatarUrl} alt='Users avatar'/>
-          </picture>
+        <Image
+          layout='raw'
+          loader={avatarLoader}
+          src={avatarUrl}
+          alt='Users avatar'
+        />
       </div>
       <p className='player-block-username'>
         {user ? `${user.username} (Rank: ${user.rank})` : 'Mr. Wall'}

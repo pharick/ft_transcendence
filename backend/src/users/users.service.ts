@@ -50,10 +50,10 @@ export class UsersService {
   }
 
   public async setAvatar(userId: number, avatarUrl: string) {
-    this.usersRepository.update(userId, {avatar: avatarUrl});
+    await this.usersRepository.update(userId, { avatar: avatarUrl });
   }
 
   public async setDisplayName(userId: number, newDisplayName: string) {
-    this.usersRepository.update(userId, {displayName: newDisplayName});
+    await this.usersRepository.update(userId, { displayName: newDisplayName });
   }
 }

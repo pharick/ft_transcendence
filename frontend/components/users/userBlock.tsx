@@ -1,4 +1,6 @@
 import { FC } from 'react';
+import Link from 'next/link';
+
 import { UserInfo } from '../../types/interfaces';
 
 interface UserBlockProps {
@@ -13,7 +15,9 @@ const UserBlock: FC<UserBlockProps> = ({ user, handleLogout }) => {
     <section className="user-block">
       {user ? (
         <>
-          <a href={`/users/${user.id}`}><p className="user-name">{user.username}</p></a>
+          <Link href={`/users/${user.id}`}>
+            <a className="user-name">{user.username}</a>
+          </Link>
           <button onClick={handleLogout}>Logout</button>
         </>
       ) : (

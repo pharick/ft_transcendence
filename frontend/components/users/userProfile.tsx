@@ -1,5 +1,6 @@
 import { FC, useState } from 'react';
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
+import Image from 'next/image'
 
 import { UserInfo } from '../../types/interfaces';
 import { userContext } from './userProvider';
@@ -54,18 +55,29 @@ const UserProfile: FC<UserProfileProps> = ({ userInfo }) => {
       alert ('Wrong nickname. Use ONLY letters and numbers, length 3-10 symbols');
   };
 
-  const avatarUrl =`/api/users/${userInfo.id}/avatar`;
+  const defaultAvatar = 'static/avatars/default_avatar.png'
+  const avatarImage = `${userInfo.avatar ? userInfo.avatar : defaultAvatar}`
+  const avatarUrl =`api/${avatarImage}`;
   const nickName = `${userInfo.displayName ? userInfo.displayName : userInfo.username}`;
   const status = `${userInfo.isOnline ? 'Online' : 'Offline'}`;
-  const classStatus = `${userInfo.isOnline ? 'online-status' : 'offline-status'}`;;
+  const classStatus = `${userInfo.isOnline ? 'online-status' : 'offline-status'}`;
+
+  const avatarLoader = ({src}: any) => {
+    return `http://localhost/${src}`
+  }
 
   return (
     <div className='block-profile'>
 
       <div className='avatar-profile'>
-        <picture>
-          <img src={avatarUrl} alt='Users avatar'/>
-        </picture>
+        <div className='avatar-img'>
+          <Image
+            layout='raw'
+            loader={avatarLoader}
+            src={avatarUrl}
+            alt='Users avatar'
+          />
+        </div>
         <p className={classStatus}>{status}</p>
       </div>
 

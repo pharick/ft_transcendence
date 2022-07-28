@@ -5,7 +5,6 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 
-
 @Injectable()
 export class MaxFileSizeValidator implements PipeTransform {
   constructor(private maxSize: any) {}
@@ -23,7 +22,7 @@ export class FileTypeValidator implements PipeTransform {
   constructor(private fileType: any) {}
 
   transform(value: any, metadata: ArgumentMetadata) {
-    const res = this.fileType.filter(type => type == value.mimetype)
+    const res = this.fileType.filter((type) => type == value.mimetype);
     if (res.length == 0) throw new BadRequestException();
     return value;
   }
@@ -31,11 +30,10 @@ export class FileTypeValidator implements PipeTransform {
 
 @Injectable()
 export class DisplayNameValidator implements PipeTransform {
-  constructor() {}
-
   transform(value: any, metadata: ArgumentMetadata) {
-    const regexp: RegExp = /^[A-Za-z0-9]{3,10}$/
-    if (regexp.test(value['nickname']) == false) throw new BadRequestException();
+    const regexp = /^[A-Za-z0-9]{3,10}$/;
+    if (regexp.test(value['nickname']) == false)
+      throw new BadRequestException();
     return value;
   }
 }

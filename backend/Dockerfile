@@ -4,9 +4,7 @@ WORKDIR /usr/src/app
 
 COPY package.json ./
 COPY package-lock.json ./
-RUN npm i
-RUN npm i -D @types/multer
-RUN mkdir avatars
+RUN npm ci
 
 COPY . ./
 RUN npm run build

@@ -16,7 +16,7 @@ services:
     env_file:
       - ./backend/.env
     volumes:
-      - 'backend_avatars:/usr/src/app/avatars/'
+      - 'static:/usr/src/app/static/avatars/'
 
   db:
     build: './db'
@@ -29,4 +29,4 @@ services:
 
 volumes:
   db_data:
-  backend_avatars:
+  static:

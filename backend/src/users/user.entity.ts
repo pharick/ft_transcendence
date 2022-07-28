@@ -19,10 +19,10 @@ export class User {
   @Column({ unique: true })
   username: string;
 
-  @Column({ default: '' })
+  @Column({ nullable: true })
   displayName: string;
 
-  @Column({ default: '' })
+  @Column({ nullable: true })
   avatar: string;
 
   @Column({ default: true })

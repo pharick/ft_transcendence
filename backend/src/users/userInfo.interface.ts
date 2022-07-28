@@ -2,6 +2,7 @@ export default interface UserInfo {
   id: number;
   username: string;
   displayName: string;
+  avatar: string;
   isActive: boolean;
   rank: number;
   oldRank: number;

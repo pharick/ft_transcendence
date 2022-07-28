@@ -86,19 +86,19 @@ input[type=text] {
 /* Player Block */
 
 .avatar-placeholder-big {
-    background-color: lightgray;
-    width: 250px;
-    height: 250px;
-    border-radius: 50%;
-    border: 1px solid dodgerblue;
+    background-color: lightgray !important;
+    width: 250px !important;
+    height: 250px !important;
+    border-radius: 50% !important;
+    border: 1px solid dodgerblue !important;
 }
 
 .avatar-placeholder-small {
-    background-color: lightgray;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: 1px solid dodgerblue;
+    background-color: lightgray !important;
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 50% !important;
+    border: 1px solid dodgerblue !important;
 }
 
 .player-block-username {
@@ -256,12 +256,12 @@ button.side-panel-button-visible {
     margin: 0 10px 0 0;
 }
 
-.user-block a{
+.user-block a {
     color:  #ffffff;
     text-decoration: none;
 }
 
-.user-block a:hover > .user-name {
+.user-block a:hover {
     color: dodgerblue;
 }
 
@@ -631,12 +631,12 @@ button.side-panel-button-visible {
     margin-bottom: 15px;
 }
 
-.avatar-profile img {
-    background-color: lightgray;
-    width: 250px;
-    height: 250px;
-    border-radius: 50%;
-    border: 2px solid rgb(106, 106, 106);
+.avatar-profile .avatar-img > img {
+    background-color: lightgray !important;
+    width: 250px !important;
+    height: 250px !important;
+    border-radius: 50% !important;
+    border: 2px solid rgb(106, 106, 106) !important;
 }
 
 .block-profile p {
