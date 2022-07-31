@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom, map } from 'rxjs';
-import { v4 as uuid4 } from 'uuid';
 
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
@@ -10,7 +9,6 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   private logger: Logger = new Logger('AuthService');
-  private userSessions: Record<string, number> = {};
 
   constructor(
     private usersService: UsersService,
@@ -42,7 +40,7 @@ export class AuthService {
     return user;
   }
 
-  async login(code: string): Promise<string> {
+  async login(code: string): Promise<number> {
     let username;
     if (code == '0') {
       username = 'testuser';
@@ -66,17 +64,6 @@ export class AuthService {
 
     const user = await this.findOrCreateUser(username);
 
-    const userSessionId = uuid4();
-    this.userSessions[userSessionId] = user.id;
-
-    return userSessionId;
-  }
-
-  logout(userSessionId: string): void {
-    delete this.userSessions[userSessionId];
-  }
-
-  getUserIdBySessionId(userSessionId: string): number {
-    return this.userSessions[userSessionId] || null;
+    return user.id;
   }
 }

@@ -29,12 +29,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('msgToServer')
   async handleMessage(client: Socket, message: ChatMessageDto): Promise<void> {
-    const newMessage = await this.chatService.create(message);
-    if (!newMessage) return;
+    // const newMessage = await this.chatService.create(message);
+    // if (!newMessage) return;
 
     client.rooms.forEach((room) => {
       if (room == client.id) return;
-      this.server.to(room).emit('msgToClient', newMessage);
+      // this.server.to(room).emit('msgToClient', newMessage);
     });
   }
 

@@ -1,18 +1,26 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { User } from './users/user.entity';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { GamesModule } from './games/games.module';
 import { PendingGame } from './pendingGames/pendingGame.entity';
-import { PendingGamesModule } from './pendingGames/pendingGames.module';
 import { CompletedGame } from './completedGames/completedGame.entity';
-import { MatchMakingGamesModule } from './matchMakingGames/matchMakingGames.module';
-import { ChatModule } from './chat/chat.module';
 import { ChatRoom } from './chat/chatRoom.entity';
 import { ChatMessage } from './chat/chatMessage.entity';
+import { ChatRoomUser } from './chat/chatRoomUser.entity';
+import { UserMiddleware } from './users/user.middleware';
+import { UsersModule } from './users/users.module';
+import { GamesModule } from './games/games.module';
+import { PendingGamesModule } from './pendingGames/pendingGames.module';
+import { MatchMakingModule } from './matchMaking/matchMaking.module';
+import { CompletedGamesModule } from './completedGames/completedGames.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -24,7 +32,14 @@ import { ChatMessage } from './chat/chatMessage.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      entities: [User, PendingGame, CompletedGame, ChatRoom, ChatMessage],
+      entities: [
+        User,
+        PendingGame,
+        CompletedGame,
+        ChatRoom,
+        ChatRoomUser,
+        ChatMessage,
+      ],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([User]),
@@ -32,10 +47,18 @@ import { ChatMessage } from './chat/chatMessage.entity';
     UsersModule,
     GamesModule,
     PendingGamesModule,
-    MatchMakingGamesModule,
-    ChatModule,
+    CompletedGamesModule,
+    MatchMakingModule,
+    NotificationsModule,
+    // ChatModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(UserMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

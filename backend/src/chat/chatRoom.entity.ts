@@ -1,30 +1,21 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { User } from '../users/user.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ChatMessage } from './chatMessage.entity';
+import { ChatRoomUser } from './chatRoomUser.entity';
 
 @Entity()
 export class ChatRoom {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: false })
-  isPrivate: boolean;
+  @Column()
+  name: string;
 
   @Column({ nullable: true, select: false })
   passwordHash: string;
 
-  @ManyToOne(() => User, (user) => user.hostPrivateChats, { nullable: true })
-  hostUser: User;
-
-  @ManyToOne(() => User, (user) => user.guestPrivateChats, { nullable: true })
-  guestUser: User;
-
   @OneToMany(() => ChatMessage, (message) => message.room)
   messages: ChatMessage[];
+
+  @OneToMany(() => ChatRoomUser, (chatRoomUser) => chatRoomUser.user)
+  users: ChatRoomUser[];
 }

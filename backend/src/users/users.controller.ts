@@ -5,11 +5,15 @@ import {
   Logger,
   NotFoundException,
   ParseIntPipe,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
+import { Request } from 'express';
 
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import UserInfo from './userInfo.interface';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -20,6 +24,12 @@ export class UsersController {
   @Get()
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
+  }
+
+  @Get('me')
+  @UseGuards(AuthGuard)
+  async getCurrentUser(@Req() request: Request) {
+    return request.user;
   }
 
   @Get(':userId')

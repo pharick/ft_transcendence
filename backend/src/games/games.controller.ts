@@ -5,15 +5,17 @@ import {
   Param,
   Logger,
   NotFoundException,
-  Session,
   Put,
-  UnauthorizedException,
   ForbiddenException,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
+import { Request } from 'express';
 
 import { GamesService } from './games.service';
 import { GameInfo } from './games.interfaces';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('games')
 export class GamesController {
@@ -30,9 +32,9 @@ export class GamesController {
   }
 
   @Get('my')
-  findMy(@Session() session: Record<string, any>): Promise<GameInfo[]> {
-    const userId = session.userId;
-    return this.gamesService.findMy(userId);
+  @UseGuards(AuthGuard)
+  findMy(@Req() request: Request): Promise<GameInfo[]> {
+    return this.gamesService.findMy(request.user.id);
   }
 
   @Get(':gameId')
@@ -43,24 +45,20 @@ export class GamesController {
   }
 
   @Post(':gameId/resume')
-  resumeGame(
-    @Param('gameId') gameId: string,
-    @Session() session: Record<string, any>,
-  ) {
-    const userId = session.userId;
-    if (!this.gamesService.resumeGame(gameId, userId))
+  @UseGuards(AuthGuard)
+  resumeGame(@Param('gameId') gameId: string, @Req() request: Request) {
+    if (!this.gamesService.resumeGame(gameId, request.user.id))
       throw new ForbiddenException();
   }
 
   @Put()
-  async createTestGame(
-    @Session() session: Record<string, any>,
-  ): Promise<GameInfo> {
-    const userId = session.userId;
-    if (!userId) {
-      throw new UnauthorizedException();
-    }
-    const game = await this.gamesService.createNewGame(userId, null, false);
+  @UseGuards(AuthGuard)
+  async createTestGame(@Req() request: Request): Promise<GameInfo> {
+    const game = await this.gamesService.createNewGame(
+      request.user.id,
+      null,
+      false,
+    );
     this.notificationsGateway.server.emit('update');
     return game;
   }

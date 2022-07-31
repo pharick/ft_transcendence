@@ -2,7 +2,7 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 
 import { userContext } from '../components/users/userProvider';
-import MatchMakingModeButton from "../components/games/createMatchMaking";
+import MatchMakingButton from "../components/games/createMatchMaking";
 import TrainingModeButton from '../components/games/createTestGame';
 
 const HomePage: NextPage = () => {
@@ -16,7 +16,7 @@ const HomePage: NextPage = () => {
 
       <userContext.Consumer>
         {({ user}) => (
-          <MatchMakingModeButton user={user} />
+          <MatchMakingButton user={user} />
         )}
       </userContext.Consumer>
 

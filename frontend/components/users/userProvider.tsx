@@ -15,7 +15,6 @@ export const userContext = createContext<UserContext>({});
 
 const UserProvider: FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserInfo>();
-  const [userSessionId, setUserSessionId] = useState<string>();
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -23,10 +22,9 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
   };
 
   const getUser = useCallback(async () => {
-    const response = await fetch('/api/auth/me');
-    const data = await response.json();
-    setUser(data.user);
-    setUserSessionId(data.userSessionId);
+    const response = await fetch('/api/users/me');
+    const user = await response.json();
+    setUser(user);
   }, []);
 
   useEffect(() => {
@@ -35,9 +33,8 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
 
   const value = useMemo(() => ({
     user,
-    userSessionId,
     handleLogout,
-  }), [user, userSessionId])
+  }), [user])
 
   return <userContext.Provider value={value}>{children}</userContext.Provider>;
 };

@@ -1,20 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GamesService } from '../games/games.service';
 import { UsersService } from '../users/users.service';
-import { MatchMakingGamesGateway } from './matchMakingGames.gateway';
+import { MatchMakingGateway } from './matchMaking.gateway';
 
 @Injectable()
-export class MatchMakingGamesService {
-  private logger: Logger = new Logger('MatchMakingGamesService');
+export class MatchMakingService {
+  private logger: Logger = new Logger('MatchMakingService');
 
   private readonly matchMakingDelta = 5000;
-  private readonly maxRankDelta = 23;
   private rankedQueue: Record<number, Set<number>> = {};
 
   constructor(
     private gamesService: GamesService,
     private usersService: UsersService,
-    private matchMakingGateway: MatchMakingGamesGateway,
+    private matchMakingGateway: MatchMakingGateway,
   ) {
     setInterval(() => {
       this.matchPlayers().then();

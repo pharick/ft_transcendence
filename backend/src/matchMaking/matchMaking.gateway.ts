@@ -7,10 +7,10 @@ import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({ namespace: 'matchmaking', cors: true })
-export class MatchMakingGamesGateway implements OnGatewayConnection {
+export class MatchMakingGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
-  private logger: Logger = new Logger('MatchMakingGamesGateway');
+  private logger: Logger = new Logger('MatchMakingGateway');
 
   handleConnection(client: Socket, ...args: any[]): void {
     this.logger.log(`MatchMaking client connected: ${client.id}`);

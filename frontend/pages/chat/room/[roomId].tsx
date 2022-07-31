@@ -10,10 +10,10 @@ interface PrivateChatPageProps {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const companionId = context.params?.companionId;
+  const roomId = context.params?.roomId;
   const headers = context.req.headers.cookie ? { 'Cookie': context.req.headers.cookie } : undefined;
   const roomResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/chat/rooms/private/${companionId}`,
+    `${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/chat/rooms/${roomId}`,
     { headers: headers},
   );
   if (roomResponse.status == 404 || roomResponse.status == 401) return { notFound: true };

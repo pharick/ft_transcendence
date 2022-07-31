@@ -1,4 +1,4 @@
-import { FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, FormEvent, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { ChatMessage, ChatRoom, UserInfo } from '../../types/interfaces';
 import { format } from 'date-fns';
@@ -27,21 +27,7 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
   const [messageText, setMessageText] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
-  const getMessages = useCallback(async () => {
-    let roomPostfix = 'common';
-    if (room?.isPrivate && user) {
-      const companion = user.id == room.hostUser.id ? room.guestUser : room.hostUser;
-      roomPostfix = `private/${companion.id}`;
-    }
-
-    const messagesResponse = await fetch(`/api/chat/messages/${roomPostfix}`);
-    const messages = await messagesResponse.json();
-    setMessages(messages);
-  }, [user, room]);
-
   useEffect(() => {
-    getMessages().then();
-
     socket.connect();
 
     socket.on('connect', () => {
@@ -57,7 +43,7 @@ const Chat: FC<ChatProps> = ({ user, userSessionId, room }) => {
       socket.off('msgToClient');
       socket.disconnect();
     };
-  }, [getMessages, room]);
+  }, [room]);
 
   useEffect(() => {
     if (messageList.current)

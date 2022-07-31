@@ -1,8 +1,10 @@
-import React, {FC, useCallback, useEffect, useState} from 'react';
-import { io } from "socket.io-client";
-import useEventListener from '../../hooks/use_event_listener';
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { io } from 'socket.io-client';
 import { GameInfo, UserInfo } from '../../types/interfaces';
-import Link from "next/link";
+import dynamic from 'next/dynamic';
+
+const Modal = dynamic(() => import('../../components/layout/modal'), { ssr: false });
 
 const socket = io(
   `${
@@ -15,19 +17,14 @@ const socket = io(
   },
 );
 
-interface MatchMakingModalProps {
+interface MatchMakingButtonProps {
   user: UserInfo | undefined;
-  onClose: () => void;
 }
 
-const MatchMakingModal: FC<MatchMakingModalProps> = ({user, onClose}) => {
-  const [game, setGame] = useState<GameInfo | undefined>();
+const MatchMakingButton: FC<MatchMakingButtonProps> = ({ user }) => {
 
-  const keyDownHandler = (e: KeyboardEvent) => {
-    if (e.code == 'Escape') {
-      onClose();
-    }
-  };
+  const [isOpen, setIsOpen] = useState(false);
+  const [game, setGame] = useState<GameInfo | undefined>();
 
   const createMatchMaking = useCallback(async () => {
     const response = await fetch('/api/matchMaking', {
@@ -39,8 +36,8 @@ const MatchMakingModal: FC<MatchMakingModalProps> = ({user, onClose}) => {
     const response = await fetch('/api/matchMaking', {
       method: 'DELETE',
     });
-    onClose();
-  }, [onClose]);
+    setIsOpen(false);
+  }, []);
 
   useEffect(() => {
     socket.connect();
@@ -59,58 +56,34 @@ const MatchMakingModal: FC<MatchMakingModalProps> = ({user, onClose}) => {
     };
   }, [createMatchMaking, user]);
 
-  useEventListener('keydown', keyDownHandler, document);
-
-  return (
-    <div className="modal">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h4 className="modal-title">
-            {game
-              ? 'Opponent founded'
-              : 'Searching for an opponent...'
-            }
-          </h4>
-        </div>
-        <div className="modal-body">
-          {game
-            ? <div className="modal-body-button-play">
-              <p>Game created: <b>{game.player1.username}</b> vs. <b>{game.player2.username}</b></p>
-               <p><Link href={`/games/${game.gameId}`}>
-                <a className="button">Play</a>
-               </Link></p>
-            </div>
-            : <div className="loader"></div>
-          }
-        </div>
-        <div className="modal-footer">
-          <button onClick={cancelMatchMaking} className="error-button" disabled={!!game}>Cancel</button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-interface MatchMakingModeButtonProps {
-  user: UserInfo | undefined;
-}
-
-const MatchMakingModeButton: FC<MatchMakingModeButtonProps> = ({user}) => {
-
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
     <>
       <button onClick={() => {
-        setIsOpen(true)
+        setIsOpen(true);
       }}>
         MatchMakingMode
       </button>
-      {isOpen && <MatchMakingModal user={user} onClose={() => {
-        setIsOpen(false)
-      }}/>}
+
+      <Modal
+        isOpen={isOpen}
+        cancelButtonText={'Cancel'}
+        cancelButtonHandler={cancelMatchMaking}
+        isCancelButtonDisabled={Boolean(game)}
+        title={game ? 'Opponent founded' : 'Searching for an opponent...'}
+      >
+        {game ?
+          <div className='modal-body-button-play'>
+            <p>Game created: <b>{game.player1.username}</b> vs. <b>{game.player2.username}</b></p>
+            <p><Link href={`/games/${game.gameId}`}>
+              <a className='button'>Play</a>
+            </Link></p>
+          </div>
+          :
+          <div className='loader'></div>
+        }
+      </Modal>
     </>
-  )
+  );
 };
 
-export default MatchMakingModeButton;
+export default MatchMakingButton;

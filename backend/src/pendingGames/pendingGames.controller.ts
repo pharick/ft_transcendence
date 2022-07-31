@@ -11,9 +11,11 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Session,
+  Req,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
+import { Request } from 'express';
 
 import { PendingGamesService } from './pendingGames.service';
 import { PendingGame } from './pendingGame.entity';
@@ -22,7 +24,7 @@ import { UsersService } from '../users/users.service';
 import { GamesService } from '../games/games.service';
 import { GameInfo } from '../games/games.interfaces';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
-import UserInfo from '../users/userInfo.interface';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('pending')
 export class PendingGamesController {
@@ -55,19 +57,16 @@ export class PendingGamesController {
   }
 
   @Put()
+  @UseGuards(AuthGuard)
   async create(
-    @Session() session: Record<string, any>,
+    @Req() request: Request,
     @Body() createPendingGameDto: CreatePendingGameDto,
   ): Promise<PendingGame> {
-    const hostUserId: number = session.userId;
+    const hostUserId: number = request.user.id;
     const guestUserId: number = createPendingGameDto.guestUserId;
 
-    const hostUser: UserInfo = await this.usersService.findOne(hostUserId);
-    const guestUser: UserInfo = await this.usersService.findOne(guestUserId);
-
-    if (!hostUserId) throw new UnauthorizedException();
     const pending = this.pendingGamesService
-      .create(hostUser, guestUser)
+      .create(hostUserId, guestUserId)
       .catch((error) => {
         this.logger.error(error);
         throw new ConflictException();
@@ -77,15 +76,16 @@ export class PendingGamesController {
   }
 
   @Post(':pendingGameId/accept')
+  @UseGuards(AuthGuard)
   async accept(
-    @Session() session: Record<string, any>,
+    @Req() request: Request,
     @Param('pendingGameId', new ParseIntPipe()) pendingGameId: number,
   ): Promise<GameInfo> {
     const pending: PendingGame = await this.pendingGamesService.findOne(
       pendingGameId,
     );
     if (!pending) throw new NotFoundException();
-    if (session.userId != pending.guestUser.id)
+    if (request.user.Id != pending.guestUser.id)
       throw new UnauthorizedException();
     await this.pendingGamesService.remove(pendingGameId);
     const game = this.gamesService.createNewGame(
@@ -98,14 +98,17 @@ export class PendingGamesController {
   }
 
   @Delete(':pendingGameId')
+  @UseGuards(AuthGuard)
   async remove(
-    @Session() session: Record<string, any>,
+    @Req() request: Request,
     @Param('pendingGameId', new ParseIntPipe()) pendingGameId: number,
   ): Promise<void> {
-    const userId: number = session.userId;
     const pending = await this.pendingGamesService.findOne(pendingGameId);
     if (!pending) throw new NotFoundException();
-    if (pending.hostUser.id != userId && pending.guestUser.id != userId)
+    if (
+      pending.hostUser.id != request.user.id &&
+      pending.guestUser.id != request.user.id
+    )
       throw new ForbiddenException();
     await this.pendingGamesService.remove(pendingGameId);
     this.notificationsGateway.server.emit('update');

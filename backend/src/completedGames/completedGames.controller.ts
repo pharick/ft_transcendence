@@ -31,9 +31,6 @@ export class CompletedGamesController {
   async findAllByUser(
     @Param('userId', new ParseIntPipe()) userId: number,
   ): Promise<CompletedGame[]> {
-    const completedGames = await this.completedGamesService.findAllByUser(
-      userId,
-    );
-    return completedGames;
+    return await this.completedGamesService.findAllByUser(userId);
   }
 }

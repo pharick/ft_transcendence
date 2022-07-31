@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { PendingGame } from './pendingGame.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import UserInfo from '../users/userInfo.interface';
 
 @Injectable()
 export class PendingGamesService {
@@ -46,10 +45,10 @@ export class PendingGamesService {
     });
   }
 
-  create(hostUser: UserInfo, guestUser: UserInfo | null): Promise<PendingGame> {
+  create(hostUserId: number, guestUserId?: number): Promise<PendingGame> {
     const pendingGame = this.pendingGamesRepository.create({
-      hostUser,
-      guestUser,
+      hostUser: { id: guestUserId },
+      guestUser: { id: hostUserId },
     });
     return this.pendingGamesRepository.save(pendingGame);
   }
