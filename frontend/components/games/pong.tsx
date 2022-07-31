@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import {FC, useContext, useEffect, useRef, useState} from 'react';
 import { io } from 'socket.io-client';
 
 import useEventListener from '../../hooks/use_event_listener';
@@ -8,6 +8,8 @@ import {
   GameInfo,
   UserInfo,
 } from '../../types/interfaces';
+import {RequestErrorHandlerContext} from "../utils/requestErrorHandlerProvider";
+import {fetchWithHandleErrors} from "../../utils";
 
 const socket = io(
   `${
@@ -33,6 +35,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   const [pause, setPause] = useState(true);
   const [player1Turn, setPlayer1Turn] = useState(false);
   const [duration, setDuration] = useState(0);
+  const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const renderField = ({
                          ballX,
@@ -107,9 +110,7 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   };
 
   const resumeGame = async () => {
-    const response = await fetch(`/api/games/${gameInfo.gameId}/resume`, {
-      method: 'POST',
-    });
+    await fetchWithHandleErrors(`/api/games/${gameInfo.gameId}/resume`, 'POST', requestErrorHandlerContext);
   };
 
   useEffect(() => {

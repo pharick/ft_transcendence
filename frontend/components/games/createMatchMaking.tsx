@@ -4,6 +4,8 @@ import { io } from 'socket.io-client';
 import { GameInfo } from '../../types/interfaces';
 import dynamic from 'next/dynamic';
 import { UserContext } from '../users/userProvider';
+import {RequestErrorHandlerContext} from "../utils/requestErrorHandlerProvider";
+import {fetchWithHandleErrors} from "../../utils";
 
 const Modal = dynamic(() => import('../../components/layout/modal'), { ssr: false });
 
@@ -23,6 +25,7 @@ const MatchMakingButton: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [game, setGame] = useState<GameInfo | undefined>();
   const userContext = useContext(UserContext);
+  const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const handleClick = () => {
     createMatchMaking().then();
@@ -30,9 +33,7 @@ const MatchMakingButton: FC = () => {
   }
 
   const createMatchMaking = useCallback(async () => {
-    const response = await fetch('/api/matchMaking', {
-      method: 'PUT',
-    });
+    await fetchWithHandleErrors('/api/matchMaking', 'PUT', requestErrorHandlerContext);
 
     socket.connect();
 
@@ -41,17 +42,16 @@ const MatchMakingButton: FC = () => {
         setGame(game);
       }
     });
-  }, [userContext]);
+  }, [requestErrorHandlerContext, userContext.user?.id]);
 
   const cancelMatchMaking = useCallback(async () => {
-    const response = await fetch('/api/matchMaking', {
-      method: 'DELETE',
-    });
+    await fetchWithHandleErrors('/api/matchMaking', 'DELETE', requestErrorHandlerContext);
+
     setIsOpen(false);
 
     socket.off('newMatch');
     socket.disconnect();
-  }, []);
+  }, [requestErrorHandlerContext]);
 
   return (
     <>
@@ -74,7 +74,7 @@ const MatchMakingButton: FC = () => {
             </Link></p>
           </div>
           :
-          <div className='loader'></div>
+          <div className='loader'/>
         }
       </Modal>
     </>

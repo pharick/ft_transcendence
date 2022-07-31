@@ -1,5 +1,7 @@
-import { createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import {createContext, FC, ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import { UserInfo } from '../../types/interfaces';
+import {RequestErrorHandlerContext} from "../utils/requestErrorHandlerProvider";
+import {fetchWithHandleErrors} from "../../utils";
 
 interface UserProviderProps {
   children?: ReactNode;
@@ -15,9 +17,10 @@ export const UserContext = createContext<UserContextInterface>({});
 
 const UserProvider: FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserInfo>();
+  const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
+    await fetchWithHandleErrors('/api/auth/logout', 'POST', requestErrorHandlerContext);
     setUser(undefined);
   };
 
