@@ -7,7 +7,7 @@ interface RequestErrorHandlerProviderProps {
   children?: ReactNode;
 }
 
-interface RequestErrorHandlerContextInterface {
+export interface RequestErrorHandlerContextInterface {
   requestErrorHandler: (requestHandler: () => Promise<Response | undefined>) => Promise<Response | undefined>;
 }
 
