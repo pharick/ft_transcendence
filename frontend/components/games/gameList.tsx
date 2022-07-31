@@ -1,13 +1,16 @@
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 import { GameInfo, UserInfo } from '../../types/interfaces';
 import Link from 'next/link';
+import { UserContext } from '../users/userProvider';
 
 interface GameListProps {
   games: GameInfo[];
-  user: UserInfo | undefined;
 }
 
-const GameList: FC<GameListProps> = ({ games, user }) => {
+const GameList: FC<GameListProps> = ({ games }) => {
+
+  const userContext = useContext(UserContext);
+
   return (
     games.length > 0 ?
       <ul className='game-list'>
@@ -27,7 +30,7 @@ const GameList: FC<GameListProps> = ({ games, user }) => {
                     </div>
                   </div>
                   <h2 className='game-card-header'>
-                    {user && (game.player1?.id == user?.id || game.player2?.id == user?.id) ? 'Play' : 'Watch'}
+                    {userContext.user && (game.player1?.id == userContext.user?.id || game.player2?.id == userContext.user?.id) ? 'Play' : 'Watch'}
                   </h2>
                 </article>
               </a>

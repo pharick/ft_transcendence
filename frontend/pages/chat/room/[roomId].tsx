@@ -1,9 +1,6 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import { ChatRoom } from '../../../types/interfaces';
-import Chat from '../../../components/chats/chat';
-import { userContext } from '../../../components/users/userProvider';
-import ChatRoomsMenu from '../../../components/chats/chatRoomsMenu';
 
 interface PrivateChatPageProps {
   chatRoom: ChatRoom;
@@ -28,14 +25,9 @@ const PrivateChatPage: NextPage<PrivateChatPageProps> = ({ chatRoom }) => {
         <title>Private chat</title>
       </Head>
 
-      <userContext.Consumer>
-        {({ user, userSessionId}) => (
-          <>
-            <ChatRoomsMenu user={user} />
-            <Chat user={user} userSessionId={userSessionId} room={chatRoom} />
-          </>
-        )}
-      </userContext.Consumer>
+      {/*<ChatRoomsMenu user={user} />*/}
+      {/*<Chat user={user} userSessionId={userSessionId} room={chatRoom} />*/}
+
     </>
   );
 };

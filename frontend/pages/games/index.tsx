@@ -2,7 +2,6 @@ import type { NextPage } from 'next';
 import { GetServerSideProps } from 'next';
 import { GameInfo } from '../../types/interfaces';
 import GameList from '../../components/games/gameList';
-import { userContext } from '../../components/users/userProvider';
 import Head from 'next/head';
 
 interface GamesPageProps {
@@ -22,11 +21,7 @@ const HomePage: NextPage<GamesPageProps> = ({ games }) => {
         <title>Ongoing games</title>
       </Head>
 
-      <userContext.Consumer>
-        {({ user }) => (
-          <GameList games={games} user={user}/>
-        )}
-      </userContext.Consumer>
+      <GameList games={games} />
     </>
   );
 };

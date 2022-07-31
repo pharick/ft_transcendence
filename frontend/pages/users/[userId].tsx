@@ -1,9 +1,10 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import { CompletedGameInfo, UserInfo } from '../../types/interfaces';
-import { userContext } from '../../components/users/userProvider';
+import { UserContext } from '../../components/users/userProvider';
 import Invite from '../../components/users/invite';
 import Link from 'next/link';
+import { useContext } from 'react';
 
 interface UserPageProps {
   userInfo: UserInfo;
@@ -21,6 +22,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const UserPage: NextPage<UserPageProps> = ({ userInfo, completedGames }) => {
+
+  const userContext = useContext(UserContext);
+
   return (
     <>
       <Head>
@@ -28,20 +32,16 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo, completedGames }) => {
       </Head>
 
       <h1> {userInfo.username} </h1>
-      <userContext.Consumer>
-        {({ user }) => (
-          <>
-            { user?.id != userInfo.id &&
-              <>
-                <Invite userInfo={userInfo} />
-                <Link href={`/chat/private/${userInfo.id}`}>
-                  <a className="button">Private chat</a>
-                </Link>
-              </>
-            }
-          </>
-        )}
-      </userContext.Consumer>
+
+      {userContext.user?.id != userInfo.id &&
+        <>
+          <Invite userInfo={userInfo} />
+          <Link href={`/chat/private/${userInfo.id}`}>
+            <a className="button">Private chat</a>
+          </Link>
+        </>
+      }
+
       <ul>
         {completedGames.map((game) => (
           <li key={game.id}>

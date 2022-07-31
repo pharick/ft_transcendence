@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic';
 import Head from 'next/head';
 
 import { GameInfo } from '../../types/interfaces';
-import { userContext } from '../../components/users/userProvider';
 
 const Pong = dynamic(() => import('../../components/games/pong'), { ssr: false });
 
@@ -36,11 +35,7 @@ const GamePage: NextPage<GamePageProps> = ({ gameInfo }) => {
         vs <b>{gameInfo.player2 ? gameInfo.player2.username : 'Mr. Wall'}</b>
       </h1>
 
-      <userContext.Consumer>
-        {({ user, userSessionId }) => (
-          <Pong gameInfo={gameInfo} user={user} userSessionId={userSessionId} />
-        )}
-      </userContext.Consumer>
+      {/*<Pong gameInfo={gameInfo} user={user} userSessionId={userSessionId} />*/}
     </>
   );
 };
