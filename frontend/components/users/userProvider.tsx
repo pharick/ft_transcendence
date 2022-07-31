@@ -23,8 +23,10 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
 
   const getUser = useCallback(async () => {
     const response = await fetch('/api/users/me');
-    const user = await response.json();
-    setUser(user);
+    if (response.ok) {
+      const user = await response.json();
+      setUser(user);
+    }
   }, []);
 
   useEffect(() => {

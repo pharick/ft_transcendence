@@ -3,7 +3,7 @@ import useEventListener from '../../hooks/use_event_listener';
 
 interface ModalProps {
   isOpen: boolean;
-  children: ReactNode;
+  children?: ReactNode;
   title: string;
   isCancelButtonDisabled: boolean;
   cancelButtonText: string;
@@ -20,7 +20,7 @@ const Modal: FC<ModalProps> = ({
                                }) => {
 
   const keyDownHandler = (e: KeyboardEvent) => {
-    if (e.code == 'Escape') {
+    if (isOpen && e.code == 'Escape') {
       cancelButtonHandler();
     }
   };

@@ -129,6 +129,10 @@ input[type=text] {
     }
 }
 
+.load-message {
+    text-align: center;
+}
+
 /* Header */
 
 .header {

@@ -26,20 +26,16 @@ const MatchMakingButton: FC<MatchMakingButtonProps> = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [game, setGame] = useState<GameInfo | undefined>();
 
+  const handleClick = () => {
+    createMatchMaking().then();
+    setIsOpen(true);
+  }
+
   const createMatchMaking = useCallback(async () => {
     const response = await fetch('/api/matchMaking', {
       method: 'PUT',
     });
-  }, []);
 
-  const cancelMatchMaking = useCallback(async () => {
-    const response = await fetch('/api/matchMaking', {
-      method: 'DELETE',
-    });
-    setIsOpen(false);
-  }, []);
-
-  useEffect(() => {
     socket.connect();
 
     socket.on('newMatch', (game: GameInfo) => {
@@ -47,20 +43,21 @@ const MatchMakingButton: FC<MatchMakingButtonProps> = ({ user }) => {
         setGame(game);
       }
     });
+  }, [user]);
 
-    createMatchMaking().then();
+  const cancelMatchMaking = useCallback(async () => {
+    const response = await fetch('/api/matchMaking', {
+      method: 'DELETE',
+    });
+    setIsOpen(false);
 
-    return () => {
-      socket.off('newMatch');
-      socket.disconnect();
-    };
-  }, [createMatchMaking, user]);
+    socket.off('newMatch');
+    socket.disconnect();
+  }, []);
 
   return (
     <>
-      <button onClick={() => {
-        setIsOpen(true);
-      }}>
+      <button onClick={handleClick}>
         MatchMakingMode
       </button>
 

@@ -30,6 +30,7 @@ export class NotificationsGateway
 
   @SubscribeMessage('introduce')
   handleIntroduce(client: Socket, userId: number): void {
+    if (!userId) return;
     this.logger.log(`Notifications user connected: ${userId}`);
     this.userStatusService.add(client.id, userId);
   }
