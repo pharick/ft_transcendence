@@ -1,10 +1,11 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
-import { GameInfo, PendingGame, UserInfo } from '../../types/interfaces';
+import React, { FC, useCallback, useContext, useEffect, useState } from 'react';
+import { GameInfo, PendingGame } from '../../types/interfaces';
 import Link from 'next/link';
 import { io } from 'socket.io-client';
 import ReadyGameBlock from './readyGameBlock';
 import InviteGameBlock from './inviteGameBlock';
 import WaitGameBlock from './waitGameBlock';
+import { UserContext } from '../users/userProvider';
 
 const socket = io(
   `${
@@ -17,27 +18,24 @@ const socket = io(
   },
 );
 
-interface NotificationListProps {
-  user?: UserInfo;
-}
-
-const NotificationList: FC<NotificationListProps> = ({ user }) => {
+const NotificationList: FC= () => {
   const [hostGames, setHostGames] = useState<PendingGame[]>([]);
   const [guestGames, setGuestGames] = useState<PendingGame[]>([]);
   const [currentGames, setCurrentGames] = useState<GameInfo[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+  const userContext = useContext(UserContext);
 
   const getHostGames = useCallback(async () => {
-    const response = await fetch(`/api/pending/host/${user?.id}`);
+    const response = await fetch(`/api/pending/host/${userContext.user?.id}`);
     const data = await response.json();
     setHostGames(data);
-  }, [user]);
+  }, [userContext]);
 
   const getGuestGames = useCallback(async () => {
-    const response = await fetch(`/api/pending/guest/${user?.id}`);
+    const response = await fetch(`/api/pending/guest/${userContext.user?.id}`);
     const data = await response.json();
     setGuestGames(data);
-  }, [user]);
+  }, [userContext]);
 
   const getCurrentGames = useCallback(async () => {
     const response = await fetch(`/api/games/my`);
@@ -52,13 +50,13 @@ const NotificationList: FC<NotificationListProps> = ({ user }) => {
   }, [getCurrentGames, getGuestGames, getHostGames]);
 
   useEffect(() => {
-    if (user) handleUpdate().then();
+    if (userContext.user) handleUpdate().then();
 
     socket.connect();
 
     socket.on('connect', () => {
       setIsConnected(true);
-      socket.emit('introduce', user?.id);
+      socket.emit('introduce', userContext.user?.id);
     });
 
     socket.on('update', () => {
@@ -70,7 +68,7 @@ const NotificationList: FC<NotificationListProps> = ({ user }) => {
       socket.off('update');
       socket.disconnect();
     };
-  }, [handleUpdate, user]);
+  }, [handleUpdate, userContext]);
 
   if (isConnected) {
     return (

@@ -1,20 +1,17 @@
-import { FC } from 'react';
-import { UserInfo } from '../../types/interfaces';
+import { FC, useContext } from 'react';
+import { UserContext } from './userProvider';
 
-interface UserBlockProps {
-  user?: UserInfo;
-  handleLogout?: () => void;
-}
-
-const UserBlock: FC<UserBlockProps> = ({ user, handleLogout }) => {
+const UserBlock: FC = () => {
   const INTRA_AUTH_API_URL = 'https://api.intra.42.fr/oauth/authorize';
+
+  const userContext = useContext(UserContext);
 
   return (
     <section className="user-block">
-      {user ? (
+      {userContext.user ? (
         <>
-          <p className="user-name">{user.username}</p>
-          <button onClick={handleLogout}>Logout</button>
+          <p className="user-name">{userContext.user.username}</p>
+          <button onClick={userContext.handleLogout}>Logout</button>
         </>
       ) : (
         <a

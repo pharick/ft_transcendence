@@ -1,8 +1,9 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useContext, useState } from 'react';
 import Link from 'next/link';
 import { io } from 'socket.io-client';
-import { GameInfo, UserInfo } from '../../types/interfaces';
+import { GameInfo } from '../../types/interfaces';
 import dynamic from 'next/dynamic';
+import { UserContext } from '../users/userProvider';
 
 const Modal = dynamic(() => import('../../components/layout/modal'), { ssr: false });
 
@@ -17,14 +18,11 @@ const socket = io(
   },
 );
 
-interface MatchMakingButtonProps {
-  user: UserInfo | undefined;
-}
-
-const MatchMakingButton: FC<MatchMakingButtonProps> = ({ user }) => {
+const MatchMakingButton: FC = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [game, setGame] = useState<GameInfo | undefined>();
+  const userContext = useContext(UserContext);
 
   const handleClick = () => {
     createMatchMaking().then();
@@ -39,11 +37,11 @@ const MatchMakingButton: FC<MatchMakingButtonProps> = ({ user }) => {
     socket.connect();
 
     socket.on('newMatch', (game: GameInfo) => {
-      if (game.player1.id == user?.id || game.player2.id == user?.id) {
+      if (game.player1.id == userContext.user?.id || game.player2.id == userContext.user?.id) {
         setGame(game);
       }
     });
-  }, [user]);
+  }, [userContext]);
 
   const cancelMatchMaking = useCallback(async () => {
     const response = await fetch('/api/matchMaking', {

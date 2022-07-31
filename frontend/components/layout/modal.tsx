@@ -5,7 +5,7 @@ interface ModalProps {
   isOpen: boolean;
   children?: ReactNode;
   title: string;
-  isCancelButtonDisabled: boolean;
+  isCancelButtonDisabled?: boolean;
   cancelButtonText: string;
   cancelButtonHandler: () => void;
 }
@@ -18,6 +18,8 @@ const Modal: FC<ModalProps> = ({
                                  cancelButtonHandler,
                                  isCancelButtonDisabled,
                                }) => {
+
+  if (isCancelButtonDisabled == undefined) isCancelButtonDisabled = false;
 
   const keyDownHandler = (e: KeyboardEvent) => {
     if (isOpen && e.code == 'Escape') {

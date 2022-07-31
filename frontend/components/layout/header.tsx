@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import UserBlock from '../users/userBlock';
-import { userContext } from '../users/userProvider';
 import Link from 'next/link';
 
 const Header: FC = () => {
@@ -28,11 +27,7 @@ const Header: FC = () => {
         </li>
       </ul>
 
-      <userContext.Consumer>
-        {({ user, handleLogout }) => (
-          <UserBlock user={user} handleLogout={handleLogout} />
-        )}
-      </userContext.Consumer>
+      <UserBlock />
     </header>
   );
 };

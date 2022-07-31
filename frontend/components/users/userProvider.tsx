@@ -5,13 +5,13 @@ interface UserProviderProps {
   children?: ReactNode;
 }
 
-interface UserContext {
+interface UserContextInterface {
   user?: UserInfo;
   handleLogout?: () => void;
   userSessionId?: string;
 }
 
-export const userContext = createContext<UserContext>({});
+export const UserContext = createContext<UserContextInterface>({});
 
 const UserProvider: FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserInfo>();
@@ -36,9 +36,9 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
   const value = useMemo(() => ({
     user,
     handleLogout,
-  }), [user])
+  }), [user]);
 
-  return <userContext.Provider value={value}>{children}</userContext.Provider>;
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
 export default UserProvider;
