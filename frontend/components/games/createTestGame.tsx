@@ -6,7 +6,12 @@ const TrainingModeButton: FC = () => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const handleCreateGame = async () => {
-    await fetchWithHandleErrors('/api/games/', 'PUT', requestErrorHandlerContext);
+    await fetchWithHandleErrors(
+      requestErrorHandlerContext,
+      '/api/games/',
+      true,
+      'PUT',
+    );
   };
 
   return (

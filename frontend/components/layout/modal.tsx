@@ -1,5 +1,5 @@
 import React, { FC, ReactNode } from 'react';
-import useEventListener from '../../hooks/use_event_listener';
+import useKeyboardEventListener from '../../hooks/use_event_listener';
 
 interface ModalProps {
   isOpen: boolean;
@@ -11,14 +11,13 @@ interface ModalProps {
 }
 
 const Modal: FC<ModalProps> = ({
-                                 children,
-                                 isOpen,
-                                 title,
-                                 cancelButtonText,
-                                 cancelButtonHandler,
-                                 isCancelButtonDisabled,
-                               }) => {
-
+  children,
+  isOpen,
+  title,
+  cancelButtonText,
+  cancelButtonHandler,
+  isCancelButtonDisabled,
+}) => {
   if (isCancelButtonDisabled == undefined) isCancelButtonDisabled = false;
 
   const keyDownHandler = (e: KeyboardEvent) => {
@@ -27,20 +26,20 @@ const Modal: FC<ModalProps> = ({
     }
   };
 
-  useEventListener('keydown', keyDownHandler, document);
+  useKeyboardEventListener('keydown', keyDownHandler, document);
 
   if (isOpen) {
     return (
-      <div className='modal'>
-        <div className='modal-content'>
-          <div className='modal-header'>
-            <h4 className='modal-title'>{title}</h4>
+      <div className="modal">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h4 className="modal-title">{title}</h4>
           </div>
-          <div className='modal-body'>{children}</div>
-          <div className='modal-footer'>
+          <div className="modal-body">{children}</div>
+          <div className="modal-footer">
             <button
               onClick={cancelButtonHandler}
-              className='error-button'
+              className="error-button"
               disabled={isCancelButtonDisabled}
             >
               {cancelButtonText}
@@ -50,7 +49,7 @@ const Modal: FC<ModalProps> = ({
       </div>
     );
   } else {
-    return (<></>);
+    return <></>;
   }
 };
 

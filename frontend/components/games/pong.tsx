@@ -1,15 +1,11 @@
-import {FC, useContext, useEffect, useRef, useState} from 'react';
+import { FC, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
-import useEventListener from '../../hooks/use_event_listener';
-import {
-  CompletedGameInfo,
-  FrameInfo,
-  GameInfo,
-  UserInfo,
-} from '../../types/interfaces';
-import {RequestErrorHandlerContext} from "../utils/requestErrorHandlerProvider";
-import {fetchWithHandleErrors} from "../../utils";
+import useKeyboardEventListener from '../../hooks/use_event_listener';
+import { CompletedGameInfo, FrameInfo, GameInfo } from '../../types/interfaces';
+import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
+import { fetchWithHandleErrors } from '../../utils';
+import { UserContext } from '../users/userProvider';
 
 const socket = io(
   `${
@@ -24,11 +20,9 @@ const socket = io(
 
 interface PongProps {
   gameInfo: GameInfo;
-  user: UserInfo | undefined;
-  userSessionId: string | undefined;
 }
 
-const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
+const Pong: FC<PongProps> = ({ gameInfo }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [score1, setScore1] = useState(0);
   const [score2, setScore2] = useState(0);
@@ -36,21 +30,22 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   const [player1Turn, setPlayer1Turn] = useState(false);
   const [duration, setDuration] = useState(0);
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
+  const userContext = useContext(UserContext);
 
   const renderField = ({
-                         ballX,
-                         ballY,
-                         ballRadius,
-                         clubWidth,
-                         clubHeightLeft,
-                         clubHeightRight,
-                         club1Pos,
-                         club2Pos,
-                         scores,
-                         isPause,
-                         isPlayer1Turn,
-                         durationMs,
-                       }: FrameInfo) => {
+    ballX,
+    ballY,
+    ballRadius,
+    clubWidth,
+    clubHeightLeft,
+    clubHeightRight,
+    club1Pos,
+    club2Pos,
+    scores,
+    isPause,
+    isPlayer1Turn,
+    durationMs,
+  }: FrameInfo) => {
     setPause(isPause);
     setPlayer1Turn(isPlayer1Turn);
     setDuration(Math.round(durationMs / 1000));
@@ -110,7 +105,12 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   };
 
   const resumeGame = async () => {
-    await fetchWithHandleErrors(`/api/games/${gameInfo.gameId}/resume`, 'POST', requestErrorHandlerContext);
+    await fetchWithHandleErrors(
+      requestErrorHandlerContext,
+      `/api/games/${gameInfo.gameId}/resume`,
+      true,
+      'POST',
+    );
   };
 
   useEffect(() => {
@@ -139,8 +139,8 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
   const keyDownHandler = (e: KeyboardEvent) => {
     if (
       e.code == 'Space' &&
-      (gameInfo.player1.id == user?.id && player1Turn ||
-        gameInfo.player2.id == user?.id && !player1Turn)
+      ((gameInfo.player1.id == userContext.user?.id && player1Turn) ||
+        (gameInfo.player2.id == userContext.user?.id && !player1Turn))
     ) {
       resumeGame().then();
       return;
@@ -149,57 +149,68 @@ const Pong: FC<PongProps> = ({ gameInfo, user, userSessionId }) => {
     if (e.code != 'KeyW' && e.code != 'KeyS') return;
     const up = e.code == 'KeyW';
 
-    if (gameInfo.player1?.id == user?.id || gameInfo.player2?.id == user?.id) {
+    if (
+      gameInfo.player1?.id == userContext.user?.id ||
+      gameInfo.player2?.id == userContext.user?.id
+    ) {
       const gameId = gameInfo.gameId;
-      socket.emit('moveClubStart', { gameId, userSessionId, up });
+      socket.emit('moveClubStart', { gameId, up });
     }
   };
 
   const keyUpHandler = (e: KeyboardEvent) => {
     if (e.code != 'KeyW' && e.code != 'KeyS') return;
 
-    if (gameInfo.player1?.id == user?.id || gameInfo.player2?.id == user?.id) {
+    if (
+      gameInfo.player1?.id == userContext.user?.id ||
+      gameInfo.player2?.id == userContext.user?.id
+    ) {
       const gameId = gameInfo.gameId;
-      socket. emit('moveClubStop', { gameId, userSessionId });
+      socket.emit('moveClubStop', { gameId });
     }
   };
 
-  useEventListener('keydown', keyDownHandler, document);
-  useEventListener('keyup', keyUpHandler, document);
+  useKeyboardEventListener(
+    'keydown',
+    keyDownHandler as EventListener,
+    document,
+  );
+  useKeyboardEventListener('keyup', keyUpHandler as EventListener, document);
 
   return (
     <>
-      <div className='field-wrapper'>
-        {pause && <p className='pause-message'>
-          {
-            !gameInfo.player1 || !gameInfo.player2 ||
-            gameInfo.player1.id == user?.id && player1Turn ||
-            gameInfo.player2.id == user?.id && !player1Turn ?
-              'Press SPACE to continue' :
-              'Waiting for opponent'
-          }
-        </p>}
-        <p className='pong-time'>Time: {duration}</p>
-        <p className='score score1'>{score1}</p>
-        <p className='score score2'>{score2}</p>
+      <div className="field-wrapper">
+        {pause && (
+          <p className="pause-message">
+            {!gameInfo.player1 ||
+            !gameInfo.player2 ||
+            (gameInfo.player1.id == userContext.user?.id && player1Turn) ||
+            (gameInfo.player2.id == userContext.user?.id && !player1Turn)
+              ? 'Press SPACE to continue'
+              : 'Waiting for opponent'}
+          </p>
+        )}
+        <p className="pong-time">Time: {duration}</p>
+        <p className="score score1">{score1}</p>
+        <p className="score score2">{score2}</p>
         <canvas
           width={gameInfo.field.width}
           height={gameInfo.field.height}
-          className='field'
+          className="field"
           ref={canvasRef}
         ></canvas>
       </div>
 
-      <div className='pong-players' style={{ width: gameInfo.field.width }}>
+      <div className="pong-players" style={{ width: gameInfo.field.width }}>
         <div className={`pong-players-part ${player1Turn ? 'current' : ''}`}>
-          <div className='avatar-placeholder-small'></div>
-          <p className='pong-players-name'>
+          <div className="avatar-placeholder-small"></div>
+          <p className="pong-players-name">
             {gameInfo.player1 ? gameInfo.player1.username : 'Mr. Wall'}
           </p>
         </div>
         <div className={`pong-players-part ${!player1Turn ? 'current' : ''}`}>
-          <div className='avatar-placeholder-small'></div>
-          <p className='pong-players-name'>
+          <div className="avatar-placeholder-small"></div>
+          <p className="pong-players-name">
             {gameInfo.player2 ? gameInfo.player2.username : 'Mr. Wall'}
           </p>
         </div>

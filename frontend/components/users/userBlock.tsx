@@ -16,7 +16,11 @@ const UserBlock: FC = () => {
       ) : (
         <a
           className="button"
-          href={`${INTRA_AUTH_API_URL}?client_id=${process.env.NEXT_PUBLIC_INTRA_CLIENT_ID}&redirect_uri=${encodeURI(process.env.NEXT_PUBLIC_INTRA_REDIRECT_URL!)}&response_type=code`}
+          href={`${INTRA_AUTH_API_URL}?client_id=${
+            process.env.NEXT_PUBLIC_INTRA_CLIENT_ID
+          }&redirect_uri=${encodeURI(
+            process.env.NEXT_PUBLIC_INTRA_REDIRECT_URL!,
+          )}&response_type=code`}
         >
           Login via 42
         </a>

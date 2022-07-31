@@ -20,34 +20,60 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return { props: { completedGameInfo } };
 };
 
-const CompletedGamePage: NextPage<CompletedGamePageProps> = ({ completedGameInfo }) => {
+const CompletedGamePage: NextPage<CompletedGamePageProps> = ({
+  completedGameInfo,
+}) => {
   return (
     <>
       <Head>
         <title>
-          Game {completedGameInfo.hostUser ? completedGameInfo.hostUser.username : 'Mr. Wall'} vs. {completedGameInfo.guestUser ? completedGameInfo.guestUser.username : 'Mr.Wall'} is
-          completed
+          Game{' '}
+          {completedGameInfo.hostUser
+            ? completedGameInfo.hostUser.username
+            : 'Mr. Wall'}{' '}
+          vs.{' '}
+          {completedGameInfo.guestUser
+            ? completedGameInfo.guestUser.username
+            : 'Mr.Wall'}{' '}
+          is completed
         </title>
       </Head>
 
-      <h1 className='text-center'>
-        Game <b>{completedGameInfo.hostUser ? completedGameInfo.hostUser.username : 'Mr. Wall'}</b> vs. <b>{completedGameInfo.guestUser ? completedGameInfo.guestUser.username : 'Mr.Wall'}</b> is
-        completed
+      <h1 className="text-center">
+        Game{' '}
+        <b>
+          {completedGameInfo.hostUser
+            ? completedGameInfo.hostUser.username
+            : 'Mr. Wall'}
+        </b>{' '}
+        vs.{' '}
+        <b>
+          {completedGameInfo.guestUser
+            ? completedGameInfo.guestUser.username
+            : 'Mr.Wall'}
+        </b>{' '}
+        is completed
       </h1>
 
-      <div className='completed-game-scores'>
-        <div className='completed-game-part'>
+      <div className="completed-game-scores">
+        <div className="completed-game-part">
           <PlayerBlock user={completedGameInfo.hostUser} />
-          <p className='completed-game-score'>{completedGameInfo.score1}</p>
+          <p className="completed-game-score">{completedGameInfo.score1}</p>
         </div>
-        <div className='completed-game-part'>
+        <div className="completed-game-part">
           <PlayerBlock user={completedGameInfo.guestUser} />
-          <p className='completed-game-score'>{completedGameInfo.score2}</p>
+          <p className="completed-game-score">{completedGameInfo.score2}</p>
         </div>
       </div>
 
       <p>Duration: {completedGameInfo.duration}s</p>
-      <p>Date: {format(utcToZonedTime(completedGameInfo.date, 'Europe/Moscow'), 'dd.MM.yyyy H:mm:ss')}</p>
+      <p>
+        Date:{' '}
+        {format(
+          utcToZonedTime(completedGameInfo.date, 'Europe/Moscow'),
+          'dd.MM.yyyy H:mm:ss',
+        )}
+      </p>
     </>
   );
 };

@@ -5,7 +5,6 @@ import Layout from '../components/layout/layout';
 import RequestErrorHandlerProvider from '../components/utils/requestErrorHandlerProvider';
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
-
   return (
     <RequestErrorHandlerProvider>
       <UserProvider>
@@ -14,7 +13,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         </Layout>
       </UserProvider>
     </RequestErrorHandlerProvider>
-  )
+  );
 };
 
 export default MyApp;

@@ -13,16 +13,21 @@ interface UserPageProps {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const userId = context.params?.userId;
-  const userResponse = await fetch(`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/users/${userId}`);
-  if (userResponse.status == 404 || userResponse.status == 400) return { notFound: true };
+  const userResponse = await fetch(
+    `${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/users/${userId}`,
+  );
+  if (userResponse.status == 404 || userResponse.status == 400)
+    return { notFound: true };
   const userInfo: UserInfo = await userResponse.json();
-  const completedGamesResponse = await fetch(`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/completed/user/${userId}`);
-  const completedGames: CompletedGameInfo[] = await completedGamesResponse.json();
+  const completedGamesResponse = await fetch(
+    `${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/completed/user/${userId}`,
+  );
+  const completedGames: CompletedGameInfo[] =
+    await completedGamesResponse.json();
   return { props: { userInfo, completedGames } };
 };
 
 const UserPage: NextPage<UserPageProps> = ({ userInfo, completedGames }) => {
-
   const userContext = useContext(UserContext);
 
   return (
@@ -33,19 +38,20 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo, completedGames }) => {
 
       <h1> {userInfo.username} </h1>
 
-      {userContext.user?.id != userInfo.id &&
+      {userContext.user?.id != userInfo.id && (
         <>
           <Invite userInfo={userInfo} />
           <Link href={`/chat/private/${userInfo.id}`}>
             <a className="button">Private chat</a>
           </Link>
         </>
-      }
+      )}
 
       <ul>
         {completedGames.map((game) => (
           <li key={game.id}>
-            {game.hostUser.username}: {game.score1} {game.guestUser.username}: {game.score2}
+            {game.hostUser.username}: {game.score1} {game.guestUser.username}:{' '}
+            {game.score2}
           </li>
         ))}
       </ul>

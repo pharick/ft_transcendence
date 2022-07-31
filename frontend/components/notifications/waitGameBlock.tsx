@@ -1,7 +1,7 @@
-import {FC, useContext} from 'react';
+import { FC, useContext } from 'react';
 import { PendingGame } from '../../types/interfaces';
-import {RequestErrorHandlerContext} from "../utils/requestErrorHandlerProvider";
-import {fetchWithHandleErrors} from "../../utils";
+import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
+import { fetchWithHandleErrors } from '../../utils';
 
 interface WaitGameBlockProps {
   game: PendingGame;
@@ -11,7 +11,12 @@ const WaitGameBlock: FC<WaitGameBlockProps> = ({ game }) => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const handleRemove = async (pendingGameId: number) => {
-    await fetchWithHandleErrors(`/api/pending/${pendingGameId}`, 'DELETE', requestErrorHandlerContext);
+    await fetchWithHandleErrors(
+      requestErrorHandlerContext,
+      `/api/pending/${pendingGameId}`,
+      true,
+      'DELETE',
+    );
   };
 
   return (

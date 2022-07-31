@@ -1,7 +1,16 @@
-import {createContext, FC, ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import {
+  createContext,
+  FC,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { UserInfo } from '../../types/interfaces';
-import {RequestErrorHandlerContext} from "../utils/requestErrorHandlerProvider";
-import {fetchWithHandleErrors} from "../../utils";
+import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
+import { fetchWithHandleErrors } from '../../utils';
 
 interface UserProviderProps {
   children?: ReactNode;
@@ -20,14 +29,22 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const handleLogout = async () => {
-    await fetchWithHandleErrors('/api/auth/logout', 'POST', requestErrorHandlerContext);
+    await fetchWithHandleErrors(
+      requestErrorHandlerContext,
+      '/api/auth/logout',
+      true,
+      'POST',
+    );
     setUser(undefined);
   };
 
   const getUser = useCallback(async () => {
-    const response = await fetch('/api/users/me');
-    if (response.ok) {
-      const user = await response.json();
+    const response = await fetchWithHandleErrors(
+      requestErrorHandlerContext,
+      '/api/users/me',
+    );
+    if (response?.ok) {
+      const user = await response?.json();
       setUser(user);
     }
   }, []);
@@ -36,10 +53,13 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
     getUser().then();
   }, [getUser]);
 
-  const value = useMemo(() => ({
-    user,
-    handleLogout,
-  }), [user]);
+  const value = useMemo(
+    () => ({
+      user,
+      handleLogout,
+    }),
+    [user],
+  );
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

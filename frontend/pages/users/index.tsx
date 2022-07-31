@@ -5,11 +5,13 @@ import Link from 'next/link';
 import Head from 'next/head';
 
 interface UsersPageProps {
-  users: UserInfo[],
+  users: UserInfo[];
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/users`);
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/users`,
+  );
   console.log(response);
   const users: UserInfo[] = await response.json();
   return { props: { users } };

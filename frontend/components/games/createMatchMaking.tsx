@@ -4,10 +4,12 @@ import { io } from 'socket.io-client';
 import { GameInfo } from '../../types/interfaces';
 import dynamic from 'next/dynamic';
 import { UserContext } from '../users/userProvider';
-import {RequestErrorHandlerContext} from "../utils/requestErrorHandlerProvider";
-import {fetchWithHandleErrors} from "../../utils";
+import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
+import { fetchWithHandleErrors } from '../../utils';
 
-const Modal = dynamic(() => import('../../components/layout/modal'), { ssr: false });
+const Modal = dynamic(() => import('../../components/layout/modal'), {
+  ssr: false,
+});
 
 const socket = io(
   `${
@@ -21,7 +23,6 @@ const socket = io(
 );
 
 const MatchMakingButton: FC = () => {
-
   const [isOpen, setIsOpen] = useState(false);
   const [game, setGame] = useState<GameInfo | undefined>();
   const userContext = useContext(UserContext);
@@ -30,22 +31,35 @@ const MatchMakingButton: FC = () => {
   const handleClick = () => {
     createMatchMaking().then();
     setIsOpen(true);
-  }
+  };
 
   const createMatchMaking = useCallback(async () => {
-    await fetchWithHandleErrors('/api/matchMaking', 'PUT', requestErrorHandlerContext);
+    await fetchWithHandleErrors(
+      requestErrorHandlerContext,
+      '/api/matchMaking',
+      true,
+      'PUT',
+    );
 
     socket.connect();
 
     socket.on('newMatch', (game: GameInfo) => {
-      if (game.player1.id == userContext.user?.id || game.player2.id == userContext.user?.id) {
+      if (
+        game.player1.id == userContext.user?.id ||
+        game.player2.id == userContext.user?.id
+      ) {
         setGame(game);
       }
     });
   }, [requestErrorHandlerContext, userContext.user?.id]);
 
   const cancelMatchMaking = useCallback(async () => {
-    await fetchWithHandleErrors('/api/matchMaking', 'DELETE', requestErrorHandlerContext);
+    await fetchWithHandleErrors(
+      requestErrorHandlerContext,
+      '/api/matchMaking',
+      true,
+      'DELETE',
+    );
 
     setIsOpen(false);
 
@@ -55,9 +69,7 @@ const MatchMakingButton: FC = () => {
 
   return (
     <>
-      <button onClick={handleClick}>
-        MatchMakingMode
-      </button>
+      <button onClick={handleClick}>MatchMakingMode</button>
 
       <Modal
         isOpen={isOpen}
@@ -66,16 +78,21 @@ const MatchMakingButton: FC = () => {
         isCancelButtonDisabled={Boolean(game)}
         title={game ? 'Opponent founded' : 'Searching for an opponent...'}
       >
-        {game ?
-          <div className='modal-body-button-play'>
-            <p>Game created: <b>{game.player1.username}</b> vs. <b>{game.player2.username}</b></p>
-            <p><Link href={`/games/${game.gameId}`}>
-              <a className='button'>Play</a>
-            </Link></p>
+        {game ? (
+          <div className="modal-body-button-play">
+            <p>
+              Game created: <b>{game.player1.username}</b> vs.{' '}
+              <b>{game.player2.username}</b>
+            </p>
+            <p>
+              <Link href={`/games/${game.gameId}`}>
+                <a className="button">Play</a>
+              </Link>
+            </p>
           </div>
-          :
-          <div className='loader'/>
-        }
+        ) : (
+          <div className="loader" />
+        )}
       </Modal>
     </>
   );

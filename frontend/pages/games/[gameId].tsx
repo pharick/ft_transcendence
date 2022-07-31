@@ -4,7 +4,9 @@ import Head from 'next/head';
 
 import { GameInfo } from '../../types/interfaces';
 
-const Pong = dynamic(() => import('../../components/games/pong'), { ssr: false });
+const Pong = dynamic(() => import('../../components/games/pong'), {
+  ssr: false,
+});
 
 interface GamePageProps {
   gameInfo: GameInfo;
@@ -35,7 +37,7 @@ const GamePage: NextPage<GamePageProps> = ({ gameInfo }) => {
         vs <b>{gameInfo.player2 ? gameInfo.player2.username : 'Mr. Wall'}</b>
       </h1>
 
-      {/*<Pong gameInfo={gameInfo} user={user} userSessionId={userSessionId} />*/}
+      <Pong gameInfo={gameInfo} />
     </>
   );
 };

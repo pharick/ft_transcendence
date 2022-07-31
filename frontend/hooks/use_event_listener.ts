@@ -1,7 +1,11 @@
-import {useEffect, useRef} from "react";
+import { useEffect, useRef } from 'react';
 
-const useEventListener = (eventName: string, handler: Function, element: Node) => {
-  const savedHandler = useRef<Function | null>(null);
+const useKeyboardEventListener = (
+  eventName: string,
+  handler: EventListener,
+  element: Node,
+) => {
+  const savedHandler = useRef<EventListener | null>(null);
 
   useEffect(() => {
     savedHandler.current = handler;
@@ -16,8 +20,8 @@ const useEventListener = (eventName: string, handler: Function, element: Node) =
 
     return () => {
       element.removeEventListener(eventName, eventListener);
-    }
+    };
   }, [eventName, element]);
-}
+};
 
-export default useEventListener;
+export default useKeyboardEventListener;

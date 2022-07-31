@@ -6,6 +6,8 @@ import ReadyGameBlock from './readyGameBlock';
 import InviteGameBlock from './inviteGameBlock';
 import WaitGameBlock from './waitGameBlock';
 import { UserContext } from '../users/userProvider';
+import { fetchWithHandleErrors } from '../../utils';
+import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 
 const socket = io(
   `${
@@ -18,40 +20,53 @@ const socket = io(
   },
 );
 
-const NotificationList: FC= () => {
+const NotificationList: FC = () => {
   const [hostGames, setHostGames] = useState<PendingGame[]>([]);
   const [guestGames, setGuestGames] = useState<PendingGame[]>([]);
   const [currentGames, setCurrentGames] = useState<GameInfo[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const userContext = useContext(UserContext);
+  const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const getHostGames = useCallback(async () => {
-    const response = await fetch(`/api/pending/host/${userContext.user?.id}`);
-    const data = await response.json();
+    const response = await fetchWithHandleErrors(
+      requestErrorHandlerContext,
+      `/api/pending/host/${userContext.user?.id}`,
+      true,
+    );
+    const data = await response?.json();
     setHostGames(data);
   }, [userContext]);
 
   const getGuestGames = useCallback(async () => {
-    const response = await fetch(`/api/pending/guest/${userContext.user?.id}`);
-    const data = await response.json();
+    const response = await fetchWithHandleErrors(
+      requestErrorHandlerContext,
+      `/api/pending/guest/${userContext.user?.id}`,
+      true,
+    );
+    const data = await response?.json();
     setGuestGames(data);
   }, [userContext]);
 
   const getCurrentGames = useCallback(async () => {
-    const response = await fetch(`/api/games/my`);
-    const data = await response.json();
+    const response = await fetchWithHandleErrors(
+      requestErrorHandlerContext,
+      `/api/games/my`,
+      true,
+    );
+    const data = await response?.json();
     setCurrentGames(data);
   }, []);
 
   const handleUpdate = useCallback(async () => {
+    if (!userContext.user) return;
     await getHostGames();
     await getGuestGames();
     await getCurrentGames();
   }, [getCurrentGames, getGuestGames, getHostGames]);
 
   useEffect(() => {
-    if (userContext.user) handleUpdate().then();
-
+    handleUpdate().then();
     socket.connect();
 
     socket.on('connect', () => {
@@ -68,7 +83,7 @@ const NotificationList: FC= () => {
       socket.off('update');
       socket.disconnect();
     };
-  }, [handleUpdate, userContext]);
+  }, [handleUpdate, userContext.user]);
 
   if (isConnected) {
     return (
@@ -98,8 +113,8 @@ const NotificationList: FC= () => {
         ) : (
           <>
             <p>
-              You don&apos;t have any invitations to the game, take the first step
-              😉
+              You don&apos;t have any invitations to the game, take the first
+              step 😉
             </p>
             <ul>
               <li>

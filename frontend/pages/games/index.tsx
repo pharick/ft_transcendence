@@ -5,11 +5,13 @@ import GameList from '../../components/games/gameList';
 import Head from 'next/head';
 
 interface GamesPageProps {
-  games: GameInfo[],
+  games: GameInfo[];
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/games`);
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/games`,
+  );
   const games: GameInfo[] = await response.json();
   return { props: { games } };
 };

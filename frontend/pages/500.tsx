@@ -9,7 +9,6 @@ const Custom500: NextPage = () => {
       </Head>
 
       <h1>Something went wrong...</h1>
-
     </>
   );
 };

@@ -8,8 +8,8 @@ interface PlayerBlockProps {
 const PlayerBlock: FC<PlayerBlockProps> = ({ user }) => {
   return (
     <article>
-      <div className='avatar-placeholder-big'></div>
-      <p className='player-block-username'>
+      <div className="avatar-placeholder-big"></div>
+      <p className="player-block-username">
         {user ? `${user.username} (Rank: ${user.rank})` : 'Mr. Wall'}
       </p>
     </article>

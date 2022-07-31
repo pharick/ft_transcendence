@@ -1,7 +1,7 @@
-import {FC, useContext} from 'react';
+import { FC, useContext } from 'react';
 import { PendingGame } from '../../types/interfaces';
-import {RequestErrorHandlerContext} from "../utils/requestErrorHandlerProvider";
-import {fetchWithHandleErrors} from "../../utils";
+import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
+import { fetchWithHandleErrors } from '../../utils';
 
 interface InviteGameBlockProps {
   game: PendingGame;
@@ -11,11 +11,21 @@ const InviteGameBlock: FC<InviteGameBlockProps> = ({ game }) => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const handleAccept = async (pendingGameId: number) => {
-    await fetchWithHandleErrors(`/api/pending/${pendingGameId}/accept`, 'POST', requestErrorHandlerContext);
+    await fetchWithHandleErrors(
+      requestErrorHandlerContext,
+      `/api/pending/${pendingGameId}/accept`,
+      true,
+      'POST',
+    );
   };
 
   const handleRemove = async (pendingGameId: number) => {
-    await fetchWithHandleErrors(`/api/pending/${pendingGameId}`, 'DELETE', requestErrorHandlerContext);
+    await fetchWithHandleErrors(
+      requestErrorHandlerContext,
+      `/api/pending/${pendingGameId}`,
+      true,
+      'DELETE',
+    );
   };
   return (
     <article className="notification-block">
