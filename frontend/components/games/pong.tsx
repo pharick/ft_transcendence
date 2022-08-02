@@ -7,17 +7,6 @@ import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider
 import { fetchWithHandleErrors } from '../../utils';
 import { UserContext } from '../users/userProvider';
 
-const socket = io(
-  `${
-    process.env.NODE_ENV == 'development'
-      ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
-      : ''
-  }/game`,
-  {
-    autoConnect: false,
-  },
-);
-
 interface PongProps {
   gameInfo: GameInfo;
 }
@@ -31,6 +20,18 @@ const Pong: FC<PongProps> = ({ gameInfo }) => {
   const [duration, setDuration] = useState(0);
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
   const userContext = useContext(UserContext);
+
+  const socket = io(
+    `${
+      process.env.NODE_ENV == 'development'
+        ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+        : ''
+    }/game`,
+    {
+      autoConnect: false,
+      auth: { gameId: gameInfo.gameId },
+    },
+  );
 
   const renderField = ({
     ballX,
@@ -115,10 +116,6 @@ const Pong: FC<PongProps> = ({ gameInfo }) => {
 
   useEffect(() => {
     socket.connect();
-
-    socket.on('connect', () => {
-      socket.emit('connectToGame', gameInfo.gameId);
-    });
 
     socket.on('nextFrame', (frame: FrameInfo) => {
       renderField(frame);

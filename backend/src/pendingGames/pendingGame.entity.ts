@@ -8,9 +8,9 @@ export class PendingGame {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.pendingHostGames)
-  hostUser: User;
-
-  @ManyToOne(() => User, (user) => user.pendingGuestGames)
-  guestUser: User;
+  // @ManyToOne(() => User, (user) => user.pendingHostGames)
+  // hostUser: User;
+  //
+  // @ManyToOne(() => User, (user) => user.pendingGuestGames)
+  // guestUser: User;
 }

@@ -64,7 +64,7 @@ const RequestErrorHandlerProvider: FC<RequestErrorHandlerProviderProps> = ({
         cancelButtonText={'Close'}
         cancelButtonHandler={closeHandler}
       >
-        {isError ? <pre className="error-doge"></pre> : <></>}
+        {isError ? <pre className="error-art"></pre> : <></>}
       </Modal>
     </>
   );

@@ -1,8 +1,8 @@
-import UserInfo from '../users/userInfo.interface';
+import { User } from '../users/user.entity';
 
 export class ChatRoomDto {
   id?: number;
   isPrivate: boolean;
-  hostUser: UserInfo;
-  guestUser: UserInfo;
+  hostUser: User;
+  guestUser: User;
 }

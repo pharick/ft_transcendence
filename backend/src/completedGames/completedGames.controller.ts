@@ -27,10 +27,10 @@ export class CompletedGamesController {
     return completedGame;
   }
 
-  @Get('user/:userId')
-  async findAllByUser(
-    @Param('userId', new ParseIntPipe()) userId: number,
-  ): Promise<CompletedGame[]> {
-    return await this.completedGamesService.findAllByUser(userId);
-  }
+  // @Get('user/:userId')
+  // async findAllByUser(
+  //   @Param('userId', new ParseIntPipe()) userId: number,
+  // ): Promise<CompletedGame[]> {
+  //   return await this.completedGamesService.findAllByUser(userId);
+  // }
 }

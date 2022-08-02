@@ -26,21 +26,21 @@ export class CompletedGamesService {
     });
   }
 
-  findAllByUser(userId: number): Promise<CompletedGame[]> {
-    return this.completedGamesRepository.find({
-      relations: ['hostUser', 'guestUser'],
-      where: [
-        {
-          hostUser: {
-            id: userId,
-          },
-        },
-        {
-          guestUser: {
-            id: userId,
-          },
-        },
-      ],
-    });
-  }
+  // findAllByUser(userId: number): Promise<CompletedGame[]> {
+  //   return this.completedGamesRepository.find({
+  //     relations: ['hostUser', 'guestUser'],
+  //     where: [
+  //       {
+  //         hostUser: {
+  //           id: userId,
+  //         },
+  //       },
+  //       {
+  //         guestUser: {
+  //           id: userId,
+  //         },
+  //       },
+  //     ],
+  //   });
+  // }
 }

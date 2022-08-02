@@ -27,15 +27,15 @@ export class ChatMessagesService {
   //   }
   // }
 
-  async findAllCommon(): Promise<ChatMessage[]> {
-    // вообще хрень какая-то но через where не работает нифига
-    return (
-      await this.chatMessageRepository.find({
-        order: {
-          date: 'ASC',
-        },
-        relations: ['user', 'room'],
-      })
-    ).filter((message) => message.room === null);
-  }
+  // async findAllCommon(): Promise<ChatMessage[]> {
+  //   // вообще хрень какая-то но через where не работает нифига
+  //   return (
+  //     await this.chatMessageRepository.find({
+  //       order: {
+  //         date: 'ASC',
+  //       },
+  //       relations: ['user', 'room'],
+  //     })
+  //   ).filter((message) => message.room === null);
+  // }
 }

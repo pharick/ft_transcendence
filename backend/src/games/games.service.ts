@@ -5,9 +5,7 @@ import { FieldInfo, GameInfo, ScoreInfo } from './games.interfaces';
 import { FrameInfo } from './games.interfaces';
 import { UsersService } from '../users/users.service';
 import { CompletedGamesService } from '../completedGames/completedGames.service';
-import { CompletedGameDto } from '../completedGames/completedGame.dto';
-import { CompletedGame } from '../completedGames/completedGame.entity';
-import UserInfo from '../users/userInfo.interface';
+import { User } from '../users/user.entity';
 
 const radians = (degrees: number) => {
   return degrees * (Math.PI / 180);
@@ -51,7 +49,7 @@ class Game {
 
   private gameTimer: NodeJS.Timer;
   private _durationMs: number;
-  private _isRanked: boolean;
+  private readonly _isRanked: boolean;
 
   constructor(
     player1Id: number | null,
@@ -321,10 +319,7 @@ class Game {
 @Injectable()
 export class GamesService {
   private logger: Logger = new Logger('GamesService');
-
   private games: Record<string, Game> = {};
-  private users: Record<number, string[]> = {};
-  private clientIdGameId: Record<string, string> = {};
 
   constructor(
     private usersService: UsersService,
@@ -339,47 +334,27 @@ export class GamesService {
     );
   }
 
-  async findMy(userId): Promise<GameInfo[]> {
-    if (!(userId in this.users)) return [];
-    return await Promise.all(
-      this.users[userId].map(async (gameId) => await this.findOne(gameId)),
-    );
-  }
-
   async findOne(gameId: string): Promise<GameInfo> {
     if (!(gameId in this.games) || !this.games[gameId]) return null;
 
     const player1Id = this.games[gameId].player1Id;
     const player2Id = this.games[gameId].player2Id;
-    const player1: UserInfo = await this.usersService.findOne(player1Id);
-    const player2: UserInfo = await this.usersService.findOne(player2Id);
+    // const player1: User = await this.usersService.findOne(player1Id);
+    // const player2: User = await this.usersService.findOne(player2Id);
 
     return {
       gameId: gameId,
       field: this.games[gameId].fieldInfo,
-      player1: player1,
-      player2: player2,
+      player1: null,
+      player2: null,
       scores: this.games[gameId].scores,
       durationMs: this.games[gameId].durationMs,
       isRanked: this.games[gameId].isRanked,
     };
   }
 
-  private saveGameForUser(userId: number, gameId: string) {
-    if (!(userId in this.users) || !this.games[gameId]) this.users[userId] = [];
-    this.users[userId].push(gameId);
-  }
-
   private removeGame(gameId: string) {
     delete this.games[gameId];
-    for (const key of Object.keys(this.users)) {
-      this.users[key] = this.users[key].filter((elem) => elem != gameId);
-    }
-    for (const key of Object.keys(this.clientIdGameId)) {
-      if (this.clientIdGameId[key] === gameId) {
-        delete this.clientIdGameId[key];
-      }
-    }
   }
 
   async createNewGame(
@@ -389,12 +364,6 @@ export class GamesService {
   ): Promise<GameInfo> {
     const gameId: string = uuid4();
     this.games[gameId] = new Game(player1Id, player2Id, isRanked);
-    if (player1Id !== null) {
-      this.saveGameForUser(player1Id, gameId);
-    }
-    if (player2Id !== null) {
-      this.saveGameForUser(player2Id, gameId);
-    }
     return this.findOne(gameId);
   }
 
@@ -403,66 +372,54 @@ export class GamesService {
     return this.games[gameId].getNextFrame();
   }
 
-  async endGame(gameId: string): Promise<CompletedGame> {
-    const game = await this.findOne(gameId);
-    if (!game) return;
-    const completedGame: CompletedGameDto = {
-      score1: game.scores.player1,
-      score2: game.scores.player2,
-      duration: Math.round(game.durationMs / 1000),
-      hostUser: game.player1,
-      guestUser: game.player2,
-      isRanked: game.isRanked,
-    };
-    this.removeGame(gameId);
+  // async endGame(gameId: string): Promise<CompletedGame> {
+  //   const game = await this.findOne(gameId);
+  //   if (!game) return;
+  //   const completedGame: CompletedGameDto = {
+  //     score1: game.scores.player1,
+  //     score2: game.scores.player2,
+  //     duration: Math.round(game.durationMs / 1000),
+  //     hostUser: game.player1,
+  //     guestUser: game.player2,
+  //     isRanked: game.isRanked,
+  //   };
+  //   this.removeGame(gameId);
+  //
+  //   if (game.isRanked) {
+  //     await this.usersService.updateRank(
+  //       game.player1.id,
+  //       game.scores.player1 - game.scores.player2,
+  //     );
+  //     await this.usersService.updateRank(
+  //       game.player2.id,
+  //       game.scores.player2 - game.scores.player1,
+  //     );
+  //   }
 
-    if (game.isRanked) {
-      await this.usersService.updateRank(
-        game.player1.id,
-        game.scores.player1 - game.scores.player2,
-      );
-      await this.usersService.updateRank(
-        game.player2.id,
-        game.scores.player2 - game.scores.player1,
-      );
-    }
+  // return await this.completedGamesService.create(completedGame);
+  // }
 
-    return await this.completedGamesService.create(completedGame);
-  }
-
-  connectToGame(gameId: string, clientId: string) {
-    if (!(gameId in this.games) || !this.games[gameId]) {
-      this.logger.log(`Don't add gameId = ${gameId} - game doesn't exist`);
-      return;
-    }
-    this.clientIdGameId[clientId] = gameId;
-  }
-
-  resumeGame(gameId: string, userId: number): boolean {
-    if (!(gameId in this.games) || !this.games[gameId]) return false;
-    if (!this.games[gameId].isGameRunning) {
-      return this.games[gameId].resumeGame(userId);
-    }
-  }
-
-  getGameIdByClientId(clientId: string) {
-    return this.clientIdGameId[clientId];
-  }
-
-  pauseGame(gameId: string) {
-    if (!(gameId in this.games) || !this.games[gameId]) return;
-    if (this.games[gameId].isGameRunning) {
-      this.games[gameId].pauseGame();
-    }
-  }
-
-  moveClubStart(gameId: number, playerId: number, up: boolean): void {
-    if (!(gameId in this.games) || !this.games[gameId]) return;
-    this.games[gameId].moveClubStart(playerId, up);
-  }
-
-  moveClubStop(gameId: number, playerId: number): void {
-    if (!(gameId in this.games) || !this.games[gameId]) return;
-    this.games[gameId].moveClubStop(playerId);
-  }
+  // resumeGame(gameId: string, userId: number): boolean {
+  //   if (!(gameId in this.games) || !this.games[gameId]) return false;
+  //   if (!this.games[gameId].isGameRunning) {
+  //     return this.games[gameId].resumeGame(userId);
+  //   }
+  // }
+  //
+  // pauseGame(gameId: string) {
+  //   if (!(gameId in this.games) || !this.games[gameId]) return;
+  //   if (this.games[gameId].isGameRunning) {
+  //     this.games[gameId].pauseGame();
+  //   }
+  // }
+  //
+  // moveClubStart(gameId: number, playerId: number, up: boolean): void {
+  //   if (!(gameId in this.games) || !this.games[gameId]) return;
+  //   this.games[gameId].moveClubStart(playerId, up);
+  // }
+  //
+  // moveClubStop(gameId: number, playerId: number): void {
+  //   if (!(gameId in this.games) || !this.games[gameId]) return;
+  //   this.games[gameId].moveClubStop(playerId);
+  // }
 }

@@ -1,21 +1,28 @@
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '../users/user.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from '../users/users.module';
-import { ConfigModule } from '@nestjs/config';
+import { Ecole42Strategy } from './strategies/ecole42.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
-    HttpModule,
-    TypeOrmModule.forFeature([User]),
-    UsersModule,
     ConfigModule,
+    PassportModule,
+    UsersModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'),
+        signOptions: { expiresIn: '3600s' },
+      }),
+    }),
   ],
-  providers: [AuthService],
+  providers: [AuthService, Ecole42Strategy, JwtStrategy],
   controllers: [AuthController],
-  exports: [AuthService],
 })
 export class AuthModule {}

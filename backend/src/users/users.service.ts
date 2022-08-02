@@ -3,8 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { User } from './user.entity';
-import UserInfo from './userInfo.interface';
-import { UserStatusService } from '../notifications/userStatus.service';
 
 @Injectable()
 export class UsersService {
@@ -13,39 +11,30 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private userStatusService: UserStatusService,
   ) {}
 
-  create(username: string): Promise<User> {
-    const user = this.usersRepository.create({ username });
-    return this.usersRepository.save(user);
+  async findOrCreate(
+    ids: Record<string, number>,
+    username: string = null,
+  ): Promise<User> {
+    let user = await this.usersRepository.findOneBy(ids);
+    if (!user) user = this.usersRepository.create({ ...ids, username });
+    return await this.usersRepository.save(user);
   }
 
-  async updateRank(userId: number, rankDelta: number): Promise<void> {
+  async updateRank(userId: number, rankDelta: number): Promise<User> {
     const user = await this.findOne(userId);
-    user.oldRank = user.rank;
+    user.prevRank = user.rank;
     user.rank += rankDelta;
-    if (user.rank < 0) {
-      user.rank = 0;
-    }
-    await this.usersRepository.save(user);
+    if (user.rank < 0) user.rank = 0;
+    return await this.usersRepository.save(user);
   }
 
   findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }
 
-  async findOne(id: number): Promise<UserInfo> {
-    if (!id) return null;
-    const user = await this.usersRepository.findOneBy({ id });
-    if (!user) return null;
-    return {
-      ...user,
-      isOnline: this.userStatusService.isUserOnline(id),
-    };
-  }
-
-  findOneByUsername(username: string): Promise<User> {
-    return this.usersRepository.findOneBy({ username: username });
+  findOne(id: number): Promise<User> {
+    return this.usersRepository.findOneBy({ id });
   }
 }

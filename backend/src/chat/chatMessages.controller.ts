@@ -8,8 +8,8 @@ export class ChatMessagesController {
 
   constructor(private chatMessagesService: ChatMessagesService) {}
 
-  @Get('common')
-  findAllCommon(): Promise<ChatMessage[]> {
-    return this.chatMessagesService.findAllCommon();
-  }
+  // @Get('common')
+  // findAllCommon(): Promise<ChatMessage[]> {
+  //   return this.chatMessagesService.findAllCommon();
+  // }
 }

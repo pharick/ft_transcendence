@@ -1,14 +1,6 @@
-import {
-  Controller,
-  Get,
-  Logger,
-  Post,
-  Query,
-  Redirect,
-  Session,
-} from '@nestjs/common';
-
+import { Controller, Get, Logger, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { Ecole42AuthGuard } from './guards/ecole42-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -16,17 +8,15 @@ export class AuthController {
 
   constructor(private authService: AuthService) {}
 
+  @UseGuards(Ecole42AuthGuard)
   @Get('login')
-  @Redirect('/')
-  async login(
-    @Query('code') code: string,
-    @Session() session: Record<string, any>,
-  ): Promise<void> {
-    session.userId = await this.authService.login(code);
+  login(): void {
+    return;
   }
 
-  @Post('logout')
-  logout(@Session() session: Record<string, any>): void {
-    session.destroy();
+  @Get('redirect')
+  @UseGuards(Ecole42AuthGuard)
+  async ecole42AuthRedirect(@Req() req: any) {
+    return this.authService.login(req.user);
   }
 }

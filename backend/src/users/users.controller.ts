@@ -1,19 +1,16 @@
 import {
   Controller,
   Get,
-  Param,
   Logger,
   NotFoundException,
+  Param,
   ParseIntPipe,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
-
 import { UsersService } from './users.service';
 import { User } from './user.entity';
-import UserInfo from './userInfo.interface';
-import { AuthGuard } from '../auth/auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -26,17 +23,17 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('me')
-  @UseGuards(AuthGuard)
-  async getCurrentUser(@Req() request: Request) {
+  async getCurrentUser(@Req() request) {
     return request.user;
   }
 
-  @Get(':userId')
+  @Get(':id')
   async findOne(
-    @Param('userId', new ParseIntPipe()) userId: number,
-  ): Promise<UserInfo> {
-    const user: UserInfo = await this.usersService.findOne(userId);
+    @Param('id', new ParseIntPipe()) userId: number,
+  ): Promise<User> {
+    const user: User = await this.usersService.findOne(userId);
     if (!user) throw new NotFoundException();
     return user;
   }

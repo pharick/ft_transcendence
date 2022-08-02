@@ -1,26 +1,10 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { User } from './users/user.entity';
 import { AuthModule } from './auth/auth.module';
-import { PendingGame } from './pendingGames/pendingGame.entity';
-import { CompletedGame } from './completedGames/completedGame.entity';
-import { ChatRoom } from './chat/chatRoom.entity';
-import { ChatMessage } from './chat/chatMessage.entity';
-import { ChatRoomUser } from './chat/chatRoomUser.entity';
-import { UserMiddleware } from './users/user.middleware';
 import { UsersModule } from './users/users.module';
-import { GamesModule } from './games/games.module';
-import { PendingGamesModule } from './pendingGames/pendingGames.module';
-import { MatchMakingModule } from './matchMaking/matchMaking.module';
-import { CompletedGamesModule } from './completedGames/completedGames.module';
-import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -32,33 +16,13 @@ import { NotificationsModule } from './notifications/notifications.module';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      entities: [
-        User,
-        PendingGame,
-        CompletedGame,
-        ChatRoom,
-        ChatRoomUser,
-        ChatMessage,
-      ],
+      entities: [User],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([User]),
     AuthModule,
     UsersModule,
-    GamesModule,
-    PendingGamesModule,
-    CompletedGamesModule,
-    MatchMakingModule,
-    NotificationsModule,
-    // ChatModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(UserMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
-  }
-}
+export class AppModule {}

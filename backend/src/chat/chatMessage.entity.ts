@@ -19,8 +19,8 @@ export class ChatMessage {
   @ManyToOne(() => User)
   user: User;
 
-  @ManyToOne(() => ChatRoom, (room) => room.messages, { nullable: true })
-  room: ChatRoom;
+  // @ManyToOne(() => ChatRoom, (room) => room.messages, { nullable: true })
+  // room: ChatRoom;
 
   @Column()
   text: string;

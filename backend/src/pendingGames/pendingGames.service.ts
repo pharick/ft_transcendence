@@ -23,35 +23,35 @@ export class PendingGamesService {
     });
   }
 
-  findByHost(hostUserId: number): Promise<PendingGame[]> {
-    return this.pendingGamesRepository.find({
-      relations: ['hostUser', 'guestUser'],
-      where: {
-        hostUser: {
-          id: hostUserId,
-        },
-      },
-    });
-  }
+  // findByHost(hostUserId: number): Promise<PendingGame[]> {
+  //   return this.pendingGamesRepository.find({
+  //     relations: ['hostUser', 'guestUser'],
+  //     where: {
+  //       hostUser: {
+  //         id: hostUserId,
+  //       },
+  //     },
+  //   });
+  // }
 
-  findByGuest(guestUserId: number): Promise<PendingGame[]> {
-    return this.pendingGamesRepository.find({
-      relations: ['hostUser', 'guestUser'],
-      where: {
-        guestUser: {
-          id: guestUserId,
-        },
-      },
-    });
-  }
+  // findByGuest(guestUserId: number): Promise<PendingGame[]> {
+  //   return this.pendingGamesRepository.find({
+  //     relations: ['hostUser', 'guestUser'],
+  //     where: {
+  //       guestUser: {
+  //         id: guestUserId,
+  //       },
+  //     },
+  //   });
+  // }
 
-  create(hostUserId: number, guestUserId?: number): Promise<PendingGame> {
-    const pendingGame = this.pendingGamesRepository.create({
-      hostUser: { id: guestUserId },
-      guestUser: { id: hostUserId },
-    });
-    return this.pendingGamesRepository.save(pendingGame);
-  }
+  // create(hostUserId: number, guestUserId?: number): Promise<PendingGame> {
+  //   const pendingGame = this.pendingGamesRepository.create({
+  //     hostUser: { id: guestUserId },
+  //     guestUser: { id: hostUserId },
+  //   });
+  //   return this.pendingGamesRepository.save(pendingGame);
+  // }
 
   async remove(pendingGameId: number): Promise<void> {
     const game: PendingGame = await this.pendingGamesRepository.findOne({

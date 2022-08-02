@@ -20,13 +20,13 @@ export class MatchMakingService {
     }, this.matchMakingDelta);
   }
 
-  async addUserToQueue(userId: number): Promise<void> {
-    const user = await this.usersService.findOne(userId);
-    if (!this.rankedQueue[user.rank]) this.rankedQueue[user.rank] = new Set();
-    this.rankedQueue[user.rank].add(userId);
-    console.log(`rankQueue is`);
-    console.log(this.rankedQueue);
-  }
+  // async addUserToQueue(userId: number): Promise<void> {
+  //   const user = await this.usersService.findOne(userId);
+  //   if (!this.rankedQueue[user.rank]) this.rankedQueue[user.rank] = new Set();
+  //   this.rankedQueue[user.rank].add(userId);
+  //   console.log(`rankQueue is`);
+  //   console.log(this.rankedQueue);
+  // }
 
   private async createGame(
     player1Id: number,
@@ -109,8 +109,8 @@ export class MatchMakingService {
     await this.createGame(userId, matchedUserId);
   }
 
-  async removeUserFromQueue(userId: number): Promise<void> {
-    const user = await this.usersService.findOne(userId);
-    this.rankedQueue[user.rank].delete(userId);
-  }
+  // async removeUserFromQueue(userId: number): Promise<void> {
+  //   const user = await this.usersService.findOne(userId);
+  //   this.rankedQueue[user.rank].delete(userId);
+  // }
 }
