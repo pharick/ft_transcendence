@@ -11,22 +11,23 @@ const InviteGameBlock: FC<InviteGameBlockProps> = ({ game }) => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const handleAccept = async (pendingGameId: number) => {
-    await fetchWithHandleErrors(
+    await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      `/api/pending/${pendingGameId}/accept`,
-      true,
-      'POST',
-    );
+      url: `/api/pending/${pendingGameId}/accept`,
+      token: '',
+      method: 'POST',
+    });
   };
 
   const handleRemove = async (pendingGameId: number) => {
-    await fetchWithHandleErrors(
+    await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      `/api/pending/${pendingGameId}`,
-      true,
-      'DELETE',
-    );
+      url: `/api/pending/${pendingGameId}`,
+      token: '',
+      method: 'DELETE',
+    });
   };
+
   return (
     <article className="notification-block">
       <p>

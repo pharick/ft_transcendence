@@ -11,12 +11,12 @@ const WaitGameBlock: FC<WaitGameBlockProps> = ({ game }) => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const handleRemove = async (pendingGameId: number) => {
-    await fetchWithHandleErrors(
+    await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      `/api/pending/${pendingGameId}`,
-      true,
-      'DELETE',
-    );
+      url: `/api/pending/${pendingGameId}`,
+      token: '',
+      method: 'DELETE',
+    });
   };
 
   return (

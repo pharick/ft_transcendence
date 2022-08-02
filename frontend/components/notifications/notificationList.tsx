@@ -29,31 +29,31 @@ const NotificationList: FC = () => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const getHostGames = useCallback(async () => {
-    const response = await fetchWithHandleErrors(
+    const response = await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      `/api/pending/host/${userContext.user?.id}`,
-      true,
-    );
+      url: `/api/pending/host/${userContext.user?.id}`,
+      token: '',
+    });
     const data = await response?.json();
     setHostGames(data);
   }, [userContext]);
 
   const getGuestGames = useCallback(async () => {
-    const response = await fetchWithHandleErrors(
+    const response = await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      `/api/pending/guest/${userContext.user?.id}`,
-      true,
-    );
+      url: `/api/pending/guest/${userContext.user?.id}`,
+      token: '',
+    });
     const data = await response?.json();
     setGuestGames(data);
   }, [userContext]);
 
   const getCurrentGames = useCallback(async () => {
-    const response = await fetchWithHandleErrors(
+    const response = await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      `/api/games/my`,
-      true,
-    );
+      url: `/api/games/my`,
+      token: '',
+    });
     const data = await response?.json();
     setCurrentGames(data);
   }, []);

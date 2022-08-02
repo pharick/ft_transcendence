@@ -19,6 +19,12 @@ export interface RequestErrorHandlerContextInterface {
   requestErrorHandler: RequestErrorHandler;
 }
 
+enum RequestResult {
+  Success,
+  Unauthorized,
+  Error,
+}
+
 export const RequestErrorHandlerContext =
   createContext<RequestErrorHandlerContextInterface>({
     requestErrorHandler: async (requestHandler) => {
@@ -29,26 +35,26 @@ export const RequestErrorHandlerContext =
 const RequestErrorHandlerProvider: FC<RequestErrorHandlerProviderProps> = ({
   children,
 }) => {
-  const [isError, setIsError] = useState(false);
-  const [isForbidden, setIsForbidden] = useState(false);
+  const [result, setResult] = useState(RequestResult.Success);
+  const [response, setResponse] = useState<Response | undefined>();
 
   const requestErrorHandler = async (
     requestHandler: () => Promise<Response | undefined>,
     authRequired = false,
   ) => {
-    try {
-      const response = await requestHandler();
-      if (authRequired && response?.status == 403) setIsForbidden(true);
-      else if (!response?.ok && response?.status != 403) setIsError(true);
-      return response;
-    } catch (e) {
-      setIsError(true);
+    const response = await requestHandler();
+    if (authRequired && response?.status == 401) {
+      setResult(RequestResult.Unauthorized);
+    } else if (!response?.ok && response?.status != 401) {
+      setResult(RequestResult.Error);
+      setResponse(response);
     }
+    return response;
   };
 
   const closeHandler = () => {
-    setIsError(false);
-    setIsForbidden(false);
+    setResult(RequestResult.Success);
+    setResponse(undefined);
   };
 
   const value = useMemo(() => ({ requestErrorHandler }), []);
@@ -59,12 +65,27 @@ const RequestErrorHandlerProvider: FC<RequestErrorHandlerProviderProps> = ({
         {children}
       </RequestErrorHandlerContext.Provider>
       <Modal
-        isOpen={isError || isForbidden}
-        title={isError ? 'Server error...' : 'Please login'}
+        isOpen={result != RequestResult.Success}
+        title={
+          result == RequestResult.Unauthorized
+            ? 'Please login'
+            : 'Server error...'
+        }
         cancelButtonText={'Close'}
         cancelButtonHandler={closeHandler}
       >
-        {isError ? <pre className="error-art"></pre> : <></>}
+        {result == RequestResult.Unauthorized ? (
+          <></>
+        ) : (
+          <>
+            <p>
+              <b>Url:</b> {response?.url}
+            </p>
+            <p>
+              <b>Status:</b> {response?.status}
+            </p>
+          </>
+        )}
       </Modal>
     </>
   );

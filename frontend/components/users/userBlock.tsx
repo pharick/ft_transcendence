@@ -1,9 +1,8 @@
 import { FC, useContext } from 'react';
 import { UserContext } from './userProvider';
+import OauthPopup from 'react-oauth-popup';
 
 const UserBlock: FC = () => {
-  const INTRA_AUTH_API_URL = 'https://api.intra.42.fr/oauth/authorize';
-
   const userContext = useContext(UserContext);
 
   return (
@@ -14,16 +13,16 @@ const UserBlock: FC = () => {
           <button onClick={userContext.handleLogout}>Logout</button>
         </>
       ) : (
-        <a
-          className="button"
-          href={`${INTRA_AUTH_API_URL}?client_id=${
-            process.env.NEXT_PUBLIC_INTRA_CLIENT_ID
-          }&redirect_uri=${encodeURI(
-            process.env.NEXT_PUBLIC_INTRA_REDIRECT_URL!,
-          )}&response_type=code`}
+        <OauthPopup
+          url="/api/auth/login"
+          title="Login"
+          width={600}
+          height={650}
+          onClose={() => 0}
+          onCode={userContext.handleLogin || (() => 0)}
         >
-          Login via 42
-        </a>
+          <button>Login via 42</button>
+        </OauthPopup>
       )}
     </section>
   );

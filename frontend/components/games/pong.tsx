@@ -106,12 +106,12 @@ const Pong: FC<PongProps> = ({ gameInfo }) => {
   };
 
   const resumeGame = async () => {
-    await fetchWithHandleErrors(
+    await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      `/api/games/${gameInfo.gameId}/resume`,
-      true,
-      'POST',
-    );
+      url: `/api/games/${gameInfo.gameId}/resume`,
+      token: '',
+      method: 'POST',
+    });
   };
 
   useEffect(() => {

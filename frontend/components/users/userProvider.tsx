@@ -18,6 +18,7 @@ interface UserProviderProps {
 
 interface UserContextInterface {
   user?: UserInfo;
+  handleLogin?: (code: string, params: URLSearchParams) => void;
   handleLogout?: () => void;
   userSessionId?: string;
 }
@@ -28,23 +29,31 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserInfo>();
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
-  const handleLogout = async () => {
-    await fetchWithHandleErrors(
+  const handleLogin = async (code: string, params: URLSearchParams) => {
+    const tokenResponse = await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      '/api/auth/logout',
-      true,
-      'POST',
-    );
+      url: `/api/auth/token?code=${code}`,
+    });
+    const { access_token } = await tokenResponse?.json();
+    localStorage.setItem('token', access_token);
+    await getUser();
+  };
+
+  const handleLogout = () => {
     setUser(undefined);
+    localStorage.clear();
   };
 
   const getUser = useCallback(async () => {
-    const response = await fetchWithHandleErrors(
+    const token = localStorage.getItem('token');
+    const userResponse = await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      '/api/users/me',
-    );
-    if (response?.ok) {
-      const user = await response?.json();
+      url: '/api/users/me',
+      token: token || '',
+    });
+    console.log(userResponse);
+    if (userResponse?.ok) {
+      const user = await userResponse?.json();
       setUser(user);
     }
   }, []);
@@ -56,6 +65,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
   const value = useMemo(
     () => ({
       user,
+      handleLogin,
       handleLogout,
     }),
     [user],

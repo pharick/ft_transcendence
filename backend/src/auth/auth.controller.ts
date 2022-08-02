@@ -10,13 +10,18 @@ export class AuthController {
 
   @UseGuards(Ecole42AuthGuard)
   @Get('login')
-  login(): void {
+  ecole42AuthLogin(): void {
     return;
   }
 
   @Get('redirect')
+  async redirect() {
+    return 'Signed in successfully';
+  }
+
+  @Get('token')
   @UseGuards(Ecole42AuthGuard)
-  async ecole42AuthRedirect(@Req() req: any) {
+  async ecole42AuthGetToken(@Req() req: any) {
     return this.authService.login(req.user);
   }
 }

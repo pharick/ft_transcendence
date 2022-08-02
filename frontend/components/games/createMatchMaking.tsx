@@ -34,12 +34,12 @@ const MatchMakingButton: FC = () => {
   };
 
   const createMatchMaking = useCallback(async () => {
-    await fetchWithHandleErrors(
+    await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      '/api/matchMaking',
-      true,
-      'PUT',
-    );
+      url: '/api/matchMaking',
+      token: '',
+      method: 'PUT',
+    });
 
     socket.connect();
 
@@ -54,12 +54,12 @@ const MatchMakingButton: FC = () => {
   }, [requestErrorHandlerContext, userContext.user?.id]);
 
   const cancelMatchMaking = useCallback(async () => {
-    await fetchWithHandleErrors(
+    await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      '/api/matchMaking',
-      true,
-      'DELETE',
-    );
+      url: '/api/matchMaking',
+      token: '',
+      method: 'DELETE',
+    });
 
     setIsOpen(false);
 
