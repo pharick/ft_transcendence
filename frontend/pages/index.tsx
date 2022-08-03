@@ -2,7 +2,7 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 
 import MatchMakingButton from '../components/games/createMatchMaking';
-import TrainingModeButton from '../components/games/createTestGame';
+import TrainingGameButton from '../components/games/trainingGameButton';
 
 const HomePage: NextPage = () => {
   return (
@@ -11,7 +11,7 @@ const HomePage: NextPage = () => {
         <title>Main page</title>
       </Head>
 
-      <TrainingModeButton />
+      <TrainingGameButton />
       <MatchMakingButton />
     </>
   );

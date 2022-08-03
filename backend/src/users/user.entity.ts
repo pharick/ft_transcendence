@@ -17,18 +17,6 @@ export class User {
   @Column({ default: 0 })
   prevRank: number;
 
-  // @OneToMany(() => PendingGame, (hostGame) => hostGame.hostUser)
-  // pendingHostGames: PendingGame[];
-  //
-  // @OneToMany(() => PendingGame, (guestGame) => guestGame.hostUser)
-  // pendingGuestGames: PendingGame[];
-  //
-  // @OneToMany(() => CompletedGame, (hostGame) => hostGame.hostUser)
-  // completedHostGames: CompletedGame[];
-  //
-  // @OneToMany(() => CompletedGame, (guestGame) => guestGame.hostUser)
-  // completedGuestGames: CompletedGame[];
-  //
   // @OneToMany(() => ChatRoomUser, (chatRoomUser) => chatRoomUser.user)
   // chatRooms: ChatRoomUser[];
 }

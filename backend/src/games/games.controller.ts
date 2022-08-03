@@ -1,62 +1,39 @@
 import {
   Controller,
-  Post,
   Get,
-  Param,
   Logger,
   NotFoundException,
+  Param,
   Put,
-  ForbiddenException,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { GamesService } from './games.service';
-import { GameInfo } from './games.interfaces';
-import { NotificationsGateway } from '../notifications/notifications.gateway';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Game } from './games.interfaces';
 
 @Controller('games')
 export class GamesController {
   private logger: Logger = new Logger('GamesController');
 
-  constructor(
-    private gamesService: GamesService,
-    private notificationsGateway: NotificationsGateway,
-  ) {}
+  constructor(private gamesService: GamesService) {}
+
+  @Put()
+  @UseGuards(JwtAuthGuard)
+  async createTraining(@Req() request: Request): Promise<Game> {
+    return await this.gamesService.create(false, request.user.id);
+  }
 
   @Get()
-  findAll(): Promise<GameInfo[]> {
+  findAll(): Promise<Game[]> {
     return this.gamesService.findAll();
   }
 
-  @Get('my')
-  // @UseGuards(AuthGuard)
-  findMy(@Req() request: Request): GameInfo[] {
-    return [];
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<Game> {
+    const game: Game = await this.gamesService.findOne(id);
+    if (!game) throw new NotFoundException();
+    return game;
   }
-
-  @Get(':gameId')
-  async findOne(@Param('gameId') gameId: string): Promise<GameInfo> {
-    const gameInfo: GameInfo = await this.gamesService.findOne(gameId);
-    if (!gameInfo) throw new NotFoundException();
-    return gameInfo;
-  }
-
-  // @Post(':gameId/resume')
-  // @UseGuards(AuthGuard)
-  // resumeGame(@Param('gameId') gameId: string, @Req() request: Request) {
-  //   if (!this.gamesService.resumeGame(gameId, request.user.id))
-  //     throw new ForbiddenException();
-  // }
-
-  // @Put()
-  // // @UseGuards(AuthGuard)
-  // async createTestGame(@Req() request: Request): Promise<GameInfo> {
-  //   const game = await this.gamesService.createNewGame(
-  //     request.user.id,
-  //     null,
-  //     false,
-  //   );
-  //   this.notificationsGateway.server.emit('update');
-  //   return game;
-  // }
 }

@@ -11,6 +11,7 @@ import {
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Request } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -25,15 +26,13 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  async getCurrentUser(@Req() request) {
+  async getCurrentUser(@Req() request: Request) {
     return request.user;
   }
 
   @Get(':id')
-  async findOne(
-    @Param('id', new ParseIntPipe()) userId: number,
-  ): Promise<User> {
-    const user: User = await this.usersService.findOne(userId);
+  async findOne(@Param('id', new ParseIntPipe()) id: number): Promise<User> {
+    const user: User = await this.usersService.findOne(id);
     if (!user) throw new NotFoundException();
     return user;
   }

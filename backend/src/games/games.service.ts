@@ -1,11 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { v4 as uuid4 } from 'uuid';
-
-import { FieldInfo, GameInfo, ScoreInfo } from './games.interfaces';
-import { FrameInfo } from './games.interfaces';
+import { GameFrame } from './games.interfaces';
+import { Game } from './games.interfaces';
 import { UsersService } from '../users/users.service';
-import { CompletedGamesService } from '../completedGames/completedGames.service';
-import { User } from '../users/user.entity';
+import { randomUUID } from 'crypto';
 
 const radians = (degrees: number) => {
   return degrees * (Math.PI / 180);
@@ -15,180 +12,161 @@ const random = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-class Game {
-  private readonly fieldWidth: number = 800;
-  private readonly fieldHeight: number = 600;
-  private readonly ballRadius: number = 4;
-  private readonly clubWidth: number = 8;
-  private readonly moveClubDelta: number = 20;
-  private readonly startingBallSpeed: number = 20;
-  private readonly ballSpeedDelta = 0.5;
+class GameProcessor {
+  private readonly _ballRadius: number = 4;
+  private readonly _clubWidth: number = 8;
+  private readonly _moveClubDelta: number = 20;
+  private readonly _startingBallSpeed: number = 20;
+  private readonly _ballSpeedDelta = 0.5;
+  private readonly _frameDelta: number = 40;
+  private readonly _max_score: number = 11;
 
-  private readonly frameDelta: number = 40;
+  public readonly fieldWidth: number = 800;
+  public readonly fieldHeight: number = 600;
+  public readonly player1Id: number;
+  public readonly player2Id: number;
+  public readonly isRanked;
 
-  private ballX: number;
-  private ballY: number;
-  private ballDirection: number;
-  private ballSpeed: number;
-  private readonly clubHeightRight: number;
-  private readonly clubHeightLeft: number;
+  private readonly _clubHeightRight: number;
+  private readonly _clubHeightLeft: number;
 
-  private club1Pos: number;
-  private club2Pos: number;
-
-  private club1Delta: number;
-  private club2Delta: number;
-
-  private readonly _player1Id: number | null;
-  private readonly _player2Id: number | null;
-
-  private score1: number;
-  private score2: number;
-
-  private player1Turn: boolean;
-
-  private gameTimer: NodeJS.Timer;
+  private _ballX: number;
+  private _ballY: number;
+  private _ballDirection: number;
+  private _ballSpeed: number;
+  private _club1Pos: number;
+  private _club2Pos: number;
+  private _club1Delta: number;
+  private _club2Delta: number;
+  private _score1: number;
+  private _score2: number;
+  private _isPlayer1Turn: boolean;
+  private _gameTimer: NodeJS.Timer;
   private _durationMs: number;
-  private readonly _isRanked: boolean;
+  private _isCompleted: boolean;
 
-  constructor(
-    player1Id: number | null,
-    player2Id: number | null,
-    isRanked: boolean,
-  ) {
-    this.ballSpeed = this.startingBallSpeed;
-    this.club1Pos = this.fieldHeight / 2;
-    this.club2Pos = this.fieldHeight / 2;
-    this.club1Delta = 0;
-    this.club2Delta = 0;
-    this._player1Id = player1Id;
-    this._player2Id = player2Id;
-    this.score1 = 0;
-    this.score2 = 0;
+  constructor(isRanked: boolean, player1Id: number, player2Id?: number) {
+    this._ballSpeed = this._startingBallSpeed;
+    this._club1Pos = this.fieldHeight / 2;
+    this._club2Pos = this.fieldHeight / 2;
+    this._club1Delta = 0;
+    this._club2Delta = 0;
+    this._score1 = 0;
+    this._score2 = 0;
+    this.player1Id = player1Id;
+    this.player2Id = player2Id;
+    this.isRanked = isRanked;
 
     this.newRound();
 
-    this.clubHeightLeft = player1Id === null ? this.fieldHeight : 80;
-    this.clubHeightRight = player2Id === null ? this.fieldHeight : 80;
-
+    this._clubHeightLeft = 80;
+    this._clubHeightRight = this.isTraining ? this.fieldHeight : 80;
     this._durationMs = 0;
-    this._isRanked = isRanked;
+    this._isCompleted = false;
   }
 
-  private get ballLeft(): number {
-    return this.ballX - this.ballRadius;
+  public get score1(): number {
+    return this._score1;
   }
 
-  private set ballLeft(n: number) {
-    this.ballX = n + this.ballRadius;
+  public get score2(): number {
+    return this._score2;
   }
 
-  private get ballRight(): number {
-    return this.ballX + this.ballRadius;
-  }
-
-  private set ballRight(n: number) {
-    this.ballX = n - this.ballRadius;
-  }
-
-  private get ballTop(): number {
-    return this.ballY - this.ballRadius;
-  }
-
-  private set ballTop(n: number) {
-    this.ballY = n + this.ballRadius;
-  }
-
-  private get ballBottom(): number {
-    return this.ballY + this.ballRadius;
-  }
-
-  private set ballBottom(n: number) {
-    this.ballY = n - this.ballRadius;
-  }
-
-  private get club1Top(): number {
-    return this.club1Pos - this.clubHeightLeft / 2;
-  }
-
-  private get club1Bottom(): number {
-    return this.club1Pos + this.clubHeightLeft / 2;
-  }
-
-  private get club1Right(): number {
-    return this.ballRadius * 2 + this.clubWidth;
-  }
-
-  private get club2Top(): number {
-    return this.club2Pos - this.clubHeightRight / 2;
-  }
-
-  private get club2Bottom(): number {
-    return this.club2Pos + this.clubHeightRight / 2;
-  }
-
-  private get club2Left(): number {
-    return this.fieldWidth - this.ballRadius * 2 - this.clubWidth;
-  }
-
-  get durationMs(): number {
+  public get durationMs(): number {
     return this._durationMs;
   }
 
-  get isRanked(): boolean {
-    return this._isRanked;
+  public get isPlayer1Turn(): boolean {
+    return this._isPlayer1Turn;
   }
 
-  get isGameRunning(): boolean {
-    return !!this.gameTimer;
+  public get isTraining(): boolean {
+    return !this.player2Id;
   }
 
-  get player1Id(): number {
-    return this._player1Id;
+  private get ballLeft(): number {
+    return this._ballX - this._ballRadius;
   }
 
-  get player2Id(): number {
-    return this._player2Id;
+  private set ballLeft(n: number) {
+    this._ballX = n + this._ballRadius;
   }
 
-  get fieldInfo(): FieldInfo {
-    return {
-      width: this.fieldWidth,
-      height: this.fieldHeight,
-    };
+  private get ballRight(): number {
+    return this._ballX + this._ballRadius;
   }
 
-  get scores(): ScoreInfo {
-    return {
-      player1: this.score1,
-      player2: this.score2,
-    };
+  private set ballRight(n: number) {
+    this._ballX = n - this._ballRadius;
   }
 
-  moveClubStart(playerId: number, up: boolean): void {
-    if (!playerId) return;
-    if (playerId == this.player1Id)
-      this.club1Delta = up ? -this.moveClubDelta : this.moveClubDelta;
-    else if (playerId == this.player2Id)
-      this.club2Delta = up ? -this.moveClubDelta : this.moveClubDelta;
+  private get ballTop(): number {
+    return this._ballY - this._ballRadius;
   }
 
-  moveClubStop(playerId: number): void {
-    if (!playerId) return;
-    if (playerId == this.player1Id) this.club1Delta = 0;
-    else if (playerId == this.player2Id) this.club2Delta = 0;
+  private set ballTop(n: number) {
+    this._ballY = n + this._ballRadius;
   }
 
-  private newRound(): void {
-    this.ballSpeed = this.startingBallSpeed;
-    this.ballX = this.fieldWidth / 2;
-    this.ballY = this.fieldHeight / 2;
-    if (!this.player2Id) {
-      this.player1Turn = true;
+  private get ballBottom(): number {
+    return this._ballY + this._ballRadius;
+  }
+
+  private set ballBottom(n: number) {
+    this._ballY = n - this._ballRadius;
+  }
+
+  private get club1Top(): number {
+    return this._club1Pos - this._clubHeightLeft / 2;
+  }
+
+  private get club1Bottom(): number {
+    return this._club1Pos + this._clubHeightLeft / 2;
+  }
+
+  private get club1Right(): number {
+    return this._ballRadius * 2 + this._clubWidth;
+  }
+
+  private get club2Top(): number {
+    return this._club2Pos - this._clubHeightRight / 2;
+  }
+
+  private get club2Bottom(): number {
+    return this._club2Pos + this._clubHeightRight / 2;
+  }
+
+  private get club2Left(): number {
+    return this.fieldWidth - this._ballRadius * 2 - this._clubWidth;
+  }
+
+  moveClubStart(isClub1: boolean, up: boolean): void {
+    if (isClub1) {
+      this._club1Delta = up ? -this._moveClubDelta : this._moveClubDelta;
     } else {
-      this.player1Turn = !!random(0, 1);
+      this._club2Delta = up ? -this._moveClubDelta : this._moveClubDelta;
     }
-    this.ballDirection = this.player1Turn
+  }
+
+  moveClubStop(isClub1: boolean): void {
+    if (isClub1) {
+      this._club1Delta = 0;
+    } else {
+      this._club2Delta = 0;
+    }
+  }
+
+  private newRound() {
+    this._ballSpeed = this._startingBallSpeed;
+    this._ballX = this.fieldWidth / 2;
+    this._ballY = this.fieldHeight / 2;
+    if (this.isTraining) {
+      this._isPlayer1Turn = true;
+    } else {
+      this._isPlayer1Turn = Boolean(random(0, 1));
+    }
+    this._ballDirection = this._isPlayer1Turn
       ? random(-30, 30)
       : random(180 - 30, 180 + 30);
     this.pauseGame();
@@ -197,36 +175,37 @@ class Game {
   private checkBordersCollisions(): void {
     if (this.ballTop < 0) {
       this.ballTop = 0;
-      this.ballDirection = -this.ballDirection;
-      this.ballSpeed += this.ballSpeedDelta;
+      this._ballDirection = -this._ballDirection;
+      this._ballSpeed += this._ballSpeedDelta;
     } else if (this.ballBottom > this.fieldHeight) {
       this.ballBottom = this.fieldHeight;
-      this.ballDirection = -this.ballDirection;
-      this.ballSpeed += this.ballSpeedDelta;
+      this._ballDirection = -this._ballDirection;
+      this._ballSpeed += this._ballSpeedDelta;
     }
   }
 
-  private checkClubsCollisions(): void {
-    function newBallDirection(delta: number) {
-      if (delta <= 10) return 200;
-      if (delta <= 20) return 190;
-      if (delta <= 30) return 185;
-      if (delta <= 40) return 180;
-      if (delta <= 50) return 180;
-      if (delta <= 60) return 175;
-      if (delta <= 70) return 170;
-      if (delta <= 80) return 160;
-      return 180;
-    }
+  private calculateClubRebound(delta: number) {
+    if (delta <= 10) return 200;
+    if (delta <= 20) return 190;
+    if (delta <= 30) return 185;
+    if (delta <= 40) return 180;
+    if (delta <= 50) return 180;
+    if (delta <= 60) return 175;
+    if (delta <= 70) return 170;
+    if (delta <= 80) return 160;
+    return 180;
+  }
 
+  private checkClubsCollisions(): void {
     if (
       this.ballLeft < this.club1Right &&
       this.ballBottom > this.club1Top &&
       this.ballTop < this.club1Bottom
     ) {
       this.ballLeft = this.club1Right;
-      this.ballDirection =
-        newBallDirection(this.club1Bottom - this.ballTop) - this.ballDirection;
+      this._ballDirection =
+        this.calculateClubRebound(this.club1Bottom - this.ballTop) -
+        this._ballDirection;
     }
     if (
       this.ballRight > this.club2Left &&
@@ -234,142 +213,143 @@ class Game {
       this.ballTop < this.club2Bottom
     ) {
       this.ballRight = this.club2Left;
-      this.ballDirection =
-        newBallDirection(this.club1Bottom - this.ballTop) - this.ballDirection;
+      this._ballDirection =
+        this.calculateClubRebound(this.club1Bottom - this.ballTop) -
+        this._ballDirection;
     }
   }
 
   private checkGoals(): void {
     if (this.ballLeft > this.fieldWidth) {
-      this.score1++;
+      this._score1++;
       this.newRound();
     }
     if (this.ballRight < 0) {
-      this.score2++;
+      this._score2++;
       this.newRound();
     }
   }
 
   private moveClubs(): void {
     if (
-      (this.club1Delta < 0 && this.club1Top > this.ballRadius * 3) ||
-      (this.club1Delta > 0 &&
-        this.club1Bottom < this.fieldHeight - this.ballRadius * 3)
+      (this._club1Delta < 0 && this.club1Top > this._ballRadius * 3) ||
+      (this._club1Delta > 0 &&
+        this.club1Bottom < this.fieldHeight - this._ballRadius * 3)
     )
-      this.club1Pos += this.club1Delta;
+      this._club1Pos += this._club1Delta;
 
     if (
-      (this.club2Delta < 0 && this.club2Top > this.ballRadius * 3) ||
-      (this.club2Delta > 0 &&
-        this.club2Bottom < this.fieldHeight - this.ballRadius * 3)
+      (this._club2Delta < 0 && this.club2Top > this._ballRadius * 3) ||
+      (this._club2Delta > 0 &&
+        this.club2Bottom < this.fieldHeight - this._ballRadius * 3)
     )
-      this.club2Pos += this.club2Delta;
+      this._club2Pos += this._club2Delta;
   }
 
   calculateNextFrame(): void {
-    this.ballX += Math.cos(radians(this.ballDirection)) * this.ballSpeed;
-    this.ballY += Math.sin(radians(this.ballDirection)) * this.ballSpeed;
+    this._ballX += Math.cos(radians(this._ballDirection)) * this._ballSpeed;
+    this._ballY += Math.sin(radians(this._ballDirection)) * this._ballSpeed;
 
     this.checkBordersCollisions();
     this.checkClubsCollisions();
     this.checkGoals();
     this.moveClubs();
 
-    this._durationMs += this.frameDelta;
-  }
+    this._durationMs += this._frameDelta;
 
-  resumeGame(userId: number): boolean {
-    if (
-      (this.player1Turn && this.player1Id != userId) ||
-      (!this.player1Turn && this.player2Id != userId)
-    )
-      return false;
-    if (this.gameTimer) return;
-    this.gameTimer = setInterval(() => {
-      this.calculateNextFrame();
-    }, this.frameDelta);
-    return true;
-  }
-
-  pauseGame(): void {
-    if (this.gameTimer) {
-      clearInterval(this.gameTimer);
-      this.gameTimer = null;
+    if (this._score1 == this._max_score || this._score2 == this._max_score) {
+      this._isCompleted = true;
     }
   }
 
-  getNextFrame(): FrameInfo {
+  resumeGame() {
+    if (this._gameTimer) return;
+    this._gameTimer = setInterval(() => {
+      this.calculateNextFrame();
+    }, this._frameDelta);
+  }
+
+  pauseGame() {
+    if (this._gameTimer) {
+      clearInterval(this._gameTimer);
+      this._gameTimer = null;
+    }
+  }
+
+  getNextFrame(): GameFrame {
     return {
-      ballRadius: this.ballRadius,
-      ballX: this.ballX,
-      ballY: this.ballY,
-      clubWidth: this.clubWidth,
-      clubHeightLeft: this.clubHeightLeft,
-      clubHeightRight: this.clubHeightRight,
-      club1Pos: this.club1Pos,
-      club2Pos: this.club2Pos,
-      scores: this.scores,
-      isPause: !this.gameTimer,
-      isPlayer1Turn: this.player1Turn,
+      ballRadius: this._ballRadius,
+      ballX: this._ballX,
+      ballY: this._ballY,
+      clubWidth: this._clubWidth,
+      clubHeightLeft: this._clubHeightLeft,
+      clubHeightRight: this._clubHeightRight,
+      club1Pos: this._club1Pos,
+      club2Pos: this._club2Pos,
+      score1: this._score1,
+      score2: this._score2,
+      isPaused: !this._gameTimer,
+      isPlayer1Turn: this._isPlayer1Turn,
       durationMs: this._durationMs,
+      isCompleted: this._isCompleted,
     };
   }
 }
 
 @Injectable()
 export class GamesService {
-  private logger: Logger = new Logger('GamesService');
-  private games: Record<string, Game> = {};
+  private logger = new Logger('GamesService');
+  private gameProcessors = new Map<string, GameProcessor>();
 
-  constructor(
-    private usersService: UsersService,
-    private completedGamesService: CompletedGamesService,
-  ) {}
+  constructor(private usersService: UsersService) {}
 
-  async findAll(): Promise<GameInfo[]> {
+  async create(
+    isRanked: boolean,
+    player1Id: number,
+    player2Id?: number,
+  ): Promise<Game> {
+    const player1 = await this.usersService.findOne(player1Id);
+    const player2 = player2Id
+      ? await this.usersService.findOne(player2Id)
+      : undefined;
+    if (!player1) return undefined;
+    const gameId = randomUUID();
+    this.gameProcessors.set(
+      gameId,
+      new GameProcessor(false, player1.id, player2?.id),
+    );
+    return this.findOne(gameId);
+  }
+
+  async findAll(): Promise<Game[]> {
     return await Promise.all(
-      Object.entries(this.games).map(
-        async ([gameId]) => await this.findOne(gameId),
+      Array.from(this.gameProcessors.keys()).map(
+        async (id) => await this.findOne(id),
       ),
     );
   }
 
-  async findOne(gameId: string): Promise<GameInfo> {
-    if (!(gameId in this.games) || !this.games[gameId]) return null;
-
-    const player1Id = this.games[gameId].player1Id;
-    const player2Id = this.games[gameId].player2Id;
-    // const player1: User = await this.usersService.findOne(player1Id);
-    // const player2: User = await this.usersService.findOne(player2Id);
-
+  async findOne(id: string): Promise<Game> {
+    const gameProcessor = this.gameProcessors.get(id);
+    if (!gameProcessor) return undefined;
     return {
-      gameId: gameId,
-      field: this.games[gameId].fieldInfo,
-      player1: null,
-      player2: null,
-      scores: this.games[gameId].scores,
-      durationMs: this.games[gameId].durationMs,
-      isRanked: this.games[gameId].isRanked,
+      id,
+      fieldWidth: gameProcessor.fieldWidth,
+      fieldHeight: gameProcessor.fieldHeight,
+      player1: await this.usersService.findOne(gameProcessor.player1Id),
+      player2: gameProcessor.player2Id
+        ? await this.usersService.findOne(gameProcessor.player1Id)
+        : undefined,
+      score1: gameProcessor.score1,
+      score2: gameProcessor.score2,
+      durationMs: gameProcessor.durationMs,
+      isPlayer1Turn: gameProcessor.isPlayer1Turn,
+      isRanked: gameProcessor.isRanked,
     };
   }
 
-  private removeGame(gameId: string) {
-    delete this.games[gameId];
-  }
-
-  async createNewGame(
-    player1Id: number | null,
-    player2Id: number | null,
-    isRanked: boolean,
-  ): Promise<GameInfo> {
-    const gameId: string = uuid4();
-    this.games[gameId] = new Game(player1Id, player2Id, isRanked);
-    return this.findOne(gameId);
-  }
-
-  getNextFrame(gameId: string): FrameInfo | null {
-    if (!(gameId in this.games) || !this.games[gameId]) return null;
-    return this.games[gameId].getNextFrame();
+  getNextFrame(gameId: string): GameFrame {
+    return this.gameProcessors.get(gameId)?.getNextFrame();
   }
 
   // async endGame(gameId: string): Promise<CompletedGame> {
@@ -395,31 +375,23 @@ export class GamesService {
   //       game.scores.player2 - game.scores.player1,
   //     );
   //   }
+  //
+  //   return await this.completedGamesService.create(completedGame);
+  // }
 
-  // return await this.completedGamesService.create(completedGame);
-  // }
+  resumeGame(id: string) {
+    this.gameProcessors.get(id)?.resumeGame();
+  }
 
-  // resumeGame(gameId: string, userId: number): boolean {
-  //   if (!(gameId in this.games) || !this.games[gameId]) return false;
-  //   if (!this.games[gameId].isGameRunning) {
-  //     return this.games[gameId].resumeGame(userId);
-  //   }
-  // }
-  //
-  // pauseGame(gameId: string) {
-  //   if (!(gameId in this.games) || !this.games[gameId]) return;
-  //   if (this.games[gameId].isGameRunning) {
-  //     this.games[gameId].pauseGame();
-  //   }
-  // }
-  //
-  // moveClubStart(gameId: number, playerId: number, up: boolean): void {
-  //   if (!(gameId in this.games) || !this.games[gameId]) return;
-  //   this.games[gameId].moveClubStart(playerId, up);
-  // }
-  //
-  // moveClubStop(gameId: number, playerId: number): void {
-  //   if (!(gameId in this.games) || !this.games[gameId]) return;
-  //   this.games[gameId].moveClubStop(playerId);
-  // }
+  pauseGame(id: string) {
+    this.gameProcessors.get(id)?.pauseGame();
+  }
+
+  moveClubStart(gameId: string, isClub1: boolean, up: boolean) {
+    this.gameProcessors.get(gameId)?.moveClubStart(isClub1, up);
+  }
+
+  moveClubStop(gameId: string, isClub1: boolean) {
+    this.gameProcessors.get(gameId)?.moveClubStop(isClub1);
+  }
 }

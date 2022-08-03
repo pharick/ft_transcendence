@@ -1,26 +1,19 @@
 import { User } from '../users/user.entity';
 
-export interface FieldInfo {
-  width: number;
-  height: number;
-}
-
-export interface ScoreInfo {
-  player1: number;
-  player2: number;
-}
-
-export interface GameInfo {
-  gameId: string;
-  field: FieldInfo;
+export interface Game {
+  id: string;
+  fieldWidth: number;
+  fieldHeight: number;
   player1: User;
   player2: User;
-  scores: ScoreInfo;
+  score1: number;
+  score2: number;
   durationMs: number;
+  isPlayer1Turn: boolean;
   isRanked: boolean;
 }
 
-export interface FrameInfo {
+export interface GameFrame {
   ballRadius: number;
   ballX: number;
   ballY: number;
@@ -29,8 +22,10 @@ export interface FrameInfo {
   clubHeightRight: number;
   club1Pos: number;
   club2Pos: number;
-  scores: ScoreInfo;
-  isPause: boolean;
+  score1: number;
+  score2: number;
+  isPaused: boolean;
   isPlayer1Turn: boolean;
   durationMs: number;
+  isCompleted: boolean;
 }

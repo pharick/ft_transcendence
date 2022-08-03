@@ -1,9 +1,8 @@
-export class CreatePendingGameDto {
-  guestUserId?: number;
+export class ResumeGameDto {
+  gameId: string;
 }
 
-export class ChatMessageDto {
-  sessionId?: string;
-  roomId?: number;
-  text?: string;
+export class MoveClubStartDto {
+  gameId: string;
+  up: boolean;
 }

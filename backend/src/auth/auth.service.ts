@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Profile } from 'passport-42';
 import { UsersService } from '../users/users.service';
+import { ConfigService } from '@nestjs/config';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -10,6 +11,7 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private userService: UsersService,
+    private configService: ConfigService,
   ) {}
 
   async validateUser(
@@ -19,11 +21,19 @@ export class AuthService {
     return this.userService.findOrCreate(ids, username);
   }
 
-  async login(user: any) {
+  async login(user: User) {
     return {
       access_token: this.jwtService.sign({
         sub: user.id,
       }),
     };
+  }
+
+  async getUser(token: string): Promise<User> {
+    const { sub } = this.jwtService.verify(token, {
+      secret: this.configService.get('JWT_SECRET'),
+    });
+    if (!sub) return undefined;
+    return await this.userService.findOne(sub);
   }
 }

@@ -2,23 +2,21 @@ import { FC, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
 import useKeyboardEventListener from '../../hooks/use_event_listener';
-import { CompletedGameInfo, FrameInfo, GameInfo } from '../../types/interfaces';
-import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
-import { fetchWithHandleErrors } from '../../utils';
 import { UserContext } from '../users/userProvider';
+import { Game, GameFrame } from '../../types/interfaces';
+import { MoveClubStartDto, ResumeGameDto } from '../../types/dtos';
 
 interface PongProps {
-  gameInfo: GameInfo;
+  game: Game;
 }
 
-const Pong: FC<PongProps> = ({ gameInfo }) => {
+const GameField: FC<PongProps> = ({ game }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [score1, setScore1] = useState(0);
   const [score2, setScore2] = useState(0);
   const [pause, setPause] = useState(true);
   const [player1Turn, setPlayer1Turn] = useState(false);
   const [duration, setDuration] = useState(0);
-  const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
   const userContext = useContext(UserContext);
 
   const socket = io(
@@ -28,8 +26,8 @@ const Pong: FC<PongProps> = ({ gameInfo }) => {
         : ''
     }/game`,
     {
+      auth: { token: localStorage.getItem('token'), gameId: game.id },
       autoConnect: false,
-      auth: { gameId: gameInfo.gameId },
     },
   );
 
@@ -42,12 +40,13 @@ const Pong: FC<PongProps> = ({ gameInfo }) => {
     clubHeightRight,
     club1Pos,
     club2Pos,
-    scores,
-    isPause,
+    score1,
+    score2,
+    isPaused,
     isPlayer1Turn,
     durationMs,
-  }: FrameInfo) => {
-    setPause(isPause);
+  }: GameFrame) => {
+    setPause(isPaused);
     setPlayer1Turn(isPlayer1Turn);
     setDuration(Math.round(durationMs / 1000));
 
@@ -72,8 +71,8 @@ const Pong: FC<PongProps> = ({ gameInfo }) => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // score
-    setScore1(scores.player1);
-    setScore2(scores.player2);
+    setScore1(score1);
+    setScore2(score2);
 
     // center line
     ctx.fillStyle = 'lightgrey';
@@ -105,25 +104,16 @@ const Pong: FC<PongProps> = ({ gameInfo }) => {
     );
   };
 
-  const resumeGame = async () => {
-    await fetchWithHandleErrors({
-      requestErrorHandlerContext,
-      url: `/api/games/${gameInfo.gameId}/resume`,
-      token: '',
-      method: 'POST',
-    });
-  };
-
   useEffect(() => {
     socket.connect();
 
-    socket.on('nextFrame', (frame: FrameInfo) => {
+    socket.on('nextFrame', (frame: GameFrame) => {
       renderField(frame);
     });
 
-    socket.on('endGame', (completedGameInfo: CompletedGameInfo) => {
-      window.location.replace(`/completed/${completedGameInfo.id}`);
-    });
+    // socket.on('endGame', (completedGameInfo: CompletedGameInfo) => {
+    //   window.location.replace(`/completed/${completedGameInfo.id}`);
+    // });
 
     return () => {
       socket.off('connect');
@@ -131,39 +121,36 @@ const Pong: FC<PongProps> = ({ gameInfo }) => {
       socket.off('endGame');
       socket.disconnect();
     };
-  }, [gameInfo.gameId]);
+  }, [game.id]);
 
   const keyDownHandler = (e: KeyboardEvent) => {
-    if (
-      e.code == 'Space' &&
-      ((gameInfo.player1.id == userContext.user?.id && player1Turn) ||
-        (gameInfo.player2.id == userContext.user?.id && !player1Turn))
-    ) {
-      resumeGame().then();
-      return;
-    }
+    // if (
+    //   game.player1?.id != userContext.user?.id &&
+    //   game.player2?.id != userContext.user?.id
+    // )
+    //   return;
 
-    if (e.code != 'KeyW' && e.code != 'KeyS') return;
-    const up = e.code == 'KeyW';
-
-    if (
-      gameInfo.player1?.id == userContext.user?.id ||
-      gameInfo.player2?.id == userContext.user?.id
-    ) {
-      const gameId = gameInfo.gameId;
-      socket.emit('moveClubStart', { gameId, up });
+    if (e.code == 'Space') {
+      const resumeGameDto: ResumeGameDto = { gameId: game.id };
+      socket.emit('resume', resumeGameDto);
+    } else if (e.code == 'KeyW' || e.code == 'KeyS') {
+      const moveClubStartDto: MoveClubStartDto = {
+        gameId: game.id,
+        up: e.code == 'KeyW',
+      };
+      socket.emit('moveClubStart', moveClubStartDto);
     }
   };
 
   const keyUpHandler = (e: KeyboardEvent) => {
-    if (e.code != 'KeyW' && e.code != 'KeyS') return;
+    // if (
+    //   game.player1?.id != userContext.user?.id &&
+    //   game.player2?.id != userContext.user?.id
+    // )
+    //   return;
 
-    if (
-      gameInfo.player1?.id == userContext.user?.id ||
-      gameInfo.player2?.id == userContext.user?.id
-    ) {
-      const gameId = gameInfo.gameId;
-      socket.emit('moveClubStop', { gameId });
+    if (e.code == 'KeyW' || e.code == 'KeyS') {
+      socket.emit('moveClubStop', { gameId: game.id });
     }
   };
 
@@ -179,10 +166,10 @@ const Pong: FC<PongProps> = ({ gameInfo }) => {
       <div className="field-wrapper">
         {pause && (
           <p className="pause-message">
-            {!gameInfo.player1 ||
-            !gameInfo.player2 ||
-            (gameInfo.player1.id == userContext.user?.id && player1Turn) ||
-            (gameInfo.player2.id == userContext.user?.id && !player1Turn)
+            {!game.player1 ||
+            !game.player2 ||
+            (game.player1.id == userContext.user?.id && player1Turn) ||
+            (game.player2.id == userContext.user?.id && !player1Turn)
               ? 'Press SPACE to continue'
               : 'Waiting for opponent'}
           </p>
@@ -191,24 +178,22 @@ const Pong: FC<PongProps> = ({ gameInfo }) => {
         <p className="score score1">{score1}</p>
         <p className="score score2">{score2}</p>
         <canvas
-          width={gameInfo.field.width}
-          height={gameInfo.field.height}
+          width={game.fieldWidth}
+          height={game.fieldHeight}
           className="field"
           ref={canvasRef}
         ></canvas>
       </div>
 
-      <div className="pong-players" style={{ width: gameInfo.field.width }}>
+      <div className="pong-players" style={{ width: game.fieldWidth }}>
         <div className={`pong-players-part ${player1Turn ? 'current' : ''}`}>
           <div className="avatar-placeholder-small"></div>
-          <p className="pong-players-name">
-            {gameInfo.player1 ? gameInfo.player1.username : 'Mr. Wall'}
-          </p>
+          <p className="pong-players-name">{game.player1.username}</p>
         </div>
         <div className={`pong-players-part ${!player1Turn ? 'current' : ''}`}>
           <div className="avatar-placeholder-small"></div>
           <p className="pong-players-name">
-            {gameInfo.player2 ? gameInfo.player2.username : 'Mr. Wall'}
+            {game.player2 ? game.player2.username : 'Mr. Wall'}
           </p>
         </div>
       </div>
@@ -216,4 +201,4 @@ const Pong: FC<PongProps> = ({ gameInfo }) => {
   );
 };
 
-export default Pong;
+export default GameField;

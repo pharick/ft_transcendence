@@ -1,35 +1,24 @@
-export interface UserInfo {
+export interface User {
   id: number;
+  ecole42Id: number;
   username: string;
   rank: number;
   prevRank: number;
 }
 
-export interface PendingGame {
-  id: number;
-  hostUser: UserInfo;
-  guestUser: UserInfo;
+export interface Game {
+  id: string;
+  fieldWidth: number;
+  fieldHeight: number;
+  player1: User;
+  player2: User;
+  score1: number;
+  score2: number;
+  durationMs: number;
+  isRanked: boolean;
 }
 
-export interface FieldInfo {
-  width: number;
-  height: number;
-}
-
-export interface ScoreInfo {
-  player1: number;
-  player2: number;
-}
-
-export interface GameInfo {
-  gameId: string;
-  field: FieldInfo;
-  player1: UserInfo;
-  player2: UserInfo;
-  scores: ScoreInfo;
-}
-
-export interface FrameInfo {
+export interface GameFrame {
   ballRadius: number;
   ballX: number;
   ballY: number;
@@ -38,37 +27,10 @@ export interface FrameInfo {
   clubHeightRight: number;
   club1Pos: number;
   club2Pos: number;
-  scores: ScoreInfo;
-  isPause: boolean;
-  isPlayer1Turn: boolean;
-  durationMs: number;
-}
-
-export interface CompletedGameInfo {
-  id: number;
-  date: Date;
   score1: number;
   score2: number;
-  duration: number;
-  hostUser: UserInfo;
-  guestUser: UserInfo;
-}
-
-export interface ChatMessage {
-  id: number;
-  date: Date;
-  user: UserInfo;
-  text: string;
-}
-
-export interface ChatRoom {
-  id: number;
-  isPrivate: boolean;
-  hostUser: UserInfo;
-  guestUser: UserInfo;
-}
-
-export interface MenuItem {
-  text: string;
-  link: string;
+  isPaused: boolean;
+  isPlayer1Turn: boolean;
+  durationMs: number;
+  isCompleted: boolean;
 }

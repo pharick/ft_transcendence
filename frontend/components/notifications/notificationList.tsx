@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useContext, useEffect, useState } from 'react';
-import { GameInfo, PendingGame } from '../../types/interfaces';
 import Link from 'next/link';
 import { io } from 'socket.io-client';
 import ReadyGameBlock from './readyGameBlock';
@@ -9,64 +8,23 @@ import { UserContext } from '../users/userProvider';
 import { fetchWithHandleErrors } from '../../utils';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 
-const socket = io(
-  `${
-    process.env.NODE_ENV == 'development'
-      ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
-      : ''
-  }/notifications`,
-  {
-    autoConnect: false,
-  },
-);
-
 const NotificationList: FC = () => {
-  const [hostGames, setHostGames] = useState<PendingGame[]>([]);
-  const [guestGames, setGuestGames] = useState<PendingGame[]>([]);
-  const [currentGames, setCurrentGames] = useState<GameInfo[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const userContext = useContext(UserContext);
-  const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
-
-  const getHostGames = useCallback(async () => {
-    const response = await fetchWithHandleErrors({
-      requestErrorHandlerContext,
-      url: `/api/pending/host/${userContext.user?.id}`,
-      token: '',
-    });
-    const data = await response?.json();
-    setHostGames(data);
-  }, [userContext]);
-
-  const getGuestGames = useCallback(async () => {
-    const response = await fetchWithHandleErrors({
-      requestErrorHandlerContext,
-      url: `/api/pending/guest/${userContext.user?.id}`,
-      token: '',
-    });
-    const data = await response?.json();
-    setGuestGames(data);
-  }, [userContext]);
-
-  const getCurrentGames = useCallback(async () => {
-    const response = await fetchWithHandleErrors({
-      requestErrorHandlerContext,
-      url: `/api/games/my`,
-      token: '',
-    });
-    const data = await response?.json();
-    setCurrentGames(data);
-  }, []);
-
-  const handleUpdate = useCallback(async () => {
-    if (!userContext.user) return;
-    await getHostGames();
-    await getGuestGames();
-    await getCurrentGames();
-  }, [getCurrentGames, getGuestGames, getHostGames]);
 
   useEffect(() => {
-    handleUpdate().then();
+    const socket = io(
+      `${
+        process.env.NODE_ENV == 'development'
+          ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+          : ''
+      }/notifications`,
+      {
+        autoConnect: false,
+        auth: { userId: userContext.user?.id },
+      },
+    );
+
     socket.connect();
 
     socket.on('connect', () => {
@@ -74,57 +32,53 @@ const NotificationList: FC = () => {
       socket.emit('introduce', userContext.user?.id);
     });
 
-    socket.on('update', () => {
-      handleUpdate().then();
-    });
-
     return () => {
       socket.off('connect');
       socket.off('update');
       socket.disconnect();
     };
-  }, [handleUpdate, userContext.user]);
+  }, [userContext.user]);
 
   if (isConnected) {
     return (
       <section>
-        {hostGames.length > 0 ||
-        guestGames.length > 0 ||
-        currentGames.length > 0 ? (
-          <ul className="notification-list">
-            {currentGames.map((game) => (
-              <li key={game.gameId}>
-                <ReadyGameBlock game={game} />
-              </li>
-            ))}
+        {/*{hostGames.length > 0 ||*/}
+        {/*guestGames.length > 0 ||*/}
+        {/*currentGames.length > 0 ? (*/}
+        {/*  <ul className="notification-list">*/}
+        {/*    {currentGames.map((game) => (*/}
+        {/*      <li key={game.gameId}>*/}
+        {/*        <ReadyGameBlock game={game} />*/}
+        {/*      </li>*/}
+        {/*    ))}*/}
 
-            {guestGames.map((game) => (
-              <li key={game.id}>
-                <InviteGameBlock game={game} />
-              </li>
-            ))}
+        {/*    {guestGames.map((game) => (*/}
+        {/*      <li key={game.id}>*/}
+        {/*        <InviteGameBlock game={game} />*/}
+        {/*      </li>*/}
+        {/*    ))}*/}
 
-            {hostGames.map((game) => (
-              <li key={game.id}>
-                <WaitGameBlock game={game} />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <>
-            <p>
-              You don&apos;t have any invitations to the game, take the first
-              step 😉
-            </p>
-            <ul>
-              <li>
-                <Link href="/users">
-                  <a>Invite someone</a>
-                </Link>
-              </li>
-            </ul>
-          </>
-        )}
+        {/*    {hostGames.map((game) => (*/}
+        {/*      <li key={game.id}>*/}
+        {/*        <WaitGameBlock game={game} />*/}
+        {/*      </li>*/}
+        {/*    ))}*/}
+        {/*  </ul>*/}
+        {/*) : (*/}
+        {/*  <>*/}
+        {/*    <p>*/}
+        {/*      You don&apos;t have any invitations to the game, take the first*/}
+        {/*      step 😉*/}
+        {/*    </p>*/}
+        {/*    <ul>*/}
+        {/*      <li>*/}
+        {/*        <Link href="/users">*/}
+        {/*          <a>Invite someone</a>*/}
+        {/*        </Link>*/}
+        {/*      </li>*/}
+        {/*    </ul>*/}
+        {/*  </>*/}
+        {/*)}*/}
       </section>
     );
   } else {

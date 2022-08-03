@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { UserInfo } from '../../types/interfaces';
+import { User } from '../../types/interfaces';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 import { fetchWithHandleErrors } from '../../utils';
 
@@ -17,7 +17,7 @@ interface UserProviderProps {
 }
 
 interface UserContextInterface {
-  user?: UserInfo;
+  user?: User;
   handleLogin?: (code: string, params: URLSearchParams) => void;
   handleLogout?: () => void;
   userSessionId?: string;
@@ -26,10 +26,10 @@ interface UserContextInterface {
 export const UserContext = createContext<UserContextInterface>({});
 
 const UserProvider: FC<UserProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<UserInfo>();
+  const [user, setUser] = useState<User>();
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
-  const handleLogin = async (code: string, params: URLSearchParams) => {
+  const handleLogin = async (code: string) => {
     const tokenResponse = await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: `/api/auth/token?code=${code}`,
@@ -45,13 +45,10 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
   };
 
   const getUser = useCallback(async () => {
-    const token = localStorage.getItem('token');
     const userResponse = await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: '/api/users/me',
-      token: token || '',
     });
-    console.log(userResponse);
     if (userResponse?.ok) {
       const user = await userResponse?.json();
       setUser(user);

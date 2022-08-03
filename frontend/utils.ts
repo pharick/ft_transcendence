@@ -3,24 +3,29 @@ import { RequestErrorHandlerContextInterface } from './components/utils/requestE
 export interface FetchParams {
   requestErrorHandlerContext: RequestErrorHandlerContextInterface;
   url: string;
-  token?: string;
   method?: string;
   headers?: HeadersInit;
-  body?: BodyInit;
+  body?: Record<string, any>;
+  authRequired?: boolean;
 }
 
-export const fetchWithHandleErrors = async (params: FetchParams) => {
-  return await params.requestErrorHandlerContext.requestErrorHandler(
-    async () => {
-      return await fetch(params.url, {
-        method: params.method || 'GET',
-        headers: {
-          ...params.headers,
-          Authorization: `Bearer ${params.token}`,
-        },
-        body: params.body,
-      });
-    },
-    Boolean(params.token),
-  );
+export const fetchWithHandleErrors = async ({
+  requestErrorHandlerContext,
+  url,
+  method,
+  headers,
+  body,
+  authRequired,
+}: FetchParams) => {
+  const token = localStorage.getItem('token');
+  return await requestErrorHandlerContext.requestErrorHandler(async () => {
+    return await fetch(url, {
+      method: method || 'GET',
+      headers: {
+        ...headers,
+        Authorization: token ? `Bearer ${token}` : '',
+      },
+      body: JSON.stringify(body),
+    });
+  }, authRequired || false);
 };

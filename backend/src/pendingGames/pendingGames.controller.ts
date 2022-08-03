@@ -18,10 +18,8 @@ import {
 import { Request } from 'express';
 import { PendingGamesService } from './pendingGames.service';
 import { PendingGame } from './pendingGame.entity';
-import { CreatePendingGameDto } from './pendingGames.dto';
 import { UsersService } from '../users/users.service';
 import { GamesService } from '../games/games.service';
-import { GameInfo } from '../games/games.interfaces';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 @Controller('pending')
