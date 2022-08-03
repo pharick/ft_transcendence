@@ -1,10 +1,10 @@
 import { FC, useContext } from 'react';
-import { GameInfo } from '../../types/interfaces';
+import { Game } from '../../types/interfaces';
 import Link from 'next/link';
 import { UserContext } from '../users/userProvider';
 
 interface GameListProps {
-  games: GameInfo[];
+  games: Game[];
 }
 
 const GameList: FC<GameListProps> = ({ games }) => {
@@ -13,19 +13,17 @@ const GameList: FC<GameListProps> = ({ games }) => {
   return games.length > 0 ? (
     <ul className="game-list">
       {games.map((game) => (
-        <li key={game.gameId}>
-          <Link href={`/games/${game.gameId}`}>
+        <li key={game.id}>
+          <Link href={`/games/${game.id}`}>
             <a className="game-card-link">
               <article className="game-card">
                 <div className="game-card-scores">
                   <div className="game-card-part">
-                    <p className="game-card-score">{game.scores.player1}</p>
-                    <p className="game-card-player">
-                      {game.player1 ? game.player1.username : 'Mr. Wall'}
-                    </p>
+                    <p className="game-card-score">{game.score1}</p>
+                    <p className="game-card-player">{game.player1.username}</p>
                   </div>
                   <div className="game-card-part">
-                    <p className="game-card-score">{game.scores.player2}</p>
+                    <p className="game-card-score">{game.score2}</p>
                     <p className="game-card-player">
                       {game.player2 ? game.player2.username : 'Mr. Wall'}
                     </p>
