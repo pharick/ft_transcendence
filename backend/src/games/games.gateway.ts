@@ -12,8 +12,13 @@ import { GamesService } from './games.service';
 import { Game, GameFrame } from './games.interfaces';
 import { User } from '../users/user.entity';
 import { AuthService } from '../auth/auth.service';
-import { ResumeGameDto } from './games.dtos';
-import { use } from 'passport';
+import { MoveClubStartDto, MoveClubStopDto, ResumeGameDto } from './games.dtos';
+
+enum GameUserType {
+  Player1 = 'player1',
+  Player2 = 'player2',
+  Watcher = 'watcher',
+}
 
 @WebSocketGateway({
   namespace: 'game',
@@ -32,7 +37,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private authService: AuthService,
   ) {}
 
-  async handleConnection(client: Socket, ...args: any[]): Promise<void> {
+  async handleConnection(client: Socket): Promise<void> {
     const { token, gameId } = client.handshake.auth;
     const game: Game = await this.gamesService.findOne(gameId);
     const user: User = await this.authService.getUser(token);
@@ -40,10 +45,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!game) {
       client.disconnect();
     } else {
-      let userType;
-      if (game.player1.id == user.id) userType = 'player1';
-      else if (game.player2.id == user.id) userType = 'player2';
-      else userType = 'watcher';
+      const userType = this.getUserType(user.id, game);
 
       client.join(gameId);
       client.join(`${gameId}-${userType}`);
@@ -56,8 +58,14 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  handleDisconnect(client: Socket, ...args: any[]): any {
+  handleDisconnect(client: Socket): any {
     this.logger.log(`Game client ${client.id} disconnected`);
+  }
+
+  private getUserType(playerId: number, game: Game): GameUserType {
+    if (playerId == game.player1.id) return GameUserType.Player1;
+    if (playerId == game.player2.id) return GameUserType.Player2;
+    return GameUserType.Watcher;
   }
 
   private sendFramesStart(gameId: string) {
@@ -90,29 +98,37 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('resume')
   async handleResume(client: Socket, { gameId }: ResumeGameDto) {
     const game: Game = await this.gamesService.findOne(gameId);
-    console.log(game);
-    console.log(client.rooms);
     if (!game) return;
     if (
-      (game.isPlayer1Turn && client.rooms.has(`${gameId}-player1`)) ||
-      (!game.isPlayer1Turn && client.rooms.has(`${gameId}-player2`))
+      (game.isPlayer1Turn &&
+        client.rooms.has(`${gameId}-${GameUserType.Player1}`)) ||
+      (!game.isPlayer1Turn &&
+        client.rooms.has(`${gameId}-${GameUserType.Player2}`))
     ) {
       this.logger.log(`Client ${client.id} resumed game ${game.id}`);
       this.gamesService.resumeGame(gameId);
     }
   }
 
-  // @SubscribeMessage('moveClubStart')
-  // handleMoveClubStart(client: Socket, { gameId, userSessionId, up }): void {
-  //   this.logger.log('Club start moving');
-  //   const userId = 0;
-  //   this.gamesService.moveClubStart(gameId, userId, up);
-  // }
+  @SubscribeMessage('moveClubStart')
+  async handleMoveClubStart(client: Socket, { gameId, up }: MoveClubStartDto) {
+    const game: Game = await this.gamesService.findOne(gameId);
+    if (!game) return;
 
-  // @SubscribeMessage('moveClubStop')
-  // handleMoveClubStop(client: Socket, { gameId, userSessionId }): void {
-  //   this.logger.log('Club stop moving');
-  //   const userId = 0;
-  //   this.gamesService.moveClubStop(gameId, userId);
-  // }
+    if (client.rooms.has(`${gameId}-${GameUserType.Player1}`))
+      this.gamesService.moveClubStart(gameId, true, up);
+    else if (client.rooms.has(`${gameId}-${GameUserType.Player2}`))
+      this.gamesService.moveClubStart(gameId, false, up);
+  }
+
+  @SubscribeMessage('moveClubStop')
+  async handleMoveClubStop(client: Socket, { gameId }: MoveClubStopDto) {
+    const game: Game = await this.gamesService.findOne(gameId);
+    if (!game) return;
+
+    if (client.rooms.has(`${gameId}-${GameUserType.Player1}`))
+      this.gamesService.moveClubStop(gameId, true);
+    else if (client.rooms.has(`${gameId}-${GameUserType.Player2}`))
+      this.gamesService.moveClubStop(gameId, false);
+  }
 }

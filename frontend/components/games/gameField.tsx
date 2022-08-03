@@ -4,7 +4,22 @@ import { io } from 'socket.io-client';
 import useKeyboardEventListener from '../../hooks/use_event_listener';
 import { UserContext } from '../users/userProvider';
 import { Game, GameFrame } from '../../types/interfaces';
-import { MoveClubStartDto, ResumeGameDto } from '../../types/dtos';
+import {
+  MoveClubStartDto,
+  MoveClubStopDto,
+  ResumeGameDto,
+} from '../../types/dtos';
+
+const socket = io(
+  `${
+    process.env.NODE_ENV == 'development'
+      ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+      : ''
+  }/game`,
+  {
+    autoConnect: false,
+  },
+);
 
 interface PongProps {
   game: Game;
@@ -18,18 +33,6 @@ const GameField: FC<PongProps> = ({ game }) => {
   const [player1Turn, setPlayer1Turn] = useState(false);
   const [duration, setDuration] = useState(0);
   const userContext = useContext(UserContext);
-
-  const socket = io(
-    `${
-      process.env.NODE_ENV == 'development'
-        ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
-        : ''
-    }/game`,
-    {
-      auth: { token: localStorage.getItem('token'), gameId: game.id },
-      autoConnect: false,
-    },
-  );
 
   const renderField = ({
     ballX,
@@ -105,6 +108,7 @@ const GameField: FC<PongProps> = ({ game }) => {
   };
 
   useEffect(() => {
+    socket.auth = { token: localStorage.getItem('token'), gameId: game.id };
     socket.connect();
 
     socket.on('nextFrame', (frame: GameFrame) => {
@@ -124,11 +128,11 @@ const GameField: FC<PongProps> = ({ game }) => {
   }, [game.id]);
 
   const keyDownHandler = (e: KeyboardEvent) => {
-    // if (
-    //   game.player1?.id != userContext.user?.id &&
-    //   game.player2?.id != userContext.user?.id
-    // )
-    //   return;
+    if (
+      game.player1?.id != userContext.user?.id &&
+      game.player2?.id != userContext.user?.id
+    )
+      return;
 
     if (e.code == 'Space') {
       const resumeGameDto: ResumeGameDto = { gameId: game.id };
@@ -143,14 +147,15 @@ const GameField: FC<PongProps> = ({ game }) => {
   };
 
   const keyUpHandler = (e: KeyboardEvent) => {
-    // if (
-    //   game.player1?.id != userContext.user?.id &&
-    //   game.player2?.id != userContext.user?.id
-    // )
-    //   return;
+    if (
+      game.player1?.id != userContext.user?.id &&
+      game.player2?.id != userContext.user?.id
+    )
+      return;
 
     if (e.code == 'KeyW' || e.code == 'KeyS') {
-      socket.emit('moveClubStop', { gameId: game.id });
+      const moveClubStopDto: MoveClubStopDto = { gameId: game.id };
+      socket.emit('moveClubStop', moveClubStopDto);
     }
   };
 

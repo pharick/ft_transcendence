@@ -141,7 +141,7 @@ class GameProcessor {
     return this.fieldWidth - this._ballRadius * 2 - this._clubWidth;
   }
 
-  moveClubStart(isClub1: boolean, up: boolean): void {
+  moveClubStart(isClub1: boolean, up: boolean) {
     if (isClub1) {
       this._club1Delta = up ? -this._moveClubDelta : this._moveClubDelta;
     } else {
@@ -149,7 +149,7 @@ class GameProcessor {
     }
   }
 
-  moveClubStop(isClub1: boolean): void {
+  moveClubStop(isClub1: boolean) {
     if (isClub1) {
       this._club1Delta = 0;
     } else {
@@ -161,6 +161,8 @@ class GameProcessor {
     this._ballSpeed = this._startingBallSpeed;
     this._ballX = this.fieldWidth / 2;
     this._ballY = this.fieldHeight / 2;
+    this._club1Pos = this.fieldHeight / 2;
+    this._club2Pos = this.fieldHeight / 2;
     if (this.isTraining) {
       this._isPlayer1Turn = true;
     } else {
@@ -172,7 +174,7 @@ class GameProcessor {
     this.pauseGame();
   }
 
-  private checkBordersCollisions(): void {
+  private checkBordersCollisions() {
     if (this.ballTop < 0) {
       this.ballTop = 0;
       this._ballDirection = -this._ballDirection;
@@ -196,7 +198,7 @@ class GameProcessor {
     return 180;
   }
 
-  private checkClubsCollisions(): void {
+  private checkClubsCollisions() {
     if (
       this.ballLeft < this.club1Right &&
       this.ballBottom > this.club1Top &&
@@ -219,7 +221,7 @@ class GameProcessor {
     }
   }
 
-  private checkGoals(): void {
+  private checkGoals() {
     if (this.ballLeft > this.fieldWidth) {
       this._score1++;
       this.newRound();
@@ -228,9 +230,12 @@ class GameProcessor {
       this._score2++;
       this.newRound();
     }
+    if (this._score1 >= this._max_score || this._score2 >= this._max_score) {
+      this._isCompleted = true;
+    }
   }
 
-  private moveClubs(): void {
+  private moveClubs() {
     if (
       (this._club1Delta < 0 && this.club1Top > this._ballRadius * 3) ||
       (this._club1Delta > 0 &&
@@ -246,7 +251,7 @@ class GameProcessor {
       this._club2Pos += this._club2Delta;
   }
 
-  calculateNextFrame(): void {
+  calculateNextFrame() {
     this._ballX += Math.cos(radians(this._ballDirection)) * this._ballSpeed;
     this._ballY += Math.sin(radians(this._ballDirection)) * this._ballSpeed;
 

@@ -26,13 +26,14 @@ const GamePage: NextPage<GamePageProps> = ({ game }) => {
     <>
       <Head>
         <title>
-          Game {game.player1.username} vs{' '}
-          {game.player2 ? game.player2.username : 'Mr. Wall'}
+          {`Game ${game.player1.username} vs ${
+            game.player2 ? game.player2.username : 'Mr. Wall'
+          }`}
         </title>
       </Head>
 
       <h1>
-        Game <b>{game.player1 ? game.player1.username : 'Mr. Wall'}</b> vs{' '}
+        Game <b>{game.player1.username}</b> vs{' '}
         <b>{game.player2 ? game.player2.username : 'Mr. Wall'}</b>
       </h1>
 

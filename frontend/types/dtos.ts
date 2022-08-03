@@ -6,3 +6,7 @@ export class MoveClubStartDto {
   gameId: string;
   up: boolean;
 }
+
+export class MoveClubStopDto {
+  gameId: string;
+}
