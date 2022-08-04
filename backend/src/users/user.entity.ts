@@ -16,7 +16,4 @@ export class User {
 
   @Column({ default: 0 })
   prevRank: number;
-
-  // @OneToMany(() => ChatRoomUser, (chatRoomUser) => chatRoomUser.user)
-  // chatRooms: ChatRoomUser[];
 }

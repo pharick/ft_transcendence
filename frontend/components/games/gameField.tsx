@@ -3,12 +3,13 @@ import { io } from 'socket.io-client';
 
 import useKeyboardEventListener from '../../hooks/use_event_listener';
 import { UserContext } from '../users/userProvider';
-import { Game, GameFrame } from '../../types/interfaces';
+import { CompletedGame, Game, GameFrame } from '../../types/interfaces';
 import {
   MoveClubStartDto,
   MoveClubStopDto,
   ResumeGameDto,
 } from '../../types/dtos';
+import { useRouter } from 'next/router';
 
 const socket = io(
   `${
@@ -33,6 +34,7 @@ const GameField: FC<PongProps> = ({ game }) => {
   const [player1Turn, setPlayer1Turn] = useState(false);
   const [duration, setDuration] = useState(0);
   const userContext = useContext(UserContext);
+  const router = useRouter();
 
   const renderField = ({
     ballX,
@@ -115,9 +117,9 @@ const GameField: FC<PongProps> = ({ game }) => {
       renderField(frame);
     });
 
-    // socket.on('endGame', (completedGameInfo: CompletedGameInfo) => {
-    //   window.location.replace(`/completed/${completedGameInfo.id}`);
-    // });
+    socket.on('endGame', async (completedGame: CompletedGame) => {
+      await router.push(`/completed/${completedGame.id}`);
+    });
 
     return () => {
       socket.off('connect');

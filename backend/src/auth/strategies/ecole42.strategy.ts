@@ -18,7 +18,7 @@ export class Ecole42Strategy extends PassportStrategy(Strategy, '42') {
     refreshToken: string,
     profile: Profile,
     done: VerifyCallback,
-  ): Promise<any> {
+  ) {
     const user = await this.authService.validateUser(
       { ecole42Id: profile.id },
       profile.username,

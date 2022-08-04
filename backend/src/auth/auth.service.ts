@@ -14,10 +14,7 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async validateUser(
-    ids: Record<string, number>,
-    username: string,
-  ): Promise<any> {
+  async validateUser(ids: Record<string, number>, username: string) {
     return this.userService.findOrCreate(ids, username);
   }
 

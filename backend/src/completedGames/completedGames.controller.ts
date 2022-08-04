@@ -16,21 +16,19 @@ export class CompletedGamesController {
 
   constructor(private completedGamesService: CompletedGamesService) {}
 
-  @Get(':completedGameId')
+  @Get(':id')
   async findOne(
-    @Param('completedGameId', new ParseIntPipe()) completedGameId: number,
+    @Param('id', new ParseIntPipe()) id: number,
   ): Promise<CompletedGame> {
-    const completedGame = await this.completedGamesService.findOne(
-      completedGameId,
-    );
+    const completedGame = await this.completedGamesService.findOne(id);
     if (!completedGame) throw new NotFoundException();
     return completedGame;
   }
 
-  // @Get('user/:userId')
-  // async findAllByUser(
-  //   @Param('userId', new ParseIntPipe()) userId: number,
-  // ): Promise<CompletedGame[]> {
-  //   return await this.completedGamesService.findAllByUser(userId);
-  // }
+  @Get('user/:id')
+  async findAllByUser(
+    @Param('id', new ParseIntPipe()) userId: number,
+  ): Promise<CompletedGame[]> {
+    return await this.completedGamesService.findAllByUser(userId);
+  }
 }

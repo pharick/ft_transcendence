@@ -34,3 +34,14 @@ export interface GameFrame {
   durationMs: number;
   isCompleted: boolean;
 }
+
+export interface CompletedGame {
+  id: number;
+  date: Date;
+  score1: number;
+  score2: number;
+  duration: number;
+  player1: User;
+  player2: User;
+  isRanked: boolean;
+}

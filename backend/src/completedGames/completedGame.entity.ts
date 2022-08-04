@@ -24,9 +24,12 @@ export class CompletedGame {
   @Column()
   duration: number;
 
-  // @ManyToOne(() => User, (user) => user.completedHostGames)
-  // hostUser: User;
-  //
-  // @ManyToOne(() => User, (user) => user.completedGuestGames)
-  // guestUser: User;
+  @ManyToOne(() => User)
+  player1: User;
+
+  @ManyToOne(() => User)
+  player2: User;
+
+  @Column()
+  isRanked: boolean;
 }

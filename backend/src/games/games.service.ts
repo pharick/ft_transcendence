@@ -3,6 +3,9 @@ import { GameFrame } from './games.interfaces';
 import { Game } from './games.interfaces';
 import { UsersService } from '../users/users.service';
 import { randomUUID } from 'crypto';
+import { CompletedGame } from '../completedGames/completedGame.entity';
+import { CompletedGameDto } from '../completedGames/completedGame.dto';
+import { CompletedGamesService } from '../completedGames/completedGames.service';
 
 const radians = (degrees: number) => {
   return degrees * (Math.PI / 180);
@@ -306,7 +309,10 @@ export class GamesService {
   private logger = new Logger('GamesService');
   private gameProcessors = new Map<string, GameProcessor>();
 
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private completedGamesService: CompletedGamesService,
+  ) {}
 
   async create(
     isRanked: boolean,
@@ -357,32 +363,32 @@ export class GamesService {
     return this.gameProcessors.get(gameId)?.getNextFrame();
   }
 
-  // async endGame(gameId: string): Promise<CompletedGame> {
-  //   const game = await this.findOne(gameId);
-  //   if (!game) return;
-  //   const completedGame: CompletedGameDto = {
-  //     score1: game.scores.player1,
-  //     score2: game.scores.player2,
-  //     duration: Math.round(game.durationMs / 1000),
-  //     hostUser: game.player1,
-  //     guestUser: game.player2,
-  //     isRanked: game.isRanked,
-  //   };
-  //   this.removeGame(gameId);
-  //
-  //   if (game.isRanked) {
-  //     await this.usersService.updateRank(
-  //       game.player1.id,
-  //       game.scores.player1 - game.scores.player2,
-  //     );
-  //     await this.usersService.updateRank(
-  //       game.player2.id,
-  //       game.scores.player2 - game.scores.player1,
-  //     );
-  //   }
-  //
-  //   return await this.completedGamesService.create(completedGame);
-  // }
+  async endGame(gameId: string): Promise<CompletedGame> {
+    const game = await this.findOne(gameId);
+    if (!game) return;
+    const completedGame: CompletedGameDto = {
+      score1: game.score1,
+      score2: game.score2,
+      duration: Math.round(game.durationMs / 1000),
+      player1: game.player1,
+      player2: game.player2,
+      isRanked: game.isRanked,
+    };
+    this.gameProcessors.delete(game.id);
+
+    if (game.isRanked) {
+      await this.usersService.updateRank(
+        game.player1.id,
+        game.score1 - game.score2,
+      );
+      await this.usersService.updateRank(
+        game.player2.id,
+        game.score2 - game.score1,
+      );
+    }
+
+    return await this.completedGamesService.create(completedGame);
+  }
 
   resumeGame(id: string) {
     this.gameProcessors.get(id)?.resumeGame();

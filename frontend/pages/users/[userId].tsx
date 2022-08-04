@@ -1,14 +1,15 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import { CompletedGameInfo, UserInfo } from '../../types/interfaces';
+import { CompletedGame, User } from '../../types/interfaces';
 import { UserContext } from '../../components/users/userProvider';
 import Invite from '../../components/users/invite';
 import Link from 'next/link';
 import { useContext } from 'react';
+import CompletedGameList from '../../components/games/completedGameList';
 
 interface UserPageProps {
-  userInfo: UserInfo;
-  completedGames: CompletedGameInfo[];
+  userInfo: User;
+  completedGames: CompletedGame[];
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -18,12 +19,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   );
   if (userResponse.status == 404 || userResponse.status == 400)
     return { notFound: true };
-  const userInfo: UserInfo = await userResponse.json();
+  const userInfo: User = await userResponse.json();
   const completedGamesResponse = await fetch(
     `${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/completed/user/${userId}`,
   );
-  const completedGames: CompletedGameInfo[] =
-    await completedGamesResponse.json();
+  const completedGames: CompletedGame[] = await completedGamesResponse.json();
   return { props: { userInfo, completedGames } };
 };
 
@@ -47,14 +47,8 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo, completedGames }) => {
         </>
       )}
 
-      <ul>
-        {completedGames.map((game) => (
-          <li key={game.id}>
-            {game.hostUser.username}: {game.score1} {game.guestUser.username}:{' '}
-            {game.score2}
-          </li>
-        ))}
-      </ul>
+      <h2>Completed games</h2>
+      <CompletedGameList games={completedGames} />
     </>
   );
 };

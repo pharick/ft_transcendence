@@ -72,27 +72,23 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.timers.set(
       gameId,
       setInterval(() => {
-        this.sendNextFrame(gameId);
+        this.sendNextFrame(gameId).then();
       }, this.frame_delta),
     );
   }
 
-  private sendNextFrame(gameId: string) {
+  private async sendNextFrame(gameId: string) {
     if (!this.timers.has(gameId)) return;
     const frame: GameFrame = this.gamesService.getNextFrame(gameId);
-    this.server.to(gameId).emit('nextFrame', frame);
 
-    // if (
-    //   frame.scores.player1 >= this.max_score ||
-    //   frame.scores.player2 >= this.max_score
-    // ) {
-    //   clearInterval(this.timers[gameId]);
-    //   delete this.timers[gameId];
-    //   const completedGame = await this.gamesService.endGame(gameId);
-    //   this.server.to(gameId).emit('endGame', completedGame);
-    // } else {
-
-    // }
+    if (!frame.isCompleted) {
+      this.server.to(gameId).emit('nextFrame', frame);
+    } else {
+      clearInterval(this.timers[gameId]);
+      this.timers.delete(gameId);
+      const completedGame = await this.gamesService.endGame(gameId);
+      this.server.to(gameId).emit('endGame', completedGame);
+    }
   }
 
   @SubscribeMessage('resume')

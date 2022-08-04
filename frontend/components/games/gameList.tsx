@@ -29,13 +29,13 @@ const GameList: FC<GameListProps> = ({ games }) => {
                     </p>
                   </div>
                 </div>
-                <h2 className="game-card-header">
+                <h3 className="game-card-header">
                   {userContext.user &&
                   (game.player1?.id == userContext.user?.id ||
                     game.player2?.id == userContext.user?.id)
                     ? 'Play'
                     : 'Watch'}
-                </h2>
+                </h3>
               </article>
             </a>
           </Link>
