@@ -24,6 +24,7 @@ export const fetchWithHandleErrors = async ({
       headers: {
         ...headers,
         Authorization: token ? `Bearer ${token}` : '',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
     });

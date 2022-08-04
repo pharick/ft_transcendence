@@ -1,33 +1,30 @@
 import { FC, useContext, useState } from 'react';
-import { UserInfo } from '../../types/interfaces';
+import { User } from '../../types/interfaces';
 import { CreatePendingGameDto } from '../../types/dtos';
 import { fetchWithHandleErrors } from '../../utils';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 
 interface InviteProps {
-  userInfo: UserInfo;
+  user: User;
 }
 
-const Invite: FC<InviteProps> = ({ userInfo }) => {
+const GameInviteButton: FC<InviteProps> = ({ user }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const handleGameInvite = async () => {
     const createPendingGameDto: CreatePendingGameDto = {
-      guestUserId: userInfo.id,
+      player2Id: user.id,
     };
 
-    const response = await fetchWithHandleErrors(
+    const response = await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      '/api/pending/',
-      true,
-      'PUT',
-      {
-        'Content-Type': 'application/json',
-      },
-      JSON.stringify(createPendingGameDto),
-    );
+      url: '/api/pending/',
+      method: 'PUT',
+      body: createPendingGameDto,
+      authRequired: true,
+    });
 
     if (response?.status == 409) setIsError(true);
     if (response?.status == 200) setIsSuccess(true);
@@ -55,4 +52,4 @@ const Invite: FC<InviteProps> = ({ userInfo }) => {
   );
 };
 
-export default Invite;
+export default GameInviteButton;

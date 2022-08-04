@@ -7,6 +7,8 @@ import { GamesModule } from './games/games.module';
 import { CompletedGamesModule } from './completedGames/completedGames.module';
 import { User } from './users/user.entity';
 import { CompletedGame } from './completedGames/completedGame.entity';
+import { PendingGamesModule } from './pendingGames/pendingGames.module';
+import { PendingGame } from './pendingGames/pendingGame.entity';
 
 @Module({
   imports: [
@@ -22,13 +24,14 @@ import { CompletedGame } from './completedGames/completedGame.entity';
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DATABASE'),
         synchronize: true,
-        entities: [User, CompletedGame],
+        entities: [User, CompletedGame, PendingGame],
       }),
     }),
     AuthModule,
     UsersModule,
     GamesModule,
     CompletedGamesModule,
+    PendingGamesModule,
   ],
   controllers: [],
   providers: [],

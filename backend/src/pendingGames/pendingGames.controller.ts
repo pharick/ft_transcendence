@@ -18,9 +18,10 @@ import {
 import { Request } from 'express';
 import { PendingGamesService } from './pendingGames.service';
 import { PendingGame } from './pendingGame.entity';
-import { UsersService } from '../users/users.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CreatePendingGameDto } from './pendingGames.dto';
+import { Game } from '../games/games.interfaces';
 import { GamesService } from '../games/games.service';
-import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 @Controller('pending')
 export class PendingGamesController {
@@ -29,84 +30,67 @@ export class PendingGamesController {
   constructor(
     private pendingGamesService: PendingGamesService,
     private gamesService: GamesService,
-    private usersService: UsersService,
-    private notificationsGateway: NotificationsGateway,
   ) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  async create(
+    @Req() request: Request,
+    @Body() { player2Id }: CreatePendingGameDto,
+  ): Promise<PendingGame> {
+    return this.pendingGamesService
+      .create(request.user.id, player2Id)
+      .catch((error) => {
+        this.logger.error(error);
+        throw new ConflictException();
+      });
+  }
 
   @Get()
   findAll(): Promise<PendingGame[]> {
     return this.pendingGamesService.findAll();
   }
 
-  // @Get('host/:hostUserId')
-  // findByHost(
-  //   @Param('hostUserId', new ParseIntPipe()) hostUserId: number,
-  // ): Promise<PendingGame[]> {
-  //   return this.pendingGamesService.findByHost(hostUserId);
-  // }
+  @Get('user/:id')
+  findAllByUser(
+    @Param('id', new ParseIntPipe()) userId: number,
+  ): Promise<PendingGame[]> {
+    return this.pendingGamesService.findAllByUser(userId);
+  }
 
-  // @Get('guest/:guestUserId')
-  // findByGuest(
-  //   @Param('guestUserId', new ParseIntPipe()) guestUserId: number,
-  // ): Promise<PendingGame[]> {
-  //   return this.pendingGamesService.findByGuest(guestUserId);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/accept')
+  async accept(
+    @Req() request: Request,
+    @Param('id', new ParseIntPipe()) pendingId: number,
+  ): Promise<Game> {
+    const pending: PendingGame = await this.pendingGamesService.findOne(
+      pendingId,
+    );
+    if (!pending) throw new NotFoundException();
+    if (request.user.id != pending.player2.id)
+      throw new UnauthorizedException();
+    await this.pendingGamesService.remove(pendingId);
+    return this.gamesService.create(
+      false,
+      pending.player1.id,
+      pending.player2.id,
+    );
+  }
 
-  // @Put()
-  // // @UseGuards(AuthGuard)
-  // async create(
-  //   @Req() request: Request,
-  //   @Body() createPendingGameDto: CreatePendingGameDto,
-  // ): Promise<PendingGame> {
-  //   // const hostUserId: number = request.user.id;
-  //   const guestUserId: number = createPendingGameDto.guestUserId;
-  //
-  //   const pending = this.pendingGamesService
-  //     .create(42, guestUserId)
-  //     .catch((error) => {
-  //       this.logger.error(error);
-  //       throw new ConflictException();
-  //     });
-  //   this.notificationsGateway.server.emit('update');
-  //   return pending;
-  // }
-
-  // @Post(':pendingGameId/accept')
-  // // @UseGuards(AuthGuard)
-  // async accept(
-  //   @Req() request: Request,
-  //   @Param('pendingGameId', new ParseIntPipe()) pendingGameId: number,
-  // ): Promise<GameInfo> {
-  //   const pending: PendingGame = await this.pendingGamesService.findOne(
-  //     pendingGameId,
-  //   );
-  //   if (!pending) throw new NotFoundException();
-  //   // if (request.user.id != pending.guestUser.id)
-  //   //   throw new UnauthorizedException();
-  //   await this.pendingGamesService.remove(pendingGameId);
-  //   const game = this.gamesService.createNewGame(
-  //     pending.hostUser.id,
-  //     pending.guestUser.id,
-  //     false,
-  //   );
-  //   this.notificationsGateway.server.emit('update');
-  //   return game;
-  // }
-
-  @Delete(':pendingGameId')
-  // @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
   async remove(
     @Req() request: Request,
-    @Param('pendingGameId', new ParseIntPipe()) pendingGameId: number,
-  ): Promise<void> {
-    // const pending = await this.pendingGamesService.findOne(pendingGameId);
-    // if (!pending) throw new NotFoundException();
-    // if (
-    //   pending.hostUser.id != request.user.id &&
-    //   pending.guestUser.id != request.user.id
-    // )
-    //   throw new ForbiddenException();
-    // await this.pendingGamesService.remove(pendingGameId);
-    // this.notificationsGateway.server.emit('update');
+    @Param('id', new ParseIntPipe()) pendingId: number,
+  ) {
+    const pending = await this.pendingGamesService.findOne(pendingId);
+    if (!pending) throw new NotFoundException();
+    if (
+      pending.player1.id != request.user.id &&
+      pending.player2.id != request.user.id
+    )
+      throw new ForbiddenException();
+    await this.pendingGamesService.remove(pendingId);
   }
 }

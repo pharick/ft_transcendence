@@ -17,5 +17,6 @@ import { CompletedGame } from '../completedGames/completedGame.entity';
   ],
   providers: [GamesService, GamesGateway],
   controllers: [GamesController],
+  exports: [GamesService],
 })
 export class GamesModule {}

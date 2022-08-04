@@ -10,3 +10,7 @@ export class MoveClubStartDto {
 export class MoveClubStopDto {
   gameId: string;
 }
+
+export class CreatePendingGameDto {
+  player2Id: number;
+}

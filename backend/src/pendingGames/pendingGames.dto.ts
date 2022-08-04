@@ -1,3 +1,3 @@
 export class CreatePendingGameDto {
-  guestUserId: number | null;
+  player2Id: number;
 }
