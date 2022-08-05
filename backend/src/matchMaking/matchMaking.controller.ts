@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { MatchMakingService } from './matchMaking.service';
 import { Request } from 'express';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('matchMaking')
 export class MatchMakingController {
@@ -15,15 +16,15 @@ export class MatchMakingController {
 
   constructor(private matchMakingGamesService: MatchMakingService) {}
 
-  // @Put()
-  // // @UseGuards(AuthGuard)
-  // async addUserToQueue(@Req() request: Request): Promise<void> {
-  //   await this.matchMakingGamesService.addUserToQueue(request.user.id);
-  // }
-  //
-  // @Delete()
-  // // @UseGuards(AuthGuard)
-  // async removeUserFromQueue(@Req() request: Request): Promise<void> {
-  //   await this.matchMakingGamesService.removeUserFromQueue(request.user.id);
-  // }
+  @Put()
+  @UseGuards(JwtAuthGuard)
+  async addUserToQueue(@Req() request: Request): Promise<void> {
+    await this.matchMakingGamesService.addUserToQueue(request.user.id);
+  }
+
+  @Delete()
+  @UseGuards(JwtAuthGuard)
+  async removeUserFromQueue(@Req() request: Request): Promise<void> {
+    await this.matchMakingGamesService.removeUserFromQueue(request.user.id);
+  }
 }

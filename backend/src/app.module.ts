@@ -9,6 +9,7 @@ import { User } from './users/user.entity';
 import { CompletedGame } from './completedGames/completedGame.entity';
 import { PendingGamesModule } from './pendingGames/pendingGames.module';
 import { PendingGame } from './pendingGames/pendingGame.entity';
+import { MatchMakingModule } from './matchMaking/matchMaking.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PendingGame } from './pendingGames/pendingGame.entity';
     GamesModule,
     CompletedGamesModule,
     PendingGamesModule,
+    MatchMakingModule,
   ],
   controllers: [],
   providers: [],

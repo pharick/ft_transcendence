@@ -30,34 +30,26 @@ const MatchMakingButton: FC = () => {
   const userContext = useContext(UserContext);
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
-  const handleClick = () => {
-    createMatchMaking().then();
-    setIsOpen(true);
-  };
-
   const createMatchMaking = useCallback(async () => {
     await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      url: '/api/matchMaking',
+      url: '/api/matchmaking',
       method: 'PUT',
     });
 
     socket.connect();
 
     socket.on('newMatch', (game: Game) => {
-      if (
-        game.player1.id == userContext.user?.id ||
-        game.player2.id == userContext.user?.id
-      ) {
-        setGame(game);
-      }
+      setGame(game);
     });
-  }, [requestErrorHandlerContext, userContext.user?.id]);
+
+    setIsOpen(true);
+  }, [requestErrorHandlerContext, userContext.user]);
 
   const cancelMatchMaking = useCallback(async () => {
     await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      url: '/api/matchMaking',
+      url: '/api/matchmaking',
       method: 'DELETE',
     });
 
@@ -69,7 +61,7 @@ const MatchMakingButton: FC = () => {
 
   return (
     <>
-      <button className="image-button" onClick={handleClick}>
+      <button className="image-button" onClick={createMatchMaking}>
         <Image src={gameImage} layout="responsive" />
         <span>Play ranked game</span>
       </button>
