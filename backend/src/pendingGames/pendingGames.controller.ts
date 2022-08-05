@@ -22,6 +22,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreatePendingGameDto } from './pendingGames.dto';
 import { Game } from '../games/games.interfaces';
 import { GamesService } from '../games/games.service';
+import { UsersService } from '../users/users.service';
 
 @Controller('pending')
 export class PendingGamesController {
@@ -30,6 +31,7 @@ export class PendingGamesController {
   constructor(
     private pendingGamesService: PendingGamesService,
     private gamesService: GamesService,
+    private usersService: UsersService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -52,9 +54,11 @@ export class PendingGamesController {
   }
 
   @Get('user/:id')
-  findAllByUser(
+  async findAllByUser(
     @Param('id', new ParseIntPipe()) userId: number,
   ): Promise<PendingGame[]> {
+    const user = await this.usersService.findOne(userId);
+    if (!user) throw new NotFoundException();
     return this.pendingGamesService.findAllByUser(userId);
   }
 

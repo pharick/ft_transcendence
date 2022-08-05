@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { GamesGateway } from './games.gateway';
 import { GamesController } from './games.controller';
@@ -7,10 +7,12 @@ import { AuthModule } from '../auth/auth.module';
 import { CompletedGamesModule } from '../completedGames/completedGames.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CompletedGame } from '../completedGames/completedGame.entity';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([CompletedGame]),
+    forwardRef(() => NotificationsModule),
     UsersModule,
     AuthModule,
     CompletedGamesModule,

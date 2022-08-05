@@ -37,7 +37,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private authService: AuthService,
   ) {}
 
-  async handleConnection(client: Socket): Promise<void> {
+  async handleConnection(client: Socket) {
     const { token, gameId } = client.handshake.auth;
     const game: Game = await this.gamesService.findOne(gameId);
     const user: User = await this.authService.getUser(token);
@@ -58,7 +58,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  handleDisconnect(client: Socket): any {
+  handleDisconnect(client: Socket) {
     this.logger.log(`Game client ${client.id} disconnected`);
   }
 

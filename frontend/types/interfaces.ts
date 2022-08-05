@@ -45,3 +45,14 @@ export interface CompletedGame {
   player2: User;
   isRanked: boolean;
 }
+
+export interface PendingGame {
+  id: number;
+  player1: User;
+  player2: User;
+}
+
+export interface Notifications {
+  games: Game[];
+  pending: PendingGame[];
+}

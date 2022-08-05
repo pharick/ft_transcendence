@@ -1,19 +1,19 @@
 import { FC } from 'react';
-import { GameInfo } from '../../types/interfaces';
+import { Game } from '../../types/interfaces';
 import Link from 'next/link';
 
 interface ReadyGameBlockProps {
-  game: GameInfo;
+  game: Game;
 }
 
 const ReadyGameBlock: FC<ReadyGameBlockProps> = ({ game }) => {
   return (
     <article className="notification-block">
       <p>
-        Game <b>{game.player1 ? game.player1.username : 'Mr. Wall'}</b> vs{' '}
+        Game <b>{game.player1.username}</b> vs{' '}
         <b>{game.player2 ? game.player2.username : 'Mr. Wall'}</b>
       </p>
-      <Link href={`/games/${game.gameId}`}>
+      <Link href={`/games/${game.id}`}>
         <a className="button">Play</a>
       </Link>
     </article>

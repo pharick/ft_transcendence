@@ -6,6 +6,7 @@ import { randomUUID } from 'crypto';
 import { CompletedGame } from '../completedGames/completedGame.entity';
 import { CompletedGameDto } from '../completedGames/completedGame.dto';
 import { CompletedGamesService } from '../completedGames/completedGames.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 const radians = (degrees: number) => {
   return degrees * (Math.PI / 180);
@@ -312,6 +313,7 @@ export class GamesService {
   constructor(
     private usersService: UsersService,
     private completedGamesService: CompletedGamesService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async create(
@@ -329,6 +331,8 @@ export class GamesService {
       gameId,
       new GameProcessor(false, player1.id, player2?.id),
     );
+    await this.notificationsService.send(player1.id);
+    await this.notificationsService.send(player2?.id);
     return this.findOne(gameId);
   }
 
@@ -337,6 +341,13 @@ export class GamesService {
       Array.from(this.gameProcessors.keys()).map(
         async (id) => await this.findOne(id),
       ),
+    );
+  }
+
+  async findAllByUser(userId: number): Promise<Game[]> {
+    const games = await this.findAll();
+    return games.filter(
+      (game) => game.player1.id == userId || game.player2?.id == userId,
     );
   }
 
@@ -349,7 +360,7 @@ export class GamesService {
       fieldHeight: gameProcessor.fieldHeight,
       player1: await this.usersService.findOne(gameProcessor.player1Id),
       player2: gameProcessor.player2Id
-        ? await this.usersService.findOne(gameProcessor.player1Id)
+        ? await this.usersService.findOne(gameProcessor.player2Id)
         : undefined,
       score1: gameProcessor.score1,
       score2: gameProcessor.score2,
@@ -386,7 +397,8 @@ export class GamesService {
         game.score2 - game.score1,
       );
     }
-
+    await this.notificationsService.send(game.player1.id);
+    await this.notificationsService.send(game.player2?.id);
     return await this.completedGamesService.create(completedGame);
   }
 

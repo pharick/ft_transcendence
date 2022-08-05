@@ -11,10 +11,11 @@ import { NotificationsModule } from '../notifications/notifications.module';
   imports: [
     TypeOrmModule.forFeature([PendingGame]),
     forwardRef(() => GamesModule),
+    forwardRef(() => NotificationsModule),
     UsersModule,
-    NotificationsModule,
   ],
   providers: [PendingGamesService],
   controllers: [PendingGamesController],
+  exports: [PendingGamesService],
 })
 export class PendingGamesModule {}
