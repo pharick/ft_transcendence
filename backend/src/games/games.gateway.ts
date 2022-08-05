@@ -45,7 +45,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!game) {
       client.disconnect();
     } else {
-      const userType = this.getUserType(user.id, game);
+      const userType = this.getUserType(user?.id, game);
 
       client.join(gameId);
       client.join(`${gameId}-${userType}`);

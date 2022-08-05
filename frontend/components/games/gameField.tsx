@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useRef, useState } from 'react';
+import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
 import useKeyboardEventListener from '../../hooks/use_event_listener';
@@ -33,6 +33,7 @@ const GameField: FC<PongProps> = ({ game }) => {
   const [pause, setPause] = useState(true);
   const [player1Turn, setPlayer1Turn] = useState(false);
   const [duration, setDuration] = useState(0);
+  const [isConnected, setIsConnected] = useState(false);
   const userContext = useContext(UserContext);
   const router = useRouter();
 
@@ -113,6 +114,14 @@ const GameField: FC<PongProps> = ({ game }) => {
     socket.auth = { token: localStorage.getItem('token'), gameId: game.id };
     socket.connect();
 
+    socket.on('connect', () => {
+      setIsConnected(true);
+    });
+
+    socket.on('disconnect', () => {
+      setIsConnected(false);
+    });
+
     socket.on('nextFrame', (frame: GameFrame) => {
       renderField(frame);
     });
@@ -123,6 +132,7 @@ const GameField: FC<PongProps> = ({ game }) => {
 
     return () => {
       socket.off('connect');
+      socket.off('disconnect');
       socket.off('nextFrame');
       socket.off('endGame');
       socket.disconnect();
@@ -184,6 +194,14 @@ const GameField: FC<PongProps> = ({ game }) => {
         <p className="pong-time">Time: {duration}</p>
         <p className="score score1">{score1}</p>
         <p className="score score2">{score2}</p>
+
+        {!isConnected && (
+          <div className="pong-loader">
+            <div className="loader"></div>
+            <p className="load-message">Load game...</p>
+          </div>
+        )}
+
         <canvas
           width={game.fieldWidth}
           height={game.fieldHeight}
