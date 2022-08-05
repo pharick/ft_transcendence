@@ -1,8 +1,12 @@
-import NotificationList from '../notifications/notificationList';
-import { FC, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
-const Aside: FC = () => {
+interface AsideProps {
+  buttonText: string;
+  children?: ReactNode;
+}
+
+const Aside: FC<AsideProps> = ({ buttonText, children }) => {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -24,10 +28,10 @@ const Aside: FC = () => {
           isVisible ? 'side-panel-button-visible' : ''
         }`}
       >
-        Notifications
+        {buttonText}
       </button>
       <aside className={`side-panel ${isVisible ? 'side-panel-visible' : ''}`}>
-        <NotificationList />
+        {children}
       </aside>
     </>
   );

@@ -70,6 +70,29 @@ button:disabled {
     background-color: #dc3545;
 }
 
+.image-button {
+    background: none;
+    box-shadow: none;
+    border: none;
+    color: black;
+    transition: transform 0.5s;
+}
+
+.image-button:hover {
+    transform: scale(1.1);
+}
+
+.image-button span {
+    display: block;
+    margin-top: 1em;
+    font-weight: bold;
+}
+
+.image-button:not(:disabled):hover {
+    box-shadow: none;
+    color: black;
+}
+
 .text-center {
     text-align: center;
 }
@@ -270,7 +293,23 @@ button.side-panel-button-visible {
     margin: 0 10px 0 0;
 }
 
-/* Notification List */
+/* Notifications */
+
+.notifications-container {
+    display: flex;
+    min-height: 60vh;
+}
+
+.notifications-section {
+    flex: 1;
+    align-items: stretch;
+}
+
+.notifications-section:not(:last-child) {
+    margin-right: 2em;
+    padding-right: 2em;
+    border-right: 1px solid lightgray;
+}
 
 .notification-list {
     list-style: none;
@@ -282,6 +321,21 @@ button.side-panel-button-visible {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+/* Main Buttons */
+
+.main-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 150px;
+    padding: 2em;
+    margin: 0;
+}
+
+.main-buttons button:not(:last-child) {
+    margin-right: 5em;
 }
 
 /* Game List */

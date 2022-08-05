@@ -17,13 +17,16 @@ const socket = io(
   },
 );
 
-const NotificationList: FC = () => {
+const Notifications: FC = () => {
   const userContext = useContext(UserContext);
   const [isConnected, setIsConnected] = useState(false);
   const [games, setGames] = useState<Game[]>([]);
   const [pendingGames, setPendingGames] = useState<PendingGame[]>([]);
 
   useEffect(() => {
+    setGames([]);
+    setPendingGames([]);
+
     socket.auth = { token: localStorage.getItem('token') };
     socket.connect();
 
@@ -38,6 +41,7 @@ const NotificationList: FC = () => {
     });
 
     socket.on('notifications', (notifications: Notifications) => {
+      console.log(notifications);
       setGames(notifications.games);
       setPendingGames(notifications.pending);
     });
@@ -52,36 +56,39 @@ const NotificationList: FC = () => {
 
   if (isConnected) {
     return (
-      <section>
-        {games.length > 0 || pendingGames.length > 0 ? (
-          <ul className="notification-list">
-            {games.map((game) => (
-              <li key={`game-${game.id}`}>
-                <ReadyGameBlock game={game} />
-              </li>
-            ))}
+      <section className="notifications-container">
+        <div className="notifications-section">
+          <h2>Ongoing games</h2>
+          {games.length > 0 ? (
+            <ul className="notification-list">
+              {games.map((game) => (
+                <li key={`game-${game.id}`}>
+                  <ReadyGameBlock game={game} />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>You don&apos;t have any ongoing games</p>
+          )}
+        </div>
 
-            {pendingGames.map((game) => (
-              <li key={`pending-${game.id}`}>
-                <PendingGameBlock game={game} />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <>
+        <div className="notifications-section">
+          <h2>Pending games</h2>
+          {pendingGames.length > 0 ? (
+            <ul className="notification-list">
+              {pendingGames.map((game) => (
+                <li key={`pending-${game.id}`}>
+                  <PendingGameBlock game={game} />
+                </li>
+              ))}
+            </ul>
+          ) : (
             <p>
               You don&apos;t have any invitations to the game, take the first
               step 😉
             </p>
-            <ul>
-              <li>
-                <Link href="/users">
-                  <a>Invite someone</a>
-                </Link>
-              </li>
-            </ul>
-          </>
-        )}
+          )}
+        </div>
       </section>
     );
   } else {
@@ -94,4 +101,4 @@ const NotificationList: FC = () => {
   }
 };
 
-export default NotificationList;
+export default Notifications;

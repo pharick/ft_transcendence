@@ -1,11 +1,13 @@
 import React, { FC, useCallback, useContext, useState } from 'react';
 import Link from 'next/link';
 import { io } from 'socket.io-client';
-import { GameInfo } from '../../types/interfaces';
+import { Game } from '../../types/interfaces';
 import dynamic from 'next/dynamic';
 import { UserContext } from '../users/userProvider';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 import { fetchWithHandleErrors } from '../../utils';
+import Image from 'next/image';
+import gameImage from '../../images/game.svg';
 
 const Modal = dynamic(() => import('../../components/layout/modal'), {
   ssr: false,
@@ -24,7 +26,7 @@ const socket = io(
 
 const MatchMakingButton: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [game, setGame] = useState<GameInfo | undefined>();
+  const [game, setGame] = useState<Game | undefined>();
   const userContext = useContext(UserContext);
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
@@ -37,13 +39,12 @@ const MatchMakingButton: FC = () => {
     await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: '/api/matchMaking',
-      token: '',
       method: 'PUT',
     });
 
     socket.connect();
 
-    socket.on('newMatch', (game: GameInfo) => {
+    socket.on('newMatch', (game: Game) => {
       if (
         game.player1.id == userContext.user?.id ||
         game.player2.id == userContext.user?.id
@@ -57,7 +58,6 @@ const MatchMakingButton: FC = () => {
     await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: '/api/matchMaking',
-      token: '',
       method: 'DELETE',
     });
 
@@ -69,7 +69,10 @@ const MatchMakingButton: FC = () => {
 
   return (
     <>
-      <button onClick={handleClick}>MatchMakingMode</button>
+      <button className="image-button" onClick={handleClick}>
+        <Image src={gameImage} layout="responsive" />
+        <span>Play ranked game</span>
+      </button>
 
       <Modal
         isOpen={isOpen}
@@ -85,7 +88,7 @@ const MatchMakingButton: FC = () => {
               <b>{game.player2.username}</b>
             </p>
             <p>
-              <Link href={`/games/${game.gameId}`}>
+              <Link href={`/games/${game.id}`}>
                 <a className="button">Play</a>
               </Link>
             </p>

@@ -26,7 +26,11 @@ const Modal: FC<ModalProps> = ({
     }
   };
 
-  useKeyboardEventListener('keydown', keyDownHandler, document);
+  useKeyboardEventListener(
+    'keydown',
+    keyDownHandler as EventListener,
+    document,
+  );
 
   if (isOpen) {
     return (
