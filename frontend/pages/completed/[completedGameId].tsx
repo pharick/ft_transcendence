@@ -1,13 +1,13 @@
 import type { GetServerSideProps, NextPage } from 'next';
 
-import { CompletedGameInfo } from '../../types/interfaces';
+import { CompletedGame } from '../../types/interfaces';
 import Head from 'next/head';
-import PlayerBlock from '../../components/users/playerBlock';
+import UserBlock from '../../components/users/userBlock';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 
 interface CompletedGamePageProps {
-  completedGameInfo: CompletedGameInfo;
+  completedGameInfo: CompletedGame;
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -16,7 +16,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     `${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/completed/${completedGameId}`,
   );
   if (response.status == 404) return { notFound: true };
-  const completedGameInfo: CompletedGameInfo = await response.json();
+  const completedGameInfo: CompletedGame = await response.json();
   return { props: { completedGameInfo } };
 };
 
@@ -27,41 +27,24 @@ const CompletedGamePage: NextPage<CompletedGamePageProps> = ({
     <>
       <Head>
         <title>
-          Game{' '}
-          {completedGameInfo.hostUser
-            ? completedGameInfo.hostUser.username
-            : 'Mr. Wall'}{' '}
-          vs.{' '}
-          {completedGameInfo.guestUser
-            ? completedGameInfo.guestUser.username
-            : 'Mr.Wall'}{' '}
-          is completed
+          {' '}
+          Game {completedGameInfo.player1.username} vs.{' '}
+          {completedGameInfo.player2?.username || 'Mr.Wall'} is completed
         </title>
       </Head>
 
       <h1 className="text-center">
-        Game{' '}
-        <b>
-          {completedGameInfo.hostUser
-            ? completedGameInfo.hostUser.username
-            : 'Mr. Wall'}
-        </b>{' '}
-        vs.{' '}
-        <b>
-          {completedGameInfo.guestUser
-            ? completedGameInfo.guestUser.username
-            : 'Mr.Wall'}
-        </b>{' '}
-        is completed
+        Game <b>{completedGameInfo.player1.username}</b> vs.{' '}
+        <b>{completedGameInfo.player2?.username || 'Mr.Wall'}</b> is completed
       </h1>
 
       <div className="completed-game-scores">
         <div className="completed-game-part">
-          <PlayerBlock user={completedGameInfo.hostUser} />
+          <UserBlock user={completedGameInfo.player1} />
           <p className="completed-game-score">{completedGameInfo.score1}</p>
         </div>
         <div className="completed-game-part">
-          <PlayerBlock user={completedGameInfo.guestUser} />
+          <UserBlock user={completedGameInfo.player2} />
           <p className="completed-game-score">{completedGameInfo.score2}</p>
         </div>
       </div>

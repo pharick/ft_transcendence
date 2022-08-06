@@ -11,6 +11,9 @@ export class User {
   @Column({ unique: true })
   username: string;
 
+  @Column({ nullable: true })
+  avatar: string;
+
   @Column({ default: 0 })
   rank: number;
 

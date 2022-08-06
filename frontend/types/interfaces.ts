@@ -2,6 +2,7 @@ export interface User {
   id: number;
   ecole42Id: number;
   username: string;
+  avatar: string;
   rank: number;
   prevRank: number;
 }

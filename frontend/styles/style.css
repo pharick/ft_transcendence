@@ -116,28 +116,49 @@ input[type=text] {
     box-shadow: 1px 1px 5px 1px #cccccc;
 }
 
+.main {
+    padding: 0 30px;
+}
+
 /* Player Block */
 
-.avatar-placeholder-big {
+.user-block {
+    position: relative;
+    width: 250px;
+}
+
+.user-block-avatar {
     background-color: lightgray;
+    box-sizing: border-box;
     width: 250px;
     height: 250px;
     border-radius: 50%;
     border: 1px solid dodgerblue;
+    overflow: hidden;
 }
 
-.avatar-placeholder-small {
-    background-color: lightgray;
-    width: 50px;
-    height: 50px;
+.user-block-rank {
+    position: absolute;
+    top: 185px;
+    right: 15px;
+    margin: 0;
+    background-color: dodgerblue;
+    width: 60px;
+    height: 60px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
     border-radius: 50%;
-    border: 1px solid dodgerblue;
 }
 
-.player-block-username {
-    margin: 0.5em 0 0 0;
-    font-weight: bold;
-    font-size: 1.5em;
+.user-block-username {
+    text-decoration: underline;
+    text-decoration-color: dodgerblue;
+    font-size: 1.8em;
+    margin: 0;
+    text-align: center;
 }
 
 /* Spinner */
@@ -277,20 +298,57 @@ button.side-panel-button-visible {
     right: 405px;
 }
 
-.main {
-    padding: 0 30px;
+/* Modal */
+
+.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
 }
 
-/* User Block */
+.modal-content {
+    width: 500px;
+    background-color: #fff;
+}
 
-.user-block {
+.modal-header,
+.modal-footer,
+.modal-body {
+    padding: 10px;
+}
+
+.modal-title {
+    margin: 0;
+}
+
+.modal-body {
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-footer {
+    text-align: right;
+}
+
+/* User Header Block */
+
+.user-header-block {
     display: flex;
     margin-left: auto;
     align-items: center;
 }
 
-.user-block .user-name {
+.user-header-block-username {
     margin: 0 10px 0 0;
+    color: white;
+    font-weight: bold;
 }
 
 /* Notifications */
@@ -336,6 +394,55 @@ button.side-panel-button-visible {
 
 .main-buttons button:not(:last-child) {
     margin-right: 5em;
+}
+
+/* User Page */
+
+.user-page-container {
+    display: flex;
+}
+
+.user-page-left-column {
+    margin-right: 1em;
+    padding: 2em 0;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+ }
+
+.user-page-main {
+    flex: 1;
+    padding: 2em 0;
+}
+
+/* User Profile */
+
+.user-profile {
+    margin-top: 1em;
+}
+
+.user-profile-form-input {
+    margin-bottom: 1em;
+    padding-bottom: 1em;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid lightgray;
+}
+
+.user-profile-form-input label {
+    flex: 1;
+    text-align: right;
+    margin-right: 0.5em;
+}
+
+.user-profile-form-input input {
+    flex: 2;
+}
+
+.user-profile-form-submit {
+    display: block;
+    margin-left: auto;
 }
 
 /* Game List */
@@ -613,108 +720,4 @@ button.side-panel-button-visible {
 
 .chat-form-input {
     flex: 1;
-}
-
-/* Chat */
-
-.chat {
-    margin-bottom: 1em;
-}
-
-.chat-list {
-    border: 1px solid black;
-    list-style: none;
-    padding: 1em;
-    height: 500px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-.chat-message {
-    border: 2px solid rgb(189, 215, 255);
-    width: 20em;
-    padding: 1em;
-    margin: 0.5em 0;
-    border-radius: 0.5em;
-    background-color: #eeeeee;
-    box-shadow: 1px 1px 5px 1px #cccccc;
-}
-
-.chat-message-my {
-    align-self: flex-end;
-}
-
-.chat-message-my .chat-message {
-    background-color: powderblue;
-}
-
-.chat-message-text {
-    margin: 0;
-}
-
-.chat-message-footer {
-    display: flex;
-    justify-content: space-between;
-    border-top: 1px solid gray;
-    margin: 0.5em 0 0;
-    padding-top: 0.5em;
-    font-size: 0.9em;
-    color: gray;
-}
-
-.chat-message-user {
-    margin: 0;
-    font-style: italic;
-}
-
-.chat-message-date {
-    margin: 0;
-}
-
-.chat-form {
-    display: flex;
-}
-
-.chat-form-input {
-    flex: 1;
-}
-
-/* Match Making Modal */
-
-.modal {
-    position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 200;
-}
-
-.modal-content {
-    width: 500px;
-    background-color: #fff;
-}
-
-.modal-header,
-.modal-footer,
-.modal-body {
-    padding: 10px;
-}
-
-.modal-title {
-    margin: 0;
-}
-
-.modal-body {
-    border-top: 1px solid #eee;
-    border-bottom: 1px solid #eee;
-}
-
-.modal-footer {
-    text-align: right;
 }

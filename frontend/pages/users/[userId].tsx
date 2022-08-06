@@ -6,6 +6,8 @@ import GameInviteButton from '../../components/users/gameInviteButton';
 import Link from 'next/link';
 import { useContext } from 'react';
 import CompletedGameList from '../../components/games/completedGameList';
+import UserBlock from '../../components/users/userBlock';
+import UserProfile from '../../components/users/userProfile';
 
 interface UserPageProps {
   user: User;
@@ -36,19 +38,26 @@ const UserPage: NextPage<UserPageProps> = ({ user, completedGames }) => {
         <title>Player {user.username}</title>
       </Head>
 
-      <h1>{user.username}</h1>
+      <div className="user-page-container">
+        <div className="user-page-left-column">
+          <UserBlock user={user} />
 
-      {userContext.user?.id != user.id && (
-        <>
-          <GameInviteButton user={user} />
-          <Link href={`/chat/private/${user.id}`}>
-            <a className="button">Private chat</a>
-          </Link>
-        </>
-      )}
-
-      <h2>Completed games</h2>
-      <CompletedGameList games={completedGames} />
+          {userContext.user?.id != user.id ? (
+            <>
+              <GameInviteButton user={user} />
+              <Link href={`/chat/private/${user.id}`}>
+                <a className="button">Private chat</a>
+              </Link>
+            </>
+          ) : (
+            <UserProfile />
+          )}
+        </div>
+        <div className="user-page-main">
+          <h2>Completed games</h2>
+          <CompletedGameList games={completedGames} />
+        </div>
+      </div>
     </>
   );
 };

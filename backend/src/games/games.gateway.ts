@@ -64,7 +64,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private getUserType(playerId: number, game: Game): GameUserType {
     if (playerId == game.player1.id) return GameUserType.Player1;
-    if (playerId == game.player2.id) return GameUserType.Player2;
+    if (playerId == game.player2?.id) return GameUserType.Player2;
     return GameUserType.Watcher;
   }
 

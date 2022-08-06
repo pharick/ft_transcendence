@@ -1,30 +1,30 @@
-import { FC, useContext } from 'react';
-import { UserContext } from './userProvider';
-import OauthPopup from 'react-oauth-popup';
+import { FC } from 'react';
+import { User } from '../../types/interfaces';
+import Image from 'next/image';
 
-const UserBlock: FC = () => {
-  const userContext = useContext(UserContext);
+interface UserBlockProps {
+  user: User;
+}
 
+const UserBlock: FC<UserBlockProps> = ({ user }) => {
+  const defaultAvatarUrl = 'static/avatars/default.png';
   return (
-    <section className="user-block">
-      {userContext.user ? (
-        <>
-          <p className="user-name">{userContext.user.username}</p>
-          <button onClick={userContext.handleLogout}>Logout</button>
-        </>
-      ) : (
-        <OauthPopup
-          url="/api/auth/login"
-          title="Login"
-          width={600}
-          height={650}
-          onClose={() => 0}
-          onCode={userContext.handleLogin || (() => 0)}
-        >
-          <button>Login via 42</button>
-        </OauthPopup>
-      )}
-    </section>
+    <article className="user-block">
+      <div className="user-block-avatar">
+        <Image
+          src={`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/${
+            user?.avatar || defaultAvatarUrl
+          }`}
+          width={250}
+          height={250}
+          alt={user ? `${user.username}` : 'Mr. Wall'}
+        />
+        {user && <p className="user-block-rank">{user.rank}</p>}
+      </div>
+      <p className="user-block-username">
+        {user ? `${user.username}` : 'Mr. Wall'}
+      </p>
+    </article>
   );
 };
 

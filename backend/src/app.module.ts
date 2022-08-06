@@ -10,6 +10,8 @@ import { CompletedGame } from './completedGames/completedGame.entity';
 import { PendingGamesModule } from './pendingGames/pendingGames.module';
 import { PendingGame } from './pendingGames/pendingGame.entity';
 import { MatchMakingModule } from './matchMaking/matchMaking.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -27,6 +29,10 @@ import { MatchMakingModule } from './matchMaking/matchMaking.module';
         synchronize: true,
         entities: [User, CompletedGame, PendingGame],
       }),
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'static'),
+      serveRoot: '/static',
     }),
     AuthModule,
     UsersModule,

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import UserBlock from '../users/userBlock';
+import UserHeaderBlock from '../users/userHeaderBlock';
 import Link from 'next/link';
 
 const Header: FC = () => {
@@ -27,7 +27,7 @@ const Header: FC = () => {
         </li>
       </ul>
 
-      <UserBlock />
+      <UserHeaderBlock />
     </header>
   );
 };

@@ -5,7 +5,7 @@ export interface FetchParams {
   url: string;
   method?: string;
   headers?: HeadersInit;
-  body?: Record<string, any>;
+  body?: Record<string, any> | FormData;
   authRequired?: boolean;
 }
 
@@ -24,9 +24,9 @@ export const fetchWithHandleErrors = async ({
       headers: {
         ...headers,
         Authorization: token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json',
+        'Content-Type': body instanceof FormData ? '' : 'application/json',
       },
-      body: JSON.stringify(body),
+      body: body instanceof FormData ? body : JSON.stringify(body),
     });
   }, authRequired || false);
 };

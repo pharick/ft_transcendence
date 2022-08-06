@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { User } from './user.entity';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 @Injectable()
 export class UsersService {
@@ -36,5 +37,16 @@ export class UsersService {
 
   findOne(id: number): Promise<User> {
     return this.usersRepository.findOneBy({ id });
+  }
+
+  public async setAvatar(userId: number, avatarUrl: string) {
+    await this.usersRepository.update(userId, { avatar: avatarUrl });
+  }
+
+  public async updateProfile(
+    userId: number,
+    profile: QueryDeepPartialEntity<User>,
+  ) {
+    await this.usersRepository.update(userId, profile);
   }
 }

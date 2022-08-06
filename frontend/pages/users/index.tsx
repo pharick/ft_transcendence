@@ -12,7 +12,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/users`,
   );
-  console.log(response);
   const users: User[] = await response.json();
   return { props: { users } };
 };
