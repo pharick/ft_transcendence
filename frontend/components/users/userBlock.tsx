@@ -3,6 +3,8 @@ import { User } from '../../types/interfaces';
 import Image from 'next/image';
 import { UserContext } from './userProvider';
 
+import styles from '../../styles/UserBlock.module.css';
+
 interface UserBlockProps {
   user: User;
 }
@@ -15,8 +17,8 @@ const UserBlock: FC<UserBlockProps> = ({ user }) => {
   if (userContext.user?.id == user?.id) username += ' (you)';
 
   return (
-    <article className="user-block">
-      <div className="user-block-avatar">
+    <article className={styles.userBlock}>
+      <div className={styles.avatar}>
         <Image
           src={`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/${
             user?.avatar || defaultAvatarUrl
@@ -25,9 +27,9 @@ const UserBlock: FC<UserBlockProps> = ({ user }) => {
           height={250}
           alt={username}
         />
-        {user && <p className="user-block-rank">{user.rank}</p>}
+        {user && <p className={styles.rank}>{user.rank}</p>}
       </div>
-      <p className="user-block-username">{user ? `${username}` : 'Mr. Wall'}</p>
+      <p className={styles.username}>{user ? `${username}` : 'Mr. Wall'}</p>
     </article>
   );
 };

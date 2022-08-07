@@ -2,8 +2,9 @@ import React, { FC, useContext } from 'react';
 import { Game } from '../../types/interfaces';
 import Link from 'next/link';
 import { UserContext } from '../users/userProvider';
-import Image from 'next/image';
 import UserBlockSmall from '../users/userBlockSmall';
+
+import styles from '../../styles/GameList.module.css';
 
 interface GameListProps {
   games: Game[];
@@ -11,26 +12,25 @@ interface GameListProps {
 
 const GameList: FC<GameListProps> = ({ games }) => {
   const userContext = useContext(UserContext);
-  const defaultAvatarUrl = 'static/avatars/default.png';
 
   return games.length > 0 ? (
-    <ul className="game-list">
+    <ul className={styles.gameList}>
       {games.map((game) => (
         <li key={game.id}>
           <Link href={`/games/${game.id}`}>
-            <a className="game-card-link">
-              <article className="game-card">
-                <div className="game-card-scores">
-                  <div className="game-card-part">
+            <a className={styles.gameCardLink}>
+              <article className={styles.gameCard}>
+                <div className={styles.scores}>
+                  <div className={styles.part}>
                     <UserBlockSmall user={game.player1} />
-                    <p className="game-card-score">{game.score1}</p>
+                    <p className={styles.score}>{game.score1}</p>
                   </div>
-                  <div className="game-card-part">
+                  <div className={styles.part}>
                     <UserBlockSmall user={game.player2} />
-                    <p className="game-card-score">{game.score2}</p>
+                    <p className={styles.score}>{game.score2}</p>
                   </div>
                 </div>
-                <h3 className="game-card-header">
+                <h3 className={styles.header}>
                   {userContext.user &&
                   (game.player1?.id == userContext.user?.id ||
                     game.player2?.id == userContext.user?.id)

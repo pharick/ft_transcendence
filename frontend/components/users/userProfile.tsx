@@ -7,6 +7,8 @@ import {
   useState,
 } from 'react';
 
+import styles from '../../styles/UserProfile.module.css';
+
 import { User } from '../../types/interfaces';
 import { UserContext } from './userProvider';
 import { fetchWithHandleErrors } from '../../utils';
@@ -60,25 +62,27 @@ const UserProfile: FC = () => {
   };
 
   return (
-    <section className="user-profile">
-      <form className="user-profile-form" onSubmit={uploadAvatar}>
-        <div className="user-profile-form-input">
+    <section className="mt-4">
+      <form className={styles.form} onSubmit={uploadAvatar}>
+        <div className={styles.input}>
           <input
             ref={avatarInput}
             type="file"
             name="avatar"
             onChange={handleChangeAvatar}
           />
-          <button type="submit">Change avatar</button>
         </div>
+        <button className={styles.submit} type="submit">
+          Change avatar
+        </button>
       </form>
 
       <form
-        className="user-profile-form"
+        className={styles.form}
         id="change-nickname"
         onSubmit={updateProfile}
       >
-        <div className="user-profile-form-input">
+        <div className={styles.input}>
           <label htmlFor="username">Username</label>
           <input
             type="text"
@@ -88,7 +92,7 @@ const UserProfile: FC = () => {
             onChange={handleChange}
           />
         </div>
-        <button className="user-profile-form-submit" type="submit">
+        <button className={styles.submit} type="submit">
           Update profile
         </button>
       </form>

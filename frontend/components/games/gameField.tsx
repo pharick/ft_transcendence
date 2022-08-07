@@ -12,6 +12,8 @@ import {
 import { useRouter } from 'next/router';
 import UserBlockSmall from '../users/userBlockSmall';
 
+import styles from '../../styles/GameField.module.css';
+
 const socket = io(
   `${
     process.env.NODE_ENV == 'development'
@@ -200,33 +202,39 @@ const GameField: FC<PongProps> = ({ game }) => {
 
   return (
     <>
-      <div className="field-wrapper">
-        {isPaused && <p className="pause-message">{pauseMessage}</p>}
-        <p className="pong-time">Time: {duration}</p>
-        <p className="score score1">{score1}</p>
-        <p className="score score2">{score2}</p>
+      <div className={styles.fieldWrapper}>
+        {isPaused && <p className={styles.pauseMessage}>{pauseMessage}</p>}
+        <p className={styles.time}>Time: {duration}</p>
+        <p className={`${styles.score} ${styles.score1}`}>{score1}</p>
+        <p className={`${styles.score} ${styles.score2}`}>{score2}</p>
 
         {!isConnected && (
-          <div className="pong-loader">
+          <div className={styles.gameLoader}>
             <div className="loader"></div>
-            <p className="load-message">Load game...</p>
+            <p className="loader-message">Load game...</p>
           </div>
         )}
 
         <canvas
           width={game.fieldWidth}
           height={game.fieldHeight}
-          className="field"
           ref={canvasRef}
         ></canvas>
       </div>
 
-      <div className="pong-players" style={{ width: game.fieldWidth }}>
-        <div className={`pong-players-part ${player1Turn ? 'current' : ''}`}>
+      <div className={styles.players} style={{ width: game.fieldWidth }}>
+        <div
+          className={`${styles.playersPart} ${
+            player1Turn ? styles.playersPartCurrent : ''
+          }`}
+        >
           <UserBlockSmall user={game.player1} />
         </div>
-        <div className={`pong-players-part ${!player1Turn ? 'current' : ''}`}>
-          <div className="avatar-placeholder-small"></div>
+        <div
+          className={`${styles.playersPart} ${
+            !player1Turn ? styles.playersPartCurrent : ''
+          }`}
+        >
           <UserBlockSmall user={game.player2} />
         </div>
       </div>

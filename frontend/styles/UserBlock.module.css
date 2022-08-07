@@ -1,0 +1,39 @@
+.userBlock {
+    position: relative;
+    width: 250px;
+    margin: 0 auto;
+}
+
+.avatar {
+    background-color: lightgray;
+    box-sizing: border-box;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    border: 1px solid dodgerblue;
+    overflow: hidden;
+}
+
+.rank {
+    position: absolute;
+    top: 185px;
+    right: 15px;
+    margin: 0;
+    background-color: dodgerblue;
+    width: 60px;
+    height: 60px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    border-radius: 50%;
+}
+
+.username {
+    text-decoration: underline;
+    text-decoration-color: dodgerblue;
+    font-size: 1.8em;
+    margin: 0;
+    text-align: center;
+}

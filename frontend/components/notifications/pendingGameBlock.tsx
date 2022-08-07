@@ -4,6 +4,8 @@ import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider
 import { fetchWithHandleErrors } from '../../utils';
 import { UserContext } from '../users/userProvider';
 
+import styles from '../../styles/Notifications.module.css';
+
 interface PendingGameBlockProps {
   game: PendingGame;
 }
@@ -46,7 +48,7 @@ const PendingGameBlock: FC<PendingGameBlockProps> = ({ game }) => {
     );
   } else {
     return (
-      <article className="notification-block">
+      <article className={styles.block}>
         <p>
           <b>{game.player1.username}</b> invites you
         </p>

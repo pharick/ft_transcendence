@@ -9,9 +9,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
   return (
     <>
       <Header />
-      <div className="container">
-        <main className="main">{children}</main>
-      </div>
+      <main className="container py-4">{children}</main>
     </>
   );
 };

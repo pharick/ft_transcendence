@@ -4,40 +4,40 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 
+import styles from '../../styles/CompletedGameList.module.css';
+
 interface CompletedGameListProps {
   games: CompletedGame[];
 }
 
 const CompletedGameList: FC<CompletedGameListProps> = ({ games }) => {
   return games.length > 0 ? (
-    <ul className="completed-game-list">
+    <ul className={styles.completedGameList}>
       {games.map((game) => (
         <li key={game.id}>
           <Link href={`/completed/${game.id}`}>
-            <a className="completed-game-link">
-              <article className="completed-game-card">
-                <div className="completed-game-card-part">
+            <a className={styles.link}>
+              <article className={styles.card}>
+                <div className={styles.cardPart}>
                   {format(
                     utcToZonedTime(game.date, 'Europe/Moscow'),
                     'dd.MM.yyyy H:mm:ss',
                   )}
                 </div>
 
-                <div className="completed-game-card-part">
-                  <p className="completed-game-card-user">
-                    {game.player1.username}
-                  </p>
-                  <p className="completed-game-card-scores">
+                <div className={styles.cardPart}>
+                  <p className={styles.user}>{game.player1.username}</p>
+                  <p className={styles.scores}>
                     {game.score1} — {game.score2}
                   </p>
-                  <p className="completed-game-card-user">
+                  <p className={styles.user}>
                     {game.player2 ? game.player2.username : 'Mr.Wall'}
                   </p>
                 </div>
 
-                <div className="completed-game-card-part">{game.duration}s</div>
+                <div className={styles.cardPart}>{game.duration}s</div>
 
-                <div className="completed-game-card-part">
+                <div className={styles.cardPart}>
                   <b>{game.isRanked ? 'Ranked' : 'Not Ranked'}</b>
                 </div>
               </article>

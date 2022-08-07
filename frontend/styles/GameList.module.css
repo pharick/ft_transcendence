@@ -1,0 +1,53 @@
+.gameList {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.gameCardLink {
+    text-decoration: none;
+    color: black;
+}
+
+.gameCardLink:hover {
+    color: black;
+}
+
+.gameCard {
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 20px;
+    margin: 5px;
+    width: 350px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.gameCard:hover {
+    box-shadow: 1px 1px 5px gray;
+    transform: translate(-1px, -1px);
+}
+
+.scores {
+    display: flex;
+    justify-content: space-around;
+}
+
+.part {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.score {
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 30px;
+    text-align: center;
+    margin: 0.5em 0 0 0;
+}
+
+.header {
+    margin: 0.5em 0 0 0;
+    text-align: center;
+}

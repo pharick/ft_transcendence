@@ -1,0 +1,30 @@
+
+@media (min-width: 768px) {
+    .notifications {
+        min-height: 60vh;
+    }
+}
+
+.section {
+    padding-left: 0;
+}
+
+@media (min-width: 768px) {
+    .section:not(:last-child) {
+        border-right: 1px solid lightgray;
+        margin-right: 2em;
+        padding-right: 2em;
+    }
+}
+
+.list {
+    list-style: none;
+    padding: 0;
+}
+
+.block {
+    border-bottom: 1px solid lightgray;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

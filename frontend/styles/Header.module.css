@@ -1,0 +1,42 @@
+.header {
+    background-color: #000000;
+    padding: 5px 35px;
+    height: 40px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    border-bottom: 4px solid dodgerblue;
+    box-shadow: 0 2px 8px gray;
+}
+
+.brand {
+    margin-right: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    color: dodgerblue;
+    text-shadow: 0 0 5px dodgerblue;
+}
+
+.mainMenu {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    height: 100%;
+}
+
+.mainMenuItem:not(:last-child) a {
+    border-right: 1px solid #343434;
+}
+
+.mainMenuLink {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 1em;
+    color: lightgray;
+}
+
+.mainMenuLink:hover {
+    color: dodgerblue;
+    text-shadow: 0 0 5px dodgerblue;
+}

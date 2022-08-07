@@ -3,17 +3,17 @@ import { UserContext } from './userProvider';
 import OauthPopup from 'react-oauth-popup';
 import Link from 'next/link';
 
+import styles from '../../styles/UserHeaderBlock.module.css';
+
 const UserHeaderBlock: FC = () => {
   const userContext = useContext(UserContext);
 
   return (
-    <section className="user-header-block">
+    <section className={styles.userHeaderBlock}>
       {userContext.user ? (
         <>
           <Link href={`/users/${userContext.user.id}`}>
-            <a className="user-header-block-username">
-              {userContext.user.username}
-            </a>
+            <a className={styles.username}>{userContext.user.username}</a>
           </Link>
           <button onClick={userContext.handleLogout}>Logout</button>
         </>

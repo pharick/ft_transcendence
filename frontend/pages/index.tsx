@@ -12,9 +12,13 @@ const HomePage: NextPage = () => {
         <title>Main page</title>
       </Head>
 
-      <section className="main-buttons">
-        <TrainingGameButton />
-        <MatchMakingButton />
+      <section className="row justify-content-center my-4">
+        <div className="col-auto">
+          <TrainingGameButton />
+        </div>
+        <div className="col-auto">
+          <MatchMakingButton />
+        </div>
       </section>
 
       <Notifications />

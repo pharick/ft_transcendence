@@ -1,0 +1,11 @@
+.userHeaderBlock {
+    display: flex;
+    margin-left: auto;
+    align-items: center;
+}
+
+.username {
+    margin: 0 10px 0 0;
+    color: white;
+    font-weight: bold;
+}

@@ -3,8 +3,9 @@ import { io } from 'socket.io-client';
 import ReadyGameBlock from './readyGameBlock';
 import PendingGameBlock from './pendingGameBlock';
 import { UserContext } from '../users/userProvider';
-import Link from 'next/link';
 import { Game, Notifications, PendingGame } from '../../types/interfaces';
+
+import styles from '../../styles/Notifications.module.css';
 
 const socket = io(
   `${
@@ -56,11 +57,11 @@ const Notifications: FC = () => {
 
   if (isConnected) {
     return (
-      <section className="notifications-container">
-        <div className="notifications-section">
+      <section className={`row ${styles.notifications}`}>
+        <div className={`col-md ${styles.section}`}>
           <h2>Ongoing games</h2>
           {games.length > 0 ? (
-            <ul className="notification-list">
+            <ul className={styles.list}>
               {games.map((game) => (
                 <li key={`game-${game.id}`}>
                   <ReadyGameBlock game={game} />
@@ -72,10 +73,10 @@ const Notifications: FC = () => {
           )}
         </div>
 
-        <div className="notifications-section">
+        <div className={`col-md ${styles.section}`}>
           <h2>Pending games</h2>
           {pendingGames.length > 0 ? (
-            <ul className="notification-list">
+            <ul className={styles.list}>
               {pendingGames.map((game) => (
                 <li key={`pending-${game.id}`}>
                   <PendingGameBlock game={game} />
@@ -95,7 +96,7 @@ const Notifications: FC = () => {
     return (
       <section>
         <div className="loader"></div>
-        <p className="load-message">Load notifications...</p>
+        <p className="loader-message">Load notifications...</p>
       </section>
     );
   }

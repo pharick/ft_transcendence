@@ -1,0 +1,64 @@
+.fieldWrapper {
+    position: relative;
+    width: 800px;
+    height: 600px;
+}
+
+.score {
+    position: absolute;
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 20px;
+    color: white;
+}
+
+.score1 {
+    top: 20px;
+    left: 25%;
+}
+
+.score2 {
+    top: 20px;
+    right: 25%;
+}
+
+.time {
+    position: absolute;
+    color: white;
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 20px;
+    bottom: 15px;
+    left: 10px;
+    margin: 0;
+}
+
+.pauseMessage {
+    position: absolute;
+    color: white;
+    font-family: "Press Start 2P", sans-serif;
+    top: 38%;
+    width: 100%;
+    text-align: center;
+    font-size: 1.4em;
+}
+
+.players {
+    display: flex;
+}
+
+.playersPart {
+    padding: 1em 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.playersPartCurrent {
+    background-color: #dddddd;
+}
+
+.gameLoader {
+    position: absolute;
+    width: 100%;
+    top: 40%;
+}

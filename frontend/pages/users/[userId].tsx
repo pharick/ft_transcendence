@@ -3,7 +3,6 @@ import Head from 'next/head';
 import { CompletedGame, User } from '../../types/interfaces';
 import { UserContext } from '../../components/users/userProvider';
 import GameInviteButton from '../../components/users/gameInviteButton';
-import Link from 'next/link';
 import { useContext } from 'react';
 import CompletedGameList from '../../components/games/completedGameList';
 import UserBlock from '../../components/users/userBlock';
@@ -38,22 +37,21 @@ const UserPage: NextPage<UserPageProps> = ({ user, completedGames }) => {
         <title>Player {user.username}</title>
       </Head>
 
-      <div className="user-page-container">
-        <div className="user-page-left-column">
+      <div className="row">
+        <div className="col-lg-3 mx-auto">
           <UserBlock user={user} />
 
           {userContext.user?.id != user.id ? (
-            <>
-              <GameInviteButton user={user} />
-              <Link href={`/chat/private/${user.id}`}>
-                <a className="button">Private chat</a>
-              </Link>
-            </>
+            <ul className="mt-4">
+              <li>
+                <GameInviteButton user={user} />
+              </li>
+            </ul>
           ) : (
             <UserProfile />
           )}
         </div>
-        <div className="user-page-main">
+        <div className="col-lg">
           <h2>Completed games</h2>
           <CompletedGameList games={completedGames} />
         </div>

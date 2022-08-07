@@ -2,29 +2,31 @@ import { FC } from 'react';
 import UserHeaderBlock from '../users/userHeaderBlock';
 import Link from 'next/link';
 
+import styles from '../../styles/Header.module.css';
+
 const Header: FC = () => {
   return (
-    <header className="header">
+    <header className={styles.header}>
       <Link href="/">
-        <a className="brand">ft_transcendence</a>
+        <a className={styles.brand}>ft_transcendence</a>
       </Link>
 
-      <ul className="main-menu">
-        <li>
+      <ul className={styles.mainMenu}>
+        <li className={styles.mainMenuItem}>
           <Link href="/games">
-            <a>Games</a>
+            <a className={styles.mainMenuLink}>Games</a>
           </Link>
         </li>
-        <li>
+        <li className={styles.mainMenuItem}>
           <Link href="/users">
-            <a>Players</a>
+            <a className={styles.mainMenuLink}>Players</a>
           </Link>
         </li>
-        <li>
-          <Link href="/chat">
-            <a>Chats</a>
-          </Link>
-        </li>
+        {/*<li>*/}
+        {/*  <Link href="/chat">*/}
+        {/*    <a>Chats</a>*/}
+        {/*  </Link>*/}
+        {/*</li>*/}
       </ul>
 
       <UserHeaderBlock />

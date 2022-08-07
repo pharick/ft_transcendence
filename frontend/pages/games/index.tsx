@@ -16,16 +16,17 @@ export const getServerSideProps: GetServerSideProps = async () => {
   return { props: { games } };
 };
 
-const HomePage: NextPage<GamesPageProps> = ({ games }) => {
+const GamesPage: NextPage<GamesPageProps> = ({ games }) => {
   return (
     <>
       <Head>
         <title>Ongoing games</title>
       </Head>
 
+      <h1>Ongoing games</h1>
       <GameList games={games} />
     </>
   );
 };
 
-export default HomePage;
+export default GamesPage;

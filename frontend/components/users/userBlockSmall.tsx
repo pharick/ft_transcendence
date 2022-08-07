@@ -3,6 +3,8 @@ import { User } from '../../types/interfaces';
 import Image from 'next/image';
 import { UserContext } from './userProvider';
 
+import styles from '../../styles/UserBlockSmall.module.css';
+
 interface UserBlockSmallProps {
   user: User;
 }
@@ -15,8 +17,8 @@ const UserBlockSmall: FC<UserBlockSmallProps> = ({ user }) => {
   if (userContext.user?.id == user?.id) username += ' (you)';
 
   return (
-    <article className="user-block-small">
-      <div className="user-block-small-avatar">
+    <article className={styles.block}>
+      <div className={styles.avatar}>
         <Image
           src={`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/${
             user?.avatar || defaultAvatarUrl
@@ -26,9 +28,7 @@ const UserBlockSmall: FC<UserBlockSmallProps> = ({ user }) => {
           alt={user ? `${username}` : 'Mr. Wall'}
         />
       </div>
-      <p className="user-block-small-username">
-        {user ? `${username}` : 'Mr. Wall'}
-      </p>
+      <p className={styles.username}>{user ? `${username}` : 'Mr. Wall'}</p>
     </article>
   );
 };
