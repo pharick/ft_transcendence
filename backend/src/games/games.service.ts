@@ -329,7 +329,7 @@ export class GamesService {
     const gameId = randomUUID();
     this.gameProcessors.set(
       gameId,
-      new GameProcessor(false, player1.id, player2?.id),
+      new GameProcessor(isRanked, player1.id, player2?.id),
     );
     await this.notificationsService.send(player1.id);
     await this.notificationsService.send(player2?.id);

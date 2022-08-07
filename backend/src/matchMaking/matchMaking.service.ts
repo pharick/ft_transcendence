@@ -91,9 +91,6 @@ export class MatchMakingService {
       return currentDelta < prevDelta ? current : prev;
     });
 
-    console.log(matchedRank);
-    console.log(delta);
-
     const playerIdsArray = Array.from(playerIds);
     const userId = playerIdsArray.pop();
     this.rankedQueue[matchedRank].delete(userId);

@@ -31,6 +31,7 @@ const UserProfile: FC = () => {
       method: 'PATCH',
       body: profile,
     });
+    router.reload();
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
