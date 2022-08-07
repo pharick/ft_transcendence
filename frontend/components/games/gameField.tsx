@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 
 import useKeyboardEventListener from '../../hooks/use_event_listener';
 import { UserContext } from '../users/userProvider';
-import { CompletedGame, Game, GameFrame } from '../../types/interfaces';
+import { CompletedGame, Game, GameFrame, User } from '../../types/interfaces';
 import {
   MoveClubStartDto,
   MoveClubStopDto,
@@ -28,13 +28,15 @@ interface PongProps {
 }
 
 const GameField: FC<PongProps> = ({ game }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
   const [score1, setScore1] = useState(0);
   const [score2, setScore2] = useState(0);
-  const [pause, setPause] = useState(true);
   const [player1Turn, setPlayer1Turn] = useState(false);
   const [duration, setDuration] = useState(0);
-  const [isConnected, setIsConnected] = useState(false);
+  const [watchers, setWatchers] = useState<User[]>([]);
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const userContext = useContext(UserContext);
   const router = useRouter();
 
@@ -53,7 +55,7 @@ const GameField: FC<PongProps> = ({ game }) => {
     isPlayer1Turn,
     durationMs,
   }: GameFrame) => {
-    setPause(isPaused);
+    setIsPaused(isPaused);
     setPlayer1Turn(isPlayer1Turn);
     setDuration(Math.round(durationMs / 1000));
 
@@ -127,6 +129,10 @@ const GameField: FC<PongProps> = ({ game }) => {
       renderField(frame);
     });
 
+    socket.on('sendWatchers', (newWatchers: User[]) => {
+      setWatchers(newWatchers);
+    });
+
     socket.on('endGame', async (completedGame: CompletedGame) => {
       await router.push(`/completed/${completedGame.id}`);
     });
@@ -184,7 +190,7 @@ const GameField: FC<PongProps> = ({ game }) => {
     game.player1.id != userContext.user?.id &&
     (!game.player2 || game.player2.id != userContext.user?.id)
   )
-    pauseMessage = '';
+    pauseMessage = 'Waiting for the serve';
   else if (
     (game.player1.id == userContext.user?.id && player1Turn) ||
     (game.player2?.id == userContext.user?.id && !player1Turn)
@@ -195,7 +201,7 @@ const GameField: FC<PongProps> = ({ game }) => {
   return (
     <>
       <div className="field-wrapper">
-        {pause && <p className="pause-message">{pauseMessage}</p>}
+        {isPaused && <p className="pause-message">{pauseMessage}</p>}
         <p className="pong-time">Time: {duration}</p>
         <p className="score score1">{score1}</p>
         <p className="score score2">{score2}</p>

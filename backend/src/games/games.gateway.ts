@@ -6,6 +6,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+
 import { Logger } from '@nestjs/common';
 
 import { GamesService } from './games.service';
@@ -26,7 +27,7 @@ enum GameUserType {
 })
 export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
-  private server: Server;
+  server: Server;
 
   private logger: Logger = new Logger('GamesGateway');
   private readonly frame_delta: number = 40;
@@ -50,8 +51,11 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.join(gameId);
       client.join(`${gameId}-${userType}`);
 
-      if (user && userType != GameUserType.Watcher)
+      if (user && userType != GameUserType.Watcher) {
         client.join(`user-${user.id}`);
+      } else {
+        await this.sendWatchers(client, gameId);
+      }
 
       this.logger.log(
         `Client ${client.id} (user ${user?.id}) connected to ${gameId} game as ${userType}`,
@@ -67,7 +71,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private getUserType(playerId: number, game: Game): GameUserType {
     if (playerId == game.player1.id) return GameUserType.Player1;
-    if (playerId == game.player2?.id) return GameUserType.Player2;
+    if (playerId && playerId == game.player2?.id) return GameUserType.Player2;
     return GameUserType.Watcher;
   }
 
@@ -78,6 +82,20 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.sendNextFrame(gameId).then();
       }, this.frame_delta),
     );
+  }
+
+  private async sendWatchers(client: Socket, gameId: string) {
+    const clientIds = client.nsp.adapter.rooms.get(
+      `${gameId}-${GameUserType.Watcher}`,
+    );
+    if (!clientIds) return;
+    const watchers = await Promise.all(
+      Array.from(clientIds.values()).map((clientId) => {
+        const { token } = client.nsp.sockets.get(clientId).handshake.auth;
+        return this.authService.getUser(token);
+      }),
+    );
+    client.to(gameId).emit('sendWatchers', watchers);
   }
 
   private async sendNextFrame(gameId: string) {
