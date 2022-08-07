@@ -23,7 +23,7 @@ const TrainingGameButton: FC = () => {
 
   return (
     <button className="image-button" onClick={handleCreateGame}>
-      <Image src={trainingImage} layout="responsive" />
+      <Image src={trainingImage} width={100} height={100} />
       <span>Play training game</span>
     </button>
   );

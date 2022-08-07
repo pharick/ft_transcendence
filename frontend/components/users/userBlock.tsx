@@ -11,8 +11,8 @@ const UserBlock: FC<UserBlockProps> = ({ user }) => {
   const userContext = useContext(UserContext);
   const defaultAvatarUrl = 'static/avatars/default.png';
 
-  let username = user.username;
-  if (userContext.user?.id == user.id) username += ' (you)';
+  let username = user?.username || 'Mr. Wall';
+  if (userContext.user?.id == user?.id) username += ' (you)';
 
   return (
     <article className="user-block">
@@ -23,7 +23,7 @@ const UserBlock: FC<UserBlockProps> = ({ user }) => {
           }`}
           width={250}
           height={250}
-          alt={user ? `${username}` : 'Mr. Wall'}
+          alt={username}
         />
         {user && <p className="user-block-rank">{user.rank}</p>}
       </div>

@@ -76,6 +76,9 @@ button:disabled {
     border: none;
     color: black;
     transition: transform 0.5s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .image-button:hover {
@@ -390,6 +393,10 @@ button.side-panel-button-visible {
     height: 150px;
     padding: 2em;
     margin: 0;
+}
+
+.main-buttons button {
+    height: 100%;
 }
 
 .main-buttons button:not(:last-child) {

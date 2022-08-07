@@ -7,7 +7,7 @@ import { UserContext } from '../users/userProvider';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 import { fetchWithHandleErrors } from '../../utils';
 import Image from 'next/image';
-import gameImage from '../../images/game.svg';
+import gameImage from '../../images/ranked_game.svg';
 
 const Modal = dynamic(() => import('../../components/layout/modal'), {
   ssr: false,
@@ -62,7 +62,7 @@ const MatchMakingButton: FC = () => {
   return (
     <>
       <button className="image-button" onClick={createMatchMaking}>
-        <Image src={gameImage} layout="responsive" />
+        <Image src={gameImage} width={100} height={100} />
         <span>Play ranked game</span>
       </button>
 
