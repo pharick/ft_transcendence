@@ -10,6 +10,7 @@ import {
   ResumeGameDto,
 } from '../../types/dtos';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 const socket = io(
   `${
@@ -36,6 +37,8 @@ const GameField: FC<PongProps> = ({ game }) => {
   const [isConnected, setIsConnected] = useState(false);
   const userContext = useContext(UserContext);
   const router = useRouter();
+
+  const defaultAvatarUrl = 'static/avatars/default.png';
 
   const renderField = ({
     ballX,
@@ -212,11 +215,30 @@ const GameField: FC<PongProps> = ({ game }) => {
 
       <div className="pong-players" style={{ width: game.fieldWidth }}>
         <div className={`pong-players-part ${player1Turn ? 'current' : ''}`}>
-          <div className="avatar-placeholder-small"></div>
+          <div className="avatar-small">
+            <Image
+              src={`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/${
+                game.player1.avatar || defaultAvatarUrl
+              }`}
+              width={50}
+              height={50}
+              alt={game.player1.username}
+            />
+          </div>
           <p className="pong-players-name">{game.player1.username}</p>
         </div>
         <div className={`pong-players-part ${!player1Turn ? 'current' : ''}`}>
           <div className="avatar-placeholder-small"></div>
+          <div className="avatar-small">
+            <Image
+              src={`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/${
+                game.player2?.avatar || defaultAvatarUrl
+              }`}
+              width={50}
+              height={50}
+              alt={game.player2 ? game.player2.username : 'Mr. Wall'}
+            />
+          </div>
           <p className="pong-players-name">
             {game.player2 ? game.player2.username : 'Mr. Wall'}
           </p>

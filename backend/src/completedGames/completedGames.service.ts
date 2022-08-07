@@ -35,6 +35,7 @@ export class CompletedGamesService {
       )
       .leftJoinAndSelect('completed_game.player1', 'player1')
       .leftJoinAndSelect('completed_game.player2', 'player2')
+      .orderBy({ 'completed_game.date': 'DESC' })
       .getMany();
   }
 }
