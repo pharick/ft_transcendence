@@ -10,7 +10,6 @@ import {
   ResumeGameDto,
 } from '../../types/dtos';
 import { useRouter } from 'next/router';
-import Image from 'next/image';
 import UserBlockSmall from '../users/userBlockSmall';
 
 const socket = io(
@@ -38,8 +37,6 @@ const GameField: FC<PongProps> = ({ game }) => {
   const [isConnected, setIsConnected] = useState(false);
   const userContext = useContext(UserContext);
   const router = useRouter();
-
-  const defaultAvatarUrl = 'static/avatars/default.png';
 
   const renderField = ({
     ballX,
@@ -182,19 +179,23 @@ const GameField: FC<PongProps> = ({ game }) => {
   );
   useKeyboardEventListener('keyup', keyUpHandler as EventListener, document);
 
+  let pauseMessage;
+  if (
+    game.player1.id != userContext.user?.id &&
+    (!game.player2 || game.player2.id != userContext.user?.id)
+  )
+    pauseMessage = '';
+  else if (
+    (game.player1.id == userContext.user?.id && player1Turn) ||
+    (game.player2?.id == userContext.user?.id && !player1Turn)
+  )
+    pauseMessage = 'Press SPACE to continue';
+  else pauseMessage = 'Waiting for opponent';
+
   return (
     <>
       <div className="field-wrapper">
-        {pause && (
-          <p className="pause-message">
-            {!game.player1 ||
-            !game.player2 ||
-            (game.player1.id == userContext.user?.id && player1Turn) ||
-            (game.player2.id == userContext.user?.id && !player1Turn)
-              ? 'Press SPACE to continue'
-              : 'Waiting for opponent'}
-          </p>
-        )}
+        {pause && <p className="pause-message">{pauseMessage}</p>}
         <p className="pong-time">Time: {duration}</p>
         <p className="score score1">{score1}</p>
         <p className="score score2">{score2}</p>

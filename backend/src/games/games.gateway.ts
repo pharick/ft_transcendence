@@ -13,7 +13,6 @@ import { Game, GameFrame } from './games.interfaces';
 import { User } from '../users/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { MoveClubStartDto, MoveClubStopDto, ResumeGameDto } from './games.dtos';
-import { use } from 'passport';
 
 enum GameUserType {
   Player1 = 'player1',
@@ -51,7 +50,8 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.join(gameId);
       client.join(`${gameId}-${userType}`);
 
-      if (userType != GameUserType.Watcher) client.join(`user-${user.id}`);
+      if (user && userType != GameUserType.Watcher)
+        client.join(`user-${user.id}`);
 
       this.logger.log(
         `Client ${client.id} (user ${user?.id}) connected to ${gameId} game as ${userType}`,
