@@ -13,19 +13,18 @@ export const fetchWithHandleErrors = async ({
   requestErrorHandlerContext,
   url,
   method,
-  headers,
   body,
   authRequired,
 }: FetchParams) => {
   const token = localStorage.getItem('token');
   return await requestErrorHandlerContext.requestErrorHandler(async () => {
+    const headers: Record<string, string> = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    if (body && !(body instanceof FormData))
+      headers['Content-Type'] = 'application/json';
     return await fetch(url, {
       method: method || 'GET',
-      headers: {
-        ...headers,
-        Authorization: token ? `Bearer ${token}` : '',
-        'Content-Type': body instanceof FormData ? '' : 'application/json',
-      },
+      headers,
       body: body instanceof FormData ? body : JSON.stringify(body),
     });
   }, authRequired || false);

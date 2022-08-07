@@ -24,6 +24,7 @@ import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { randomUUID } from 'crypto';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 const storage = diskStorage({
   destination: './static/avatars',
@@ -66,7 +67,7 @@ export class UsersController {
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({ maxSize: 500000 }),
-          new FileTypeValidator({ fileType: 'image/jpeg' }),
+          new FileTypeValidator({ fileType: 'image/jpeg|image/png' }),
         ],
       }),
     )
@@ -77,11 +78,11 @@ export class UsersController {
     await this.usersService.setAvatar(userId, file.path);
   }
 
-  // @Patch(':id')
-  // async updateProfile(
-  //   @Param('id', new ParseIntPipe()) userId: number,
-  //   @Body() profile: ProfileDto,
-  // ) {
-  //   await this.usersService.updateProfile(userId, profile);
-  // }
+  @Patch(':id')
+  async updateProfile(
+    @Param('id', new ParseIntPipe()) userId: number,
+    @Body() profile: QueryDeepPartialEntity<User>,
+  ) {
+    await this.usersService.updateProfile(userId, profile);
+  }
 }

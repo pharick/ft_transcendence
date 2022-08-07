@@ -1,10 +1,17 @@
-import { ChangeEvent, FC, FormEvent, useContext, useState } from 'react';
-import Image from 'next/image';
+import {
+  ChangeEvent,
+  FC,
+  FormEvent,
+  useContext,
+  useRef,
+  useState,
+} from 'react';
 
 import { User } from '../../types/interfaces';
 import { UserContext } from './userProvider';
 import { fetchWithHandleErrors } from '../../utils';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
+import { useRouter } from 'next/router';
 
 const UserProfile: FC = () => {
   const userContext = useContext(UserContext);
@@ -13,27 +20,18 @@ const UserProfile: FC = () => {
   });
   const [avatar, setAvatar] = useState<File>();
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
+  const avatarInput = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
-  // const handleUpdateDisplayName = async () => {
-  //   const response = await fetch(`/api/users/${userInfo.id}/name`, {
-  //     body: JSON.stringify({
-  //       nickname: newDisplayName,
-  //     }),
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     method: 'POST',
-  //   });
-  //
-  //   if (response.status == 400)
-  //     alert(
-  //       'Wrong nickname. Use ONLY letters and numbers, length 3-10 symbols',
-  //     );
-  // };
-  //
-  // const avatarLoader = ({ src }: any) => {
-  //   return `http://localhost/${src}`;
-  // };
+  const updateProfile = async (e: FormEvent) => {
+    e.preventDefault();
+    await fetchWithHandleErrors({
+      requestErrorHandlerContext,
+      url: `/api/users/${userContext.user?.id}`,
+      method: 'PATCH',
+      body: profile,
+    });
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setProfile((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -49,32 +47,36 @@ const UserProfile: FC = () => {
     if (!avatar) return;
     const body = new FormData();
     body.append('avatar', avatar);
-    body.forEach((el) => {
-      console.log(el);
-    });
-    const response = await fetchWithHandleErrors({
+    await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: `/api/users/${userContext.user?.id}/avatar`,
       method: 'PUT',
       body,
     });
-    console.log(response);
-
-    // if (response.status == 201) alert('You change avatar');
-    // if (response.status == 413 || response.status == 400)
-    //   alert('Wrong file. Use ONLY types: jpg, jpeg, png. Max size 500kb');
+    if (avatarInput.current) avatarInput.current.value = '';
+    setAvatar(undefined);
+    router.reload();
   };
 
   return (
     <section className="user-profile">
       <form className="user-profile-form" onSubmit={uploadAvatar}>
         <div className="user-profile-form-input">
-          <input type="file" name="avatar" onChange={handleChangeAvatar} />
+          <input
+            ref={avatarInput}
+            type="file"
+            name="avatar"
+            onChange={handleChangeAvatar}
+          />
           <button type="submit">Change avatar</button>
         </div>
       </form>
 
-      <form className="user-profile-form" id="change-nickname">
+      <form
+        className="user-profile-form"
+        id="change-nickname"
+        onSubmit={updateProfile}
+      >
         <div className="user-profile-form-input">
           <label htmlFor="username">Username</label>
           <input
