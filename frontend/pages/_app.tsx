@@ -5,6 +5,7 @@ import RequestErrorHandlerProvider from '../components/utils/requestErrorHandler
 
 import '../styles/style.css';
 import 'bootstrap/dist/css/bootstrap-grid.css';
+import 'bootstrap/dist/css/bootstrap-utilities.css';
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (

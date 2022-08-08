@@ -6,6 +6,8 @@ import UserBlock from '../../components/users/userBlock';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 
+import styles from '../../styles/CompletedGamePage.module.css';
+
 interface CompletedGamePageProps {
   completedGameInfo: CompletedGame;
 }
@@ -38,25 +40,29 @@ const CompletedGamePage: NextPage<CompletedGamePageProps> = ({
         <b>{completedGameInfo.player2?.username || 'Mr.Wall'}</b> is completed
       </h1>
 
-      <div className="completed-game-scores">
-        <div className="completed-game-part">
+      <div className={styles.scores}>
+        <div className={styles.part}>
           <UserBlock user={completedGameInfo.player1} />
-          <p className="completed-game-score">{completedGameInfo.score1}</p>
+          <p className={styles.score}>{completedGameInfo.score1}</p>
         </div>
-        <div className="completed-game-part">
+        <div className={styles.part}>
           <UserBlock user={completedGameInfo.player2} />
-          <p className="completed-game-score">{completedGameInfo.score2}</p>
+          <p className={styles.score}>{completedGameInfo.score2}</p>
         </div>
       </div>
 
-      <p>Duration: {completedGameInfo.duration}s</p>
-      <p>
-        Date:{' '}
-        {format(
-          utcToZonedTime(completedGameInfo.date, 'Europe/Moscow'),
-          'dd.MM.yyyy H:mm:ss',
-        )}
-      </p>
+      <ul className={styles.meta}>
+        <li className={styles.metaItem}>
+          <b>Date:</b>{' '}
+          {format(
+            utcToZonedTime(completedGameInfo.date, 'Europe/Moscow'),
+            'dd.MM.yyyy H:mm:ss',
+          )}
+        </li>
+        <li className={styles.metaItem}>
+          <b>Duration:</b> {completedGameInfo.duration}s
+        </li>
+      </ul>
     </>
   );
 };

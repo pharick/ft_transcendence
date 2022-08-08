@@ -97,10 +97,6 @@ button:disabled {
     color: black;
 }
 
-.text-center {
-    text-align: center;
-}
-
 input[type=text] {
     border: 2px solid lightgray;
     border-radius: 3px;

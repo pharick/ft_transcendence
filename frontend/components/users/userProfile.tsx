@@ -71,10 +71,10 @@ const UserProfile: FC = () => {
             name="avatar"
             onChange={handleChangeAvatar}
           />
+          <button className={styles.submit} type="submit">
+            Change avatar
+          </button>
         </div>
-        <button className={styles.submit} type="submit">
-          Change avatar
-        </button>
       </form>
 
       <form

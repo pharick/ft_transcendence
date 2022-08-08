@@ -11,13 +11,12 @@
 }
 
 .input label {
-    flex: 1;
     text-align: right;
     margin-right: 0.5em;
 }
 
 .input input {
-    flex: 2;
+    flex: 1;
 }
 
 .submit {

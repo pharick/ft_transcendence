@@ -38,7 +38,7 @@ const UserPage: NextPage<UserPageProps> = ({ user, completedGames }) => {
       </Head>
 
       <div className="row">
-        <div className="col-lg-3 mx-auto">
+        <div className="col-lg-4 mx-auto">
           <UserBlock user={user} />
 
           {userContext.user?.id != user.id ? (
