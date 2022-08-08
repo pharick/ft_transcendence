@@ -143,6 +143,7 @@ const GameField: FC<PongProps> = ({ game }) => {
       socket.off('connect');
       socket.off('disconnect');
       socket.off('nextFrame');
+      socket.off('sendWatchers');
       socket.off('endGame');
       socket.disconnect();
     };
@@ -201,44 +202,57 @@ const GameField: FC<PongProps> = ({ game }) => {
   else pauseMessage = 'Waiting for opponent';
 
   return (
-    <>
-      <div className={styles.fieldWrapper}>
-        {isPaused && <p className={styles.pauseMessage}>{pauseMessage}</p>}
-        <p className={styles.time}>Time: {duration}</p>
-        <p className={`${styles.score} ${styles.score1}`}>{score1}</p>
-        <p className={`${styles.score} ${styles.score2}`}>{score2}</p>
+    <div className="row">
+      <div className="col-auto">
+        <div className={styles.fieldWrapper}>
+          {isPaused && <p className={styles.pauseMessage}>{pauseMessage}</p>}
+          <p className={styles.time}>Time: {duration}</p>
+          <p className={`${styles.score} ${styles.score1}`}>{score1}</p>
+          <p className={`${styles.score} ${styles.score2}`}>{score2}</p>
 
-        {!isConnected && (
-          <div className={styles.gameLoader}>
-            <div className="loader"></div>
-            <p className="loader-message">Load game...</p>
+          {!isConnected && (
+            <div className={styles.gameLoader}>
+              <div className="loader"></div>
+              <p className="loader-message">Load game...</p>
+            </div>
+          )}
+
+          <canvas
+            width={game.fieldWidth}
+            height={game.fieldHeight}
+            ref={canvasRef}
+          ></canvas>
+        </div>
+
+        <div className={styles.players} style={{ width: game.fieldWidth }}>
+          <div
+            className={`${styles.playersPart} ${
+              player1Turn ? styles.playersPartCurrent : ''
+            }`}
+          >
+            <UserBlockSmall user={game.player1} />
           </div>
-        )}
-
-        <canvas
-          width={game.fieldWidth}
-          height={game.fieldHeight}
-          ref={canvasRef}
-        ></canvas>
-      </div>
-
-      <div className={styles.players} style={{ width: game.fieldWidth }}>
-        <div
-          className={`${styles.playersPart} ${
-            player1Turn ? styles.playersPartCurrent : ''
-          }`}
-        >
-          <UserBlockSmall user={game.player1} />
-        </div>
-        <div
-          className={`${styles.playersPart} ${
-            !player1Turn ? styles.playersPartCurrent : ''
-          }`}
-        >
-          <UserBlockSmall user={game.player2} />
+          <div
+            className={`${styles.playersPart} ${
+              !player1Turn ? styles.playersPartCurrent : ''
+            }`}
+          >
+            <UserBlockSmall user={game.player2} />
+          </div>
         </div>
       </div>
-    </>
+
+      <div className="col">
+        <h2>Watch game</h2>
+        <ul>
+          {watchers.map((user) => (
+            <li>
+              <UserBlockSmall user={user} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 };
 
