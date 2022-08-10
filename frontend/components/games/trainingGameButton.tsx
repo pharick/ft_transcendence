@@ -4,9 +4,11 @@ import { fetchWithHandleErrors } from '../../utils';
 import { Game } from '../../types/interfaces';
 import trainingImage from '../../images/training.svg';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 const TrainingGameButton: FC = () => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
+  const router = useRouter();
 
   const handleCreateGame = async () => {
     const gameResponse = await fetchWithHandleErrors({
@@ -17,7 +19,7 @@ const TrainingGameButton: FC = () => {
     });
     if (gameResponse?.ok) {
       const game: Game = await gameResponse.json();
-      console.log(`New trainig game created: ${game.id}`);
+      await router.push(`/games/${game.id}`);
     }
   };
 

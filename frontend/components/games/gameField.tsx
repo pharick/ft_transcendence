@@ -118,6 +118,7 @@ const GameField: FC<PongProps> = ({ game }) => {
 
   useEffect(() => {
     socket.auth = { token: localStorage.getItem('token'), gameId: game.id };
+    socket.connect();
 
     socket.on('connect', () => {
       setIsConnected(true);
@@ -139,8 +140,6 @@ const GameField: FC<PongProps> = ({ game }) => {
       if (!completedGame) await router.push('/');
       else await router.push(`/completed/${completedGame.id}`);
     });
-
-    socket.connect();
 
     return () => {
       socket.off('connect');

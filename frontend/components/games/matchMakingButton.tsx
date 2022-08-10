@@ -8,6 +8,7 @@ import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider
 import { fetchWithHandleErrors } from '../../utils';
 import Image from 'next/image';
 import gameImage from '../../images/ranked_game.svg';
+import ReadyGameBlock from '../notifications/readyGameBlock';
 
 const Modal = dynamic(() => import('../../components/layout/modal'), {
   ssr: false,
@@ -31,18 +32,17 @@ const MatchMakingButton: FC = () => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const createMatchMaking = useCallback(async () => {
-    await fetchWithHandleErrors({
+    const response = await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: '/api/matchmaking',
       method: 'PUT',
+      authRequired: true,
     });
-
+    if (!response.ok) return;
     socket.connect();
-
     socket.on('newMatch', (game: Game) => {
       setGame(game);
     });
-
     setIsOpen(true);
   }, [requestErrorHandlerContext, userContext.user]);
 
@@ -73,21 +73,7 @@ const MatchMakingButton: FC = () => {
         isCancelButtonDisabled={Boolean(game)}
         title={game ? 'Opponent founded' : 'Searching for an opponent...'}
       >
-        {game ? (
-          <div className="modal-body-button-play">
-            <p>
-              Game created: <b>{game.player1.username}</b> vs.{' '}
-              <b>{game.player2.username}</b>
-            </p>
-            <p>
-              <Link href={`/games/${game.id}`}>
-                <a className="button">Play</a>
-              </Link>
-            </p>
-          </div>
-        ) : (
-          <div className="loader" />
-        )}
+        {game ? <ReadyGameBlock game={game} /> : <div className="loader" />}
       </Modal>
     </>
   );

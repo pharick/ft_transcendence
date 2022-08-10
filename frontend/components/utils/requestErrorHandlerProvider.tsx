@@ -75,7 +75,9 @@ const RequestErrorHandlerProvider: FC<RequestErrorHandlerProviderProps> = ({
         cancelButtonHandler={closeHandler}
       >
         {result == RequestResult.Unauthorized ? (
-          <></>
+          <>
+            <p>You must be authenticated to play. Sorry...</p>
+          </>
         ) : (
           <>
             <p>
