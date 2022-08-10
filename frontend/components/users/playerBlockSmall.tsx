@@ -7,9 +7,13 @@ import styles from '../../styles/UserBlockSmall.module.css';
 
 interface PlayerBlockSmallProps {
   user: Player;
+  showUsername?: boolean;
 }
 
-const PlayerBlockSmall: FC<PlayerBlockSmallProps> = ({ user }) => {
+const PlayerBlockSmall: FC<PlayerBlockSmallProps> = ({
+  user,
+  showUsername,
+}) => {
   const userContext = useContext(UserContext);
   const defaultAvatarUrl = 'static/avatars/default.png';
 
@@ -18,16 +22,18 @@ const PlayerBlockSmall: FC<PlayerBlockSmallProps> = ({ user }) => {
       <div className={styles.avatar}>
         <Image
           src={`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/${
-            user.avatar || defaultAvatarUrl
+            user?.avatar || defaultAvatarUrl
           }`}
           width={50}
           height={50}
-          alt={user.username}
+          alt={user?.username || 'Anonymous'}
         />
       </div>
-      <p className={styles.username}>{`${user.username}${
-        userContext.user?.id == user.id ? ' (you)' : ''
-      }`}</p>
+      {(showUsername || showUsername == undefined) && (
+        <p className={styles.username}>{`${user?.username || 'Anonymous'}${
+          user && userContext.user?.id == user?.id ? ' (you)' : ''
+        }`}</p>
+      )}
     </article>
   );
 };

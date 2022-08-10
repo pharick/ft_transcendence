@@ -1,0 +1,12 @@
+.watcherList {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    height: 50px;
+}
+
+.item {
+    width: 40px;
+    z-index: 200;
+    display: flex;
+}

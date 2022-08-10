@@ -13,6 +13,7 @@ import { useRouter } from 'next/router';
 import PlayerBlockSmall from '../users/playerBlockSmall';
 
 import styles from '../../styles/GameField.module.css';
+import WatcherList from './watcherList';
 
 const socket = io(
   `${
@@ -244,14 +245,7 @@ const GameField: FC<PongProps> = ({ game }) => {
       </div>
 
       <div className="col">
-        <h2>Watch game</h2>
-        <ul>
-          {watchers.map((user) => (
-            <li>
-              <PlayerBlockSmall user={user} />
-            </li>
-          ))}
-        </ul>
+        <WatcherList watchers={watchers} />
       </div>
     </div>
   );
