@@ -24,8 +24,6 @@ export class MatchMakingService {
     const user = await this.usersService.findOne(userId);
     if (!this.rankedQueue[user.rank]) this.rankedQueue[user.rank] = new Set();
     this.rankedQueue[user.rank].add(userId);
-    console.log(`rankQueue is`);
-    console.log(this.rankedQueue);
   }
 
   private async createGame(
@@ -33,8 +31,12 @@ export class MatchMakingService {
     player2Id: number,
   ): Promise<void> {
     const game = await this.gamesService.create(true, player1Id, player2Id);
-    console.log(game);
-    this.matchMakingGateway.server.emit('newMatch', game);
+    this.matchMakingGateway.server
+      .to(`user-${game.player1.id}`)
+      .emit('newMatch', game);
+    this.matchMakingGateway.server
+      .to(`user-${game.player2.id}`)
+      .emit('newMatch', game);
   }
 
   private async matchPlayers() {

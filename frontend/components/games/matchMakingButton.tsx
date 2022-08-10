@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useContext, useState } from 'react';
-import Link from 'next/link';
 import { io } from 'socket.io-client';
 import { Game } from '../../types/interfaces';
 import dynamic from 'next/dynamic';
@@ -39,6 +38,7 @@ const MatchMakingButton: FC = () => {
       authRequired: true,
     });
     if (!response.ok) return;
+    socket.auth = { token: localStorage.getItem('token') };
     socket.connect();
     socket.on('newMatch', (game: Game) => {
       setGame(game);
