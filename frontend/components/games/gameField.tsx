@@ -246,7 +246,15 @@ const GameField: FC<PongProps> = ({ game }) => {
 
       <div className="col">
         <div className={styles.rules}>
-          <h2 className="m-0">Controls</h2>
+          <h2 className="m-0">Controls and rules</h2>
+          <ul className={styles.rulesList}>
+            <li>
+              <span className="key-label">W</span> — club up,{' '}
+              <span className="key-label">S</span> — club down
+            </li>
+            <li></li>
+            <li>Play up to 11 points</li>
+          </ul>
         </div>
         <WatcherList watchers={watchers} />
       </div>

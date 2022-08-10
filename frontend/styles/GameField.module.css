@@ -69,3 +69,9 @@
     padding: 20px;
     margin: 5px;
 }
+
+.rulesList {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0;
+}
