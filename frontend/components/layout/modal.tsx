@@ -1,6 +1,8 @@
 import React, { FC, ReactNode } from 'react';
 import useKeyboardEventListener from '../../hooks/use_event_listener';
 
+import styles from '../../styles/Modal.module.css';
+
 interface ModalProps {
   isOpen: boolean;
   children?: ReactNode;
@@ -34,13 +36,13 @@ const Modal: FC<ModalProps> = ({
 
   if (isOpen) {
     return (
-      <div className="modal">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h4 className="modal-title">{title}</h4>
+      <div className={styles.dimmer}>
+        <div className={styles.content}>
+          <div className={styles.header}>
+            <h4 className={styles.title}>{title}</h4>
           </div>
-          <div className="modal-body">{children}</div>
-          <div className="modal-footer">
+          <div className={styles.body}>{children}</div>
+          <div className={styles.footer}>
             <button
               onClick={cancelButtonHandler}
               className="error-button"

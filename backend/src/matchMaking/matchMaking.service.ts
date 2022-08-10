@@ -84,7 +84,7 @@ export class MatchMakingService {
 
     if (deltas.length <= 0) return;
 
-    const [matchedRank, delta] = deltas.reduce((prev, current) => {
+    const [matchedRank] = deltas.reduce((prev, current) => {
       if (!prev) return current;
       const [, currentDelta] = current;
       const [, prevDelta] = prev;

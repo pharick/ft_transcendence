@@ -62,3 +62,10 @@
     width: 100%;
     top: 40%;
 }
+
+.rules {
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 20px;
+    margin: 5px;
+}

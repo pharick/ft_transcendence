@@ -1,8 +1,20 @@
+.watcherListSection {
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 20px;
+    margin: 5px;
+}
+
+.watcherListSection p {
+    margin: 0 0 0.5em 0;
+}
+
 .watcherList {
     display: flex;
     list-style: none;
     padding: 0;
     height: 50px;
+    margin: 0;
 }
 
 .item {

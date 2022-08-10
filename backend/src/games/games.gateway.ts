@@ -5,7 +5,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Namespace, Socket } from 'socket.io';
 
 import { Logger } from '@nestjs/common';
 
@@ -27,7 +27,7 @@ enum GameUserType {
 })
 export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
-  server: Server;
+  server: Namespace;
 
   private logger: Logger = new Logger('GamesGateway');
   private readonly frame_delta: number = 40;
@@ -53,8 +53,6 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (user && userType != GameUserType.Watcher) {
         client.join(`user-${user.id}`);
-      } else {
-        await this.sendWatchers(client, gameId);
       }
 
       this.logger.log(
@@ -80,22 +78,23 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
       gameId,
       setInterval(() => {
         this.sendNextFrame(gameId).then();
+        this.sendWatchers(gameId).then();
       }, this.frame_delta),
     );
   }
 
-  private async sendWatchers(client: Socket, gameId: string) {
-    const clientIds = client.nsp.adapter.rooms.get(
+  private async sendWatchers(gameId: string) {
+    const clientIds = this.server.adapter.rooms.get(
       `${gameId}-${GameUserType.Watcher}`,
     );
     if (!clientIds) return;
     const watchers = await Promise.all(
       Array.from(clientIds.values()).map((clientId) => {
-        const { token } = client.nsp.sockets.get(clientId).handshake.auth;
+        const { token } = this.server.sockets.get(clientId).handshake.auth;
         return this.authService.getUser(token);
       }),
     );
-    client.to(gameId).emit('sendWatchers', watchers);
+    this.server.to(gameId).emit('sendWatchers', watchers);
   }
 
   private async sendNextFrame(gameId: string) {

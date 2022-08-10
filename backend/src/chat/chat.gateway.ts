@@ -6,7 +6,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
-import { Server, Socket } from 'socket.io';
+import { Namespace, Socket } from 'socket.io';
 import { ChatMessageDto } from './chatMessage.dto';
 import { ChatMessagesService } from './chatMessages.service';
 import { ChatRoomDto } from './charRoom.dto';
@@ -14,7 +14,7 @@ import { ChatRoomDto } from './charRoom.dto';
 @WebSocketGateway({ namespace: 'chat', cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
-  server: Server;
+  server: Namespace;
 
   private logger: Logger = new Logger('ChatGateway');
 

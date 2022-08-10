@@ -4,12 +4,9 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Namespace, Socket } from 'socket.io';
 import { AuthService } from '../auth/auth.service';
 import { User } from '../users/user.entity';
-import { GamesService } from '../games/games.service';
-import { Notifications } from './notifications.interface';
-import { PendingGamesService } from '../pendingGames/pendingGames.service';
 import { forwardRef, Inject, Logger } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 
@@ -20,7 +17,7 @@ export class NotificationsGateway
   private logger: Logger = new Logger('NotificationsGateway');
 
   @WebSocketServer()
-  server: Server;
+  server: Namespace;
 
   constructor(
     private authService: AuthService,

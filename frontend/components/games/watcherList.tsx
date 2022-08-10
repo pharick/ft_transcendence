@@ -10,7 +10,7 @@ interface WatcherListProps {
 
 const WatcherList: FC<WatcherListProps> = ({ watchers }) => {
   return (
-    <section>
+    <section className={styles.watcherListSection}>
       <p>{watchers.length} users watching game</p>
       <ul className={styles.watcherList}>
         {watchers.map((user) => (

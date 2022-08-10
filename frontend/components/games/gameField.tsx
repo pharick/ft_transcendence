@@ -118,7 +118,6 @@ const GameField: FC<PongProps> = ({ game }) => {
 
   useEffect(() => {
     socket.auth = { token: localStorage.getItem('token'), gameId: game.id };
-    socket.connect();
 
     socket.on('connect', () => {
       setIsConnected(true);
@@ -140,6 +139,8 @@ const GameField: FC<PongProps> = ({ game }) => {
       if (!completedGame) await router.push('/');
       else await router.push(`/completed/${completedGame.id}`);
     });
+
+    socket.connect();
 
     return () => {
       socket.off('connect');
@@ -204,7 +205,7 @@ const GameField: FC<PongProps> = ({ game }) => {
   else pauseMessage = 'Waiting for opponent';
 
   return (
-    <div className="row">
+    <div className="row justify-content-center">
       <div className="col-auto">
         <div className={styles.fieldWrapper}>
           {isPaused && <p className={styles.pauseMessage}>{pauseMessage}</p>}
@@ -245,6 +246,9 @@ const GameField: FC<PongProps> = ({ game }) => {
       </div>
 
       <div className="col">
+        <div className={styles.rules}>
+          <h2 className="m-0">Controls</h2>
+        </div>
         <WatcherList watchers={watchers} />
       </div>
     </div>
