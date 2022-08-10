@@ -2,7 +2,7 @@ import React, { FC, useContext } from 'react';
 import { Game } from '../../types/interfaces';
 import Link from 'next/link';
 import { UserContext } from '../users/userProvider';
-import UserBlockSmall from '../users/userBlockSmall';
+import PlayerBlockSmall from '../users/playerBlockSmall';
 
 import styles from '../../styles/GameList.module.css';
 
@@ -22,11 +22,11 @@ const GameList: FC<GameListProps> = ({ games }) => {
               <article className={styles.gameCard}>
                 <div className={styles.scores}>
                   <div className={styles.part}>
-                    <UserBlockSmall user={game.player1} />
+                    <PlayerBlockSmall user={game.player1} />
                     <p className={styles.score}>{game.score1}</p>
                   </div>
                   <div className={styles.part}>
-                    <UserBlockSmall user={game.player2} />
+                    <PlayerBlockSmall user={game.player2} />
                     <p className={styles.score}>{game.score2}</p>
                   </div>
                 </div>

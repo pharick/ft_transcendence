@@ -32,7 +32,7 @@ const PendingGameBlock: FC<PendingGameBlockProps> = ({ game }) => {
 
   if (game.player1.id == userContext.user?.id) {
     return (
-      <article className="notification-block">
+      <article className={styles.block}>
         <p>
           Waiting for <b>{game.player2.username}</b>
         </p>

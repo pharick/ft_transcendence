@@ -7,12 +7,20 @@ export interface User {
   prevRank: number;
 }
 
+export interface Player {
+  id: number;
+  username: string;
+  avatar: string;
+  rank?: number;
+  prevRank?: number;
+}
+
 export interface Game {
   id: string;
   fieldWidth: number;
   fieldHeight: number;
-  player1: User;
-  player2: User;
+  player1: Player;
+  player2: Player;
   score1: number;
   score2: number;
   durationMs: number;

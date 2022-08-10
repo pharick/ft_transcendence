@@ -29,15 +29,14 @@ const CompletedGamePage: NextPage<CompletedGamePageProps> = ({
     <>
       <Head>
         <title>
-          {' '}
           Game {completedGameInfo.player1.username} vs.{' '}
-          {completedGameInfo.player2?.username || 'Mr.Wall'} is completed
+          {completedGameInfo.player2.username} is completed
         </title>
       </Head>
 
       <h1 className="text-center">
         Game <b>{completedGameInfo.player1.username}</b> vs.{' '}
-        <b>{completedGameInfo.player2?.username || 'Mr.Wall'}</b> is completed
+        <b>{completedGameInfo.player2.username}</b> is completed
       </h1>
 
       <div className={styles.scores}>

@@ -361,12 +361,13 @@ export class GamesService {
       player1: await this.usersService.findOne(gameProcessor.player1Id),
       player2: gameProcessor.player2Id
         ? await this.usersService.findOne(gameProcessor.player2Id)
-        : undefined,
+        : { id: 0, username: 'Mr.Wall', avatar: undefined },
       score1: gameProcessor.score1,
       score2: gameProcessor.score2,
       durationMs: gameProcessor.durationMs,
       isPlayer1Turn: gameProcessor.isPlayer1Turn,
       isRanked: gameProcessor.isRanked,
+      isTraining: gameProcessor.isTraining,
     };
   }
 
@@ -377,15 +378,21 @@ export class GamesService {
   async endGame(gameId: string): Promise<CompletedGame> {
     const game = await this.findOne(gameId);
     if (!game) return;
+
+    this.gameProcessors.delete(game.id);
+    await this.notificationsService.send(game.player1.id);
+    await this.notificationsService.send(game.player2?.id);
+
+    if (game.isTraining) return undefined;
+
     const completedGame: CompletedGameDto = {
       score1: game.score1,
       score2: game.score2,
       duration: Math.round(game.durationMs / 1000),
-      player1: game.player1,
-      player2: game.player2,
+      player1: await this.usersService.findOne(game.player1.id),
+      player2: await this.usersService.findOne(game.player2.id),
       isRanked: game.isRanked,
     };
-    this.gameProcessors.delete(game.id);
 
     if (game.isRanked) {
       await this.usersService.updateRank(
@@ -397,8 +404,7 @@ export class GamesService {
         game.score2 - game.score1,
       );
     }
-    await this.notificationsService.send(game.player1.id);
-    await this.notificationsService.send(game.player2?.id);
+
     return await this.completedGamesService.create(completedGame);
   }
 

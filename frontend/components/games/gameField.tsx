@@ -10,7 +10,7 @@ import {
   ResumeGameDto,
 } from '../../types/dtos';
 import { useRouter } from 'next/router';
-import UserBlockSmall from '../users/userBlockSmall';
+import PlayerBlockSmall from '../users/playerBlockSmall';
 
 import styles from '../../styles/GameField.module.css';
 
@@ -136,7 +136,8 @@ const GameField: FC<PongProps> = ({ game }) => {
     });
 
     socket.on('endGame', async (completedGame: CompletedGame) => {
-      await router.push(`/completed/${completedGame.id}`);
+      if (!completedGame) await router.push('/');
+      else await router.push(`/completed/${completedGame.id}`);
     });
 
     return () => {
@@ -151,8 +152,8 @@ const GameField: FC<PongProps> = ({ game }) => {
 
   const keyDownHandler = (e: KeyboardEvent) => {
     if (
-      game.player1?.id != userContext.user?.id &&
-      game.player2?.id != userContext.user?.id
+      game.player1.id != userContext.user?.id &&
+      game.player2.id != userContext.user?.id
     )
       return;
 
@@ -170,8 +171,8 @@ const GameField: FC<PongProps> = ({ game }) => {
 
   const keyUpHandler = (e: KeyboardEvent) => {
     if (
-      game.player1?.id != userContext.user?.id &&
-      game.player2?.id != userContext.user?.id
+      game.player1.id != userContext.user?.id &&
+      game.player2.id != userContext.user?.id
     )
       return;
 
@@ -191,12 +192,12 @@ const GameField: FC<PongProps> = ({ game }) => {
   let pauseMessage;
   if (
     game.player1.id != userContext.user?.id &&
-    (!game.player2 || game.player2.id != userContext.user?.id)
+    game.player2.id != userContext.user?.id
   )
     pauseMessage = 'Waiting for the serve';
   else if (
-    (game.player1.id == userContext.user?.id && player1Turn) ||
-    (game.player2?.id == userContext.user?.id && !player1Turn)
+    (player1Turn && game.player1.id == userContext.user?.id) ||
+    (!player1Turn && game.player2.id == userContext.user?.id)
   )
     pauseMessage = 'Press SPACE to continue';
   else pauseMessage = 'Waiting for opponent';
@@ -230,14 +231,14 @@ const GameField: FC<PongProps> = ({ game }) => {
               player1Turn ? styles.playersPartCurrent : ''
             }`}
           >
-            <UserBlockSmall user={game.player1} />
+            <PlayerBlockSmall user={game.player1} />
           </div>
           <div
             className={`${styles.playersPart} ${
               !player1Turn ? styles.playersPartCurrent : ''
             }`}
           >
-            <UserBlockSmall user={game.player2} />
+            <PlayerBlockSmall user={game.player2} />
           </div>
         </div>
       </div>
@@ -247,7 +248,7 @@ const GameField: FC<PongProps> = ({ game }) => {
         <ul>
           {watchers.map((user) => (
             <li>
-              <UserBlockSmall user={user} />
+              <PlayerBlockSmall user={user} />
             </li>
           ))}
         </ul>

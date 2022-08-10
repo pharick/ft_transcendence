@@ -24,19 +24,14 @@ const CompletedGameList: FC<CompletedGameListProps> = ({ games }) => {
                     'dd.MM.yyyy H:mm:ss',
                   )}
                 </div>
-
                 <div className={styles.cardPart}>
                   <p className={styles.user}>{game.player1.username}</p>
                   <p className={styles.scores}>
                     {game.score1} — {game.score2}
                   </p>
-                  <p className={styles.user}>
-                    {game.player2 ? game.player2.username : 'Mr.Wall'}
-                  </p>
+                  <p className={styles.user}>{game.player2.username}</p>
                 </div>
-
                 <div className={styles.cardPart}>{game.duration}s</div>
-
                 <div className={styles.cardPart}>
                   <b>{game.isRanked ? 'Ranked' : 'Not Ranked'}</b>
                 </div>
