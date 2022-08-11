@@ -6,30 +6,30 @@ import {
 } from '@nestjs/websockets';
 import { Namespace, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
-import { User } from '../users/user.entity';
 import { AuthService } from '../auth/auth.service';
+import { User } from '../users/user.entity';
 
-@WebSocketGateway({ namespace: 'matchmaking', cors: true })
-export class MatchMakingGateway
+@WebSocketGateway({ namespace: 'status', cors: true })
+export class UserStatusGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer()
   server: Namespace;
 
-  private logger: Logger = new Logger('MatchMakingGateway');
+  private logger: Logger = new Logger('UserStatusGateway');
 
   constructor(private authService: AuthService) {}
 
   async handleConnection(client: Socket) {
     const { token } = client.handshake.auth;
     const user: User = await this.authService.getUser(token);
-    client.join(`user-${user?.id}`);
+    if (user) client.join(`user-${user.id}`);
     this.logger.log(
-      `MatchMaking client connected: ${client.id} (user ${user?.id})`,
+      `UserStatus client connected: ${client.id} (user ${user?.id})`,
     );
   }
 
   handleDisconnect(client: Socket) {
-    this.logger.log(`MatchMaking client disconnected: ${client.id}`);
+    this.logger.log(`UserStatus client disconnected: ${client.id}`);
   }
 }

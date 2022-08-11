@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Logger,
   NotFoundException,
   Param,
   Put,
@@ -15,8 +14,6 @@ import { Game } from './games.interfaces';
 
 @Controller('games')
 export class GamesController {
-  private logger: Logger = new Logger('GamesController');
-
   constructor(private gamesService: GamesService) {}
 
   @Put()

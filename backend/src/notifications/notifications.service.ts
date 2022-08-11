@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { NotificationsGateway } from './notifications.gateway';
 import { Notifications } from './notifications.interface';
 import { GamesService } from '../games/games.service';
@@ -6,8 +6,6 @@ import { PendingGamesService } from '../pendingGames/pendingGames.service';
 
 @Injectable()
 export class NotificationsService {
-  private logger: Logger = new Logger('NotificationsService');
-
   constructor(
     private notificationsGateway: NotificationsGateway,
     @Inject(forwardRef(() => GamesService))

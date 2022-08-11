@@ -12,6 +12,7 @@ import { PendingGame } from './pendingGames/pendingGame.entity';
 import { MatchMakingModule } from './matchMaking/matchMaking.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { UserStatusModule } from './userStatus/userStatus.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { join } from 'path';
     AuthModule,
     UsersModule,
     GamesModule,
+    UserStatusModule,
     CompletedGamesModule,
     PendingGamesModule,
     MatchMakingModule,

@@ -11,10 +11,22 @@ import {
 import { User } from '../../types/interfaces';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 import { fetchWithHandleErrors } from '../../utils';
+import { io } from 'socket.io-client';
 
 interface UserProviderProps {
   children?: ReactNode;
 }
+
+const socket = io(
+  `${
+    process.env.NODE_ENV == 'development'
+      ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+      : ''
+  }/status`,
+  {
+    autoConnect: false,
+  },
+);
 
 interface UserContextInterface {
   user?: User;
@@ -57,6 +69,13 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
 
   useEffect(() => {
     getUser().then();
+
+    socket.auth = { token: localStorage.getItem('token') };
+    socket.connect();
+
+    return () => {
+      socket.disconnect();
+    };
   }, [getUser]);
 
   const value = useMemo(

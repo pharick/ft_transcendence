@@ -1,12 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GamesService } from '../games/games.service';
 import { UsersService } from '../users/users.service';
 import { MatchMakingGateway } from './matchMaking.gateway';
 
 @Injectable()
 export class MatchMakingService {
-  private logger: Logger = new Logger('MatchMakingService');
-
   private readonly matchMakingDelta = 5000;
   private rankedQueue: Record<number, Set<number>> = {};
 

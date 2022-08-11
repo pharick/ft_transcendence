@@ -19,6 +19,6 @@ import { NotificationsModule } from '../notifications/notifications.module';
   ],
   providers: [GamesService, GamesGateway],
   controllers: [GamesController],
-  exports: [GamesService],
+  exports: [GamesService, GamesGateway],
 })
 export class GamesModule {}

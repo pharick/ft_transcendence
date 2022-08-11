@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
 import { UsersService } from '../users/users.service';
@@ -7,8 +7,6 @@ import { User } from '../users/user.entity';
 
 @Injectable()
 export class AuthService {
-  private logger: Logger = new Logger('AuthService');
-
   constructor(
     private jwtService: JwtService,
     private userService: UsersService,

@@ -34,6 +34,36 @@
     text-decoration: underline;
     text-decoration-color: dodgerblue;
     font-size: 1.8em;
-    margin: 0;
+    margin: 0 0 5px 0;
     text-align: center;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+}
+
+.status p {
+    margin: 0;
+}
+
+.statusCircle {
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+    border-radius: 50%;
+}
+
+.online {
+    background-color: lightgreen;
+}
+
+.offline {
+    background-color: gray;
+}
+
+.inGame {
+    background-color: orange;
 }

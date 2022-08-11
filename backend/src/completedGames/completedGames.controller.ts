@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Logger,
   NotFoundException,
   Param,
   ParseIntPipe,
@@ -13,8 +12,6 @@ import { UsersService } from '../users/users.service';
 
 @Controller('completed')
 export class CompletedGamesController {
-  private logger: Logger = new Logger('CompletedGamesController');
-
   constructor(
     private completedGamesService: CompletedGamesService,
     private usersService: UsersService,

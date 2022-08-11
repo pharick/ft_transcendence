@@ -1,11 +1,9 @@
-import { Controller, Get, Logger, Req, UseGuards } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { Ecole42AuthGuard } from './guards/ecole42-auth.guard';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  private logger: Logger = new Logger('AuthController');
-
   constructor(private authService: AuthService) {}
 
   @UseGuards(Ecole42AuthGuard)

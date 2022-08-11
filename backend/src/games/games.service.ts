@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GameFrame } from './games.interfaces';
 import { Game } from './games.interfaces';
 import { UsersService } from '../users/users.service';
@@ -307,7 +307,6 @@ class GameProcessor {
 
 @Injectable()
 export class GamesService {
-  private logger = new Logger('GamesService');
   private gameProcessors = new Map<string, GameProcessor>();
 
   constructor(

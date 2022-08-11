@@ -4,7 +4,6 @@ import {
   FileTypeValidator,
   ForbiddenException,
   Get,
-  Logger,
   MaxFileSizeValidator,
   NotFoundException,
   Param,
@@ -35,8 +34,6 @@ const storage = diskStorage({
 
 @Controller('users')
 export class UsersController {
-  private logger: Logger = new Logger('UsersController');
-
   constructor(private usersService: UsersService) {}
 
   @Get()
