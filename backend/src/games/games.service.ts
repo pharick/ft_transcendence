@@ -277,8 +277,10 @@ class GameProcessor {
       this._gameTimer &&
       (this._status == GameStatus.Player1Serve ||
         this._status == GameStatus.Player2Serve)
-    )
+    ) {
       this._ballSpeed = this._startingBallSpeed;
+      this._status = GameStatus.OnGame;
+    }
   }
 
   resumeGame() {
