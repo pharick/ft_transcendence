@@ -2,7 +2,6 @@ import {
   createContext,
   FC,
   ReactNode,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -45,7 +44,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
     localStorage.clear();
   };
 
-  const getUser = useCallback(async () => {
+  const getUser = async () => {
     const userResponse = await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: '/api/users/me',
@@ -54,11 +53,13 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
       const user = await userResponse?.json();
       setUser(user);
     }
-  }, []);
+  };
 
   useEffect(() => {
     getUser().then();
+  }, []);
 
+  useEffect(() => {
     const statusSocket = io(
       `${
         process.env.NODE_ENV == 'development'
@@ -73,7 +74,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
     return () => {
       statusSocket.disconnect();
     };
-  }, []);
+  }, [user]);
 
   const value = useMemo(
     () => ({
