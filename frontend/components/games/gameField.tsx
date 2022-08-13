@@ -1,9 +1,14 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 import useKeyboardEventListener from '../../hooks/use_event_listener';
 import { UserContext } from '../users/userProvider';
-import { CompletedGame, Game, GameFrame, User } from '../../types/interfaces';
+import {
+  CompletedGame,
+  Game,
+  GameClients,
+  GameFrame,
+} from '../../types/interfaces';
 import {
   MoveClubStartDto,
   MoveClubStopDto,
@@ -15,29 +20,22 @@ import PlayerBlockSmall from '../users/playerBlockSmall';
 import styles from '../../styles/GameField.module.css';
 import WatcherList from './watcherList';
 
-const socket = io(
-  `${
-    process.env.NODE_ENV == 'development'
-      ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
-      : ''
-  }/game`,
-  {
-    autoConnect: false,
-  },
-);
-
 interface PongProps {
   game: Game;
 }
 
 const GameField: FC<PongProps> = ({ game }) => {
-  const [isConnected, setIsConnected] = useState(false);
+  const [socket, setSocket] = useState<Socket>();
   const [isPaused, setIsPaused] = useState(true);
   const [score1, setScore1] = useState(0);
   const [score2, setScore2] = useState(0);
   const [player1Turn, setPlayer1Turn] = useState(false);
   const [duration, setDuration] = useState(0);
-  const [watchers, setWatchers] = useState<User[]>([]);
+  const [clients, setClients] = useState<GameClients>({
+    watchers: [],
+    player1online: false,
+    player2online: false,
+  });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const userContext = useContext(UserContext);
@@ -117,23 +115,23 @@ const GameField: FC<PongProps> = ({ game }) => {
   };
 
   useEffect(() => {
-    socket.auth = { token: localStorage.getItem('token'), gameId: game.id };
-    socket.connect();
-
-    socket.on('connect', () => {
-      setIsConnected(true);
-    });
-
-    socket.on('disconnect', () => {
-      setIsConnected(false);
-    });
+    const socket = io(
+      `${
+        process.env.NODE_ENV == 'development'
+          ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+          : ''
+      }/game`,
+      {
+        auth: { token: localStorage.getItem('token'), gameId: game.id },
+      },
+    );
 
     socket.on('nextFrame', (frame: GameFrame) => {
       renderField(frame);
     });
 
-    socket.on('sendWatchers', (newWatchers: User[]) => {
-      setWatchers(newWatchers);
+    socket.on('sendClients', (newClients: GameClients) => {
+      setClients(newClients);
     });
 
     socket.on('endGame', async (completedGame: CompletedGame) => {
@@ -141,15 +139,17 @@ const GameField: FC<PongProps> = ({ game }) => {
       else await router.push(`/completed/${completedGame.id}`);
     });
 
+    setSocket(socket);
+
     return () => {
       socket.off('connect');
       socket.off('disconnect');
       socket.off('nextFrame');
-      socket.off('sendWatchers');
+      socket.off('sendClients');
       socket.off('endGame');
       socket.disconnect();
     };
-  }, [game.id]);
+  }, []);
 
   const keyDownHandler = (e: KeyboardEvent) => {
     if (
@@ -212,12 +212,20 @@ const GameField: FC<PongProps> = ({ game }) => {
           <p className={`${styles.score} ${styles.score1}`}>{score1}</p>
           <p className={`${styles.score} ${styles.score2}`}>{score2}</p>
 
-          {!isConnected && (
+          {socket && !socket.connected && (
             <div className={styles.gameLoader}>
               <div className="loader"></div>
               <p className="loader-message">Load game...</p>
             </div>
           )}
+
+          {!game.isTraining &&
+            (!clients.player1online || !clients.player2online) && (
+              <div className={styles.gameLoader}>
+                <div className="loader"></div>
+                <p className="loader-message">Opponent offline...</p>
+              </div>
+            )}
 
           <canvas
             width={game.fieldWidth}
@@ -256,7 +264,7 @@ const GameField: FC<PongProps> = ({ game }) => {
             <li>Play up to 11 points</li>
           </ul>
         </div>
-        <WatcherList watchers={watchers} />
+        <WatcherList watchers={clients.watchers} />
       </div>
     </div>
   );

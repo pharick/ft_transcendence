@@ -36,3 +36,9 @@ export interface GameFrame {
   durationMs: number;
   isCompleted: boolean;
 }
+
+export interface GameClients {
+  watchers: Player[];
+  player1online: boolean;
+  player2online: boolean;
+}

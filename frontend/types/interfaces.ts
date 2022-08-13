@@ -25,6 +25,7 @@ export interface Game {
   score2: number;
   durationMs: number;
   isRanked: boolean;
+  isTraining: boolean;
 }
 
 export interface GameFrame {
@@ -42,6 +43,12 @@ export interface GameFrame {
   isPlayer1Turn: boolean;
   durationMs: number;
   isCompleted: boolean;
+}
+
+export interface GameClients {
+  watchers: Player[];
+  player1online: boolean;
+  player2online: boolean;
 }
 
 export interface CompletedGame {

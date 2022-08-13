@@ -17,17 +17,6 @@ interface UserProviderProps {
   children?: ReactNode;
 }
 
-const socket = io(
-  `${
-    process.env.NODE_ENV == 'development'
-      ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
-      : ''
-  }/status`,
-  {
-    autoConnect: false,
-  },
-);
-
 interface UserContextInterface {
   user?: User;
   handleLogin?: (code: string, params: URLSearchParams) => void;
@@ -70,13 +59,21 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
   useEffect(() => {
     getUser().then();
 
-    socket.auth = { token: localStorage.getItem('token') };
-    socket.connect();
+    const statusSocket = io(
+      `${
+        process.env.NODE_ENV == 'development'
+          ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+          : ''
+      }/status`,
+      {
+        auth: { token: localStorage.getItem('token') },
+      },
+    );
 
     return () => {
-      socket.disconnect();
+      statusSocket.disconnect();
     };
-  }, [getUser]);
+  }, []);
 
   const value = useMemo(
     () => ({

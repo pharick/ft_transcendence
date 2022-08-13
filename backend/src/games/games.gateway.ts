@@ -10,7 +10,7 @@ import { Namespace, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 
 import { GamesService } from './games.service';
-import { Game, GameFrame } from './games.interfaces';
+import { Game, GameClients, GameFrame } from './games.interfaces';
 import { User } from '../users/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { MoveClubStartDto, MoveClubStopDto, ResumeGameDto } from './games.dtos';
@@ -30,7 +30,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Namespace;
 
   private logger: Logger = new Logger('GamesGateway');
-  private readonly frame_delta: number = 40;
+  private readonly frame_delta: number = 128;
   private timers = new Map<string, NodeJS.Timer>();
 
   constructor(
@@ -63,7 +63,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     this.logger.log(`Game client ${client.id} disconnected`);
   }
 
@@ -78,23 +78,34 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
       gameId,
       setInterval(() => {
         this.sendNextFrame(gameId).then();
-        this.sendWatchers(gameId).then();
+        this.sendClients(gameId).then();
       }, this.frame_delta),
     );
   }
 
-  private async sendWatchers(gameId: string) {
-    const clientIds = this.server.adapter.rooms.get(
+  private async sendClients(gameId: string) {
+    let clientIds = this.server.adapter.rooms.get(
       `${gameId}-${GameUserType.Watcher}`,
     );
-    if (!clientIds) return;
+    if (!clientIds) clientIds = new Set();
     const watchers = await Promise.all(
       Array.from(clientIds.values()).map((clientId) => {
-        const { token } = this.server.sockets.get(clientId).handshake.auth;
+        const client = this.server.sockets.get(clientId);
+        if (!client) return undefined;
+        const { token } = client.handshake.auth;
         return this.authService.getUser(token);
       }),
     );
-    this.server.to(gameId).emit('sendWatchers', watchers);
+    const clients: GameClients = {
+      watchers,
+      player1online: this.server.adapter.rooms.has(
+        `${gameId}-${GameUserType.Player1}`,
+      ),
+      player2online: this.server.adapter.rooms.has(
+        `${gameId}-${GameUserType.Player2}`,
+      ),
+    };
+    this.server.to(gameId).emit('sendClients', clients);
   }
 
   private async sendNextFrame(gameId: string) {

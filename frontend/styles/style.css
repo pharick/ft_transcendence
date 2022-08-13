@@ -112,7 +112,6 @@ input[type=text] {
     border: 2px solid rgb(189, 215, 255);
     padding: 0.5em 1em;
     border-radius: 0.5em;
-    width: 100%;
     box-shadow: 1px 1px 5px 1px #cccccc;
 }
 

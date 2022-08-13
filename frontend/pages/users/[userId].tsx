@@ -34,7 +34,7 @@ const UserPage: NextPage<UserPageProps> = ({ user, completedGames }) => {
   return (
     <>
       <Head>
-        <title>Player {user.username}</title>
+        <title>{`Player ${user.username}`}</title>
       </Head>
 
       <div className="row">
