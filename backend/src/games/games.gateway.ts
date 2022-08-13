@@ -10,7 +10,7 @@ import { Namespace, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 
 import { GamesService } from './games.service';
-import { Game, GameClients, GameFrame } from './games.interfaces';
+import { Game, GameClients, GameFrame, GameStatus } from './games.interfaces';
 import { User } from '../users/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { MoveClubStartDto, MoveClubStopDto, ResumeGameDto } from './games.dtos';
@@ -30,7 +30,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Namespace;
 
   private logger: Logger = new Logger('GamesGateway');
-  private readonly frame_delta: number = 128;
+  private readonly frame_delta: number = 64;
   private timers = new Map<string, NodeJS.Timer>();
 
   constructor(
@@ -96,14 +96,18 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return this.authService.getUser(token);
       }),
     );
+    const player1online = this.server.adapter.rooms.has(
+      `${gameId}-${GameUserType.Player1}`,
+    );
+    const player2online = this.server.adapter.rooms.has(
+      `${gameId}-${GameUserType.Player2}`,
+    );
+    if (!player1online || !player2online) this.gamesService.pauseGame(gameId);
+    else this.gamesService.resumeGame(gameId);
     const clients: GameClients = {
       watchers,
-      player1online: this.server.adapter.rooms.has(
-        `${gameId}-${GameUserType.Player1}`,
-      ),
-      player2online: this.server.adapter.rooms.has(
-        `${gameId}-${GameUserType.Player2}`,
-      ),
+      player1online,
+      player2online,
     };
     this.server.to(gameId).emit('sendClients', clients);
   }
@@ -122,18 +126,17 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  @SubscribeMessage('resume')
-  async handleResume(client: Socket, { gameId }: ResumeGameDto) {
+  @SubscribeMessage('serve')
+  async handleServe(client: Socket, { gameId }: ResumeGameDto) {
     const game: Game = await this.gamesService.findOne(gameId);
     if (!game) return;
     if (
-      (game.isPlayer1Turn &&
+      (game.status == GameStatus.Player1Serve &&
         client.rooms.has(`${gameId}-${GameUserType.Player1}`)) ||
-      (!game.isPlayer1Turn &&
+      (game.status == GameStatus.Player2Serve &&
         client.rooms.has(`${gameId}-${GameUserType.Player2}`))
     ) {
-      this.logger.log(`Client ${client.id} resumed game ${game.id}`);
-      this.gamesService.resumeGame(gameId);
+      this.gamesService.serve(gameId);
     }
   }
 

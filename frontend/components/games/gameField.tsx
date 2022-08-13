@@ -8,6 +8,7 @@ import {
   Game,
   GameClients,
   GameFrame,
+  GameStatus,
 } from '../../types/interfaces';
 import {
   MoveClubStartDto,
@@ -26,10 +27,9 @@ interface PongProps {
 
 const GameField: FC<PongProps> = ({ game }) => {
   const [socket, setSocket] = useState<Socket>();
-  const [isPaused, setIsPaused] = useState(true);
   const [score1, setScore1] = useState(0);
   const [score2, setScore2] = useState(0);
-  const [player1Turn, setPlayer1Turn] = useState(false);
+  const [status, setStatus] = useState<GameStatus>();
   const [duration, setDuration] = useState(0);
   const [clients, setClients] = useState<GameClients>({
     watchers: [],
@@ -52,12 +52,10 @@ const GameField: FC<PongProps> = ({ game }) => {
     club2Pos,
     score1,
     score2,
-    isPaused,
-    isPlayer1Turn,
+    status,
     durationMs,
   }: GameFrame) => {
-    setIsPaused(isPaused);
-    setPlayer1Turn(isPlayer1Turn);
+    setStatus(status);
     setDuration(Math.round(durationMs / 1000));
 
     const canvas = canvasRef.current;
@@ -159,8 +157,9 @@ const GameField: FC<PongProps> = ({ game }) => {
       return;
 
     if (e.code == 'Space') {
+      e.preventDefault();
       const resumeGameDto: ResumeGameDto = { gameId: game.id };
-      socket.emit('resume', resumeGameDto);
+      socket.emit('serve', resumeGameDto);
     } else if (e.code == 'KeyW' || e.code == 'KeyS') {
       const moveClubStartDto: MoveClubStartDto = {
         gameId: game.id,
@@ -190,24 +189,30 @@ const GameField: FC<PongProps> = ({ game }) => {
   );
   useKeyboardEventListener('keyup', keyUpHandler as EventListener, document);
 
-  let pauseMessage;
+  let message;
   if (
     game.player1.id != userContext.user?.id &&
     game.player2.id != userContext.user?.id
   )
-    pauseMessage = 'Waiting for the serve';
+    message =
+      status == GameStatus.Player1Serve ? 'Player 1 serve' : 'Player 2 serve';
   else if (
-    (player1Turn && game.player1.id == userContext.user?.id) ||
-    (!player1Turn && game.player2.id == userContext.user?.id)
+    (status == GameStatus.Player1Serve &&
+      game.player1.id == userContext.user?.id) ||
+    (status == GameStatus.Player2Serve &&
+      game.player2.id == userContext.user?.id)
   )
-    pauseMessage = 'Press SPACE to continue';
-  else pauseMessage = 'Waiting for opponent';
+    message = 'Press SPACE to serve';
+  else message = 'Opponent serve';
 
   return (
     <div className="row justify-content-center">
       <div className="col-auto">
         <div className={styles.fieldWrapper}>
-          {isPaused && <p className={styles.pauseMessage}>{pauseMessage}</p>}
+          {(status == GameStatus.Player1Serve ||
+            status == GameStatus.Player2Serve) && (
+            <p className={styles.message}>{message}</p>
+          )}
           <p className={styles.time}>Time: {duration}</p>
           <p className={`${styles.score} ${styles.score1}`}>{score1}</p>
           <p className={`${styles.score} ${styles.score2}`}>{score2}</p>
@@ -237,14 +242,14 @@ const GameField: FC<PongProps> = ({ game }) => {
         <div className={styles.players} style={{ width: game.fieldWidth }}>
           <div
             className={`${styles.playersPart} ${
-              player1Turn ? styles.playersPartCurrent : ''
+              status == GameStatus.Player1Serve ? styles.playersPartCurrent : ''
             }`}
           >
             <PlayerBlockSmall user={game.player1} />
           </div>
           <div
             className={`${styles.playersPart} ${
-              !player1Turn ? styles.playersPartCurrent : ''
+              status == GameStatus.Player2Serve ? styles.playersPartCurrent : ''
             }`}
           >
             <PlayerBlockSmall user={game.player2} />

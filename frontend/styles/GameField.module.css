@@ -31,7 +31,7 @@
     margin: 0;
 }
 
-.pauseMessage {
+.message {
     position: absolute;
     color: white;
     font-family: "Press Start 2P", sans-serif;

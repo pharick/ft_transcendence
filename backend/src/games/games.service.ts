@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GameFrame } from './games.interfaces';
-import { Game } from './games.interfaces';
+import { Game, GameFrame, GameStatus } from './games.interfaces';
 import { UsersService } from '../users/users.service';
 import { randomUUID } from 'crypto';
 import { CompletedGame } from '../completedGames/completedGame.entity';
@@ -22,7 +21,7 @@ class GameProcessor {
   private readonly _moveClubDelta: number = 20;
   private readonly _startingBallSpeed: number = 20;
   private readonly _ballSpeedDelta = 0.5;
-  private readonly _frameDelta: number = 128;
+  private readonly _frameDelta: number = 64;
   private readonly _max_score: number = 11;
 
   public readonly fieldWidth: number = 800;
@@ -34,6 +33,7 @@ class GameProcessor {
   private readonly _clubHeightRight: number;
   private readonly _clubHeightLeft: number;
 
+  private _status: GameStatus;
   private _ballX: number;
   private _ballY: number;
   private _ballDirection: number;
@@ -44,7 +44,6 @@ class GameProcessor {
   private _club2Delta: number;
   private _score1: number;
   private _score2: number;
-  private _isPlayer1Turn: boolean;
   private _gameTimer: NodeJS.Timer;
   private _durationMs: number;
   private _isCompleted: boolean;
@@ -81,8 +80,8 @@ class GameProcessor {
     return this._durationMs;
   }
 
-  public get isPlayer1Turn(): boolean {
-    return this._isPlayer1Turn;
+  public get status(): GameStatus {
+    return this._status;
   }
 
   public get isTraining(): boolean {
@@ -162,20 +161,22 @@ class GameProcessor {
   }
 
   private newRound() {
-    this._ballSpeed = this._startingBallSpeed;
+    this._ballSpeed = 0;
     this._ballX = this.fieldWidth / 2;
     this._ballY = this.fieldHeight / 2;
     this._club1Pos = this.fieldHeight / 2;
     this._club2Pos = this.fieldHeight / 2;
     if (this.isTraining) {
-      this._isPlayer1Turn = true;
+      this._status = GameStatus.Player1Serve;
     } else {
-      this._isPlayer1Turn = Boolean(random(0, 1));
+      this._status = Boolean(random(0, 1))
+        ? GameStatus.Player1Serve
+        : GameStatus.Player2Serve;
     }
-    this._ballDirection = this._isPlayer1Turn
-      ? random(-30, 30)
-      : random(180 - 30, 180 + 30);
-    this.pauseGame();
+    this._ballDirection =
+      this._status == GameStatus.Player1Serve
+        ? random(-30, 30)
+        : random(180 - 30, 180 + 30);
   }
 
   private checkBordersCollisions() {
@@ -271,6 +272,15 @@ class GameProcessor {
     }
   }
 
+  serve() {
+    if (
+      this._gameTimer &&
+      (this._status == GameStatus.Player1Serve ||
+        this._status == GameStatus.Player2Serve)
+    )
+      this._ballSpeed = this._startingBallSpeed;
+  }
+
   resumeGame() {
     if (this._gameTimer) return;
     this._gameTimer = setInterval(() => {
@@ -297,8 +307,7 @@ class GameProcessor {
       club2Pos: this._club2Pos,
       score1: this._score1,
       score2: this._score2,
-      isPaused: !this._gameTimer,
-      isPlayer1Turn: this._isPlayer1Turn,
+      status: this._status,
       durationMs: this._durationMs,
       isCompleted: this._isCompleted,
     };
@@ -364,7 +373,7 @@ export class GamesService {
       score1: gameProcessor.score1,
       score2: gameProcessor.score2,
       durationMs: gameProcessor.durationMs,
-      isPlayer1Turn: gameProcessor.isPlayer1Turn,
+      status: gameProcessor.status,
       isRanked: gameProcessor.isRanked,
       isTraining: gameProcessor.isTraining,
     };
@@ -405,6 +414,10 @@ export class GamesService {
     }
 
     return await this.completedGamesService.create(completedGame);
+  }
+
+  serve(id: string) {
+    this.gameProcessors.get(id)?.serve();
   }
 
   resumeGame(id: string) {
