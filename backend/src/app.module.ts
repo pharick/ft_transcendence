@@ -13,6 +13,7 @@ import { MatchMakingModule } from './matchMaking/matchMaking.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UserStatusModule } from './userStatus/userStatus.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { UserStatusModule } from './userStatus/userStatus.module';
     CompletedGamesModule,
     PendingGamesModule,
     MatchMakingModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [],
