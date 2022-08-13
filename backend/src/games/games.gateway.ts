@@ -30,7 +30,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Namespace;
 
   private logger: Logger = new Logger('GamesGateway');
-  private readonly frame_delta: number = 64;
+  private readonly frame_delta: number = 32;
   private timers = new Map<string, NodeJS.Timer>();
 
   constructor(

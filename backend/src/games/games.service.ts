@@ -21,7 +21,7 @@ class GameProcessor {
   private readonly _moveClubDelta: number = 20;
   private readonly _startingBallSpeed: number = 20;
   private readonly _ballSpeedDelta = 0.5;
-  private readonly _frameDelta: number = 64;
+  private readonly _frameDelta: number = 32;
   private readonly _max_score: number = 11;
 
   public readonly fieldWidth: number = 800;
