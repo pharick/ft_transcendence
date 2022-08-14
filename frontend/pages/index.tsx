@@ -15,14 +15,14 @@ const HomePage: NextPage = () => {
         <title>Main page</title>
       </Head>
 
-      <section className="row justify-content-center mb-4">
-        <div className="col-auto">
+      <section className="d-flex gap-3 justify-content-center mb-4">
+        <div>
           <TrainingGameButton />
         </div>
-        <div className="col-auto">
+        <div>
           <MatchMakingButton />
         </div>
-        <div className="col-auto">
+        <div>
           <Link href="/users">
             <a className="image-button">
               <Image src={pongImage} width={100} height={100} />

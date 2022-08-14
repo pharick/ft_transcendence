@@ -51,7 +51,7 @@ const Notifications: FC = () => {
 
   if (isConnected) {
     return (
-      <section className={`row ${styles.notifications}`}>
+      <section className={`row flex-grow-1 ${styles.notifications}`}>
         <div className={`col-md ${styles.section}`}>
           <h2>Ongoing games</h2>
           {games.length > 0 ? (
