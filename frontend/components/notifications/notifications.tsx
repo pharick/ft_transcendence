@@ -1,25 +1,12 @@
-import React, { FC, useContext, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import ReadyGameBlock from './readyGameBlock';
 import PendingGameBlock from './pendingGameBlock';
-import { UserContext } from '../users/userProvider';
 import { Game, Notifications, PendingGame } from '../../types/interfaces';
 
 import styles from '../../styles/Notifications.module.css';
 
-const socket = io(
-  `${
-    process.env.NODE_ENV == 'development'
-      ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
-      : ''
-  }/notifications`,
-  {
-    autoConnect: false,
-  },
-);
-
 const Notifications: FC = () => {
-  const userContext = useContext(UserContext);
   const [isConnected, setIsConnected] = useState(false);
   const [games, setGames] = useState<Game[]>([]);
   const [pendingGames, setPendingGames] = useState<PendingGame[]>([]);
@@ -28,8 +15,16 @@ const Notifications: FC = () => {
     setGames([]);
     setPendingGames([]);
 
-    socket.auth = { token: localStorage.getItem('token') };
-    socket.connect();
+    const socket = io(
+      `${
+        process.env.NODE_ENV == 'development'
+          ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+          : ''
+      }/notifications`,
+      {
+        auth: { token: localStorage.getItem('token') },
+      },
+    );
 
     socket.on('connect', () => {
       setIsConnected(true);
@@ -52,7 +47,7 @@ const Notifications: FC = () => {
       socket.off('newMessages');
       socket.disconnect();
     };
-  }, [userContext.user]);
+  }, []);
 
   if (isConnected) {
     return (

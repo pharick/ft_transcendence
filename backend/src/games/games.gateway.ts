@@ -10,7 +10,7 @@ import { Namespace, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 
 import { GamesService } from './games.service';
-import { Game, GameFrame } from './games.interfaces';
+import { Game, GameClients, GameFrame, GameStatus } from './games.interfaces';
 import { User } from '../users/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { MoveClubStartDto, MoveClubStopDto, ResumeGameDto } from './games.dtos';
@@ -63,7 +63,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     this.logger.log(`Game client ${client.id} disconnected`);
   }
 
@@ -78,23 +78,38 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
       gameId,
       setInterval(() => {
         this.sendNextFrame(gameId).then();
-        this.sendWatchers(gameId).then();
+        this.sendClients(gameId).then();
       }, this.frame_delta),
     );
   }
 
-  private async sendWatchers(gameId: string) {
-    const clientIds = this.server.adapter.rooms.get(
+  private async sendClients(gameId: string) {
+    let clientIds = this.server.adapter.rooms.get(
       `${gameId}-${GameUserType.Watcher}`,
     );
-    if (!clientIds) return;
+    if (!clientIds) clientIds = new Set();
     const watchers = await Promise.all(
       Array.from(clientIds.values()).map((clientId) => {
-        const { token } = this.server.sockets.get(clientId).handshake.auth;
+        const client = this.server.sockets.get(clientId);
+        if (!client) return undefined;
+        const { token } = client.handshake.auth;
         return this.authService.getUser(token);
       }),
     );
-    this.server.to(gameId).emit('sendWatchers', watchers);
+    const player1online = this.server.adapter.rooms.has(
+      `${gameId}-${GameUserType.Player1}`,
+    );
+    const player2online = this.server.adapter.rooms.has(
+      `${gameId}-${GameUserType.Player2}`,
+    );
+    if (!player1online || !player2online) this.gamesService.pauseGame(gameId);
+    else this.gamesService.resumeGame(gameId);
+    const clients: GameClients = {
+      watchers,
+      player1online,
+      player2online,
+    };
+    this.server.to(gameId).emit('sendClients', clients);
   }
 
   private async sendNextFrame(gameId: string) {
@@ -111,18 +126,17 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  @SubscribeMessage('resume')
-  async handleResume(client: Socket, { gameId }: ResumeGameDto) {
+  @SubscribeMessage('serve')
+  async handleServe(client: Socket, { gameId }: ResumeGameDto) {
     const game: Game = await this.gamesService.findOne(gameId);
     if (!game) return;
     if (
-      (game.isPlayer1Turn &&
+      (game.status == GameStatus.Player1Serve &&
         client.rooms.has(`${gameId}-${GameUserType.Player1}`)) ||
-      (!game.isPlayer1Turn &&
+      (game.status == GameStatus.Player2Serve &&
         client.rooms.has(`${gameId}-${GameUserType.Player2}`))
     ) {
-      this.logger.log(`Client ${client.id} resumed game ${game.id}`);
-      this.gamesService.resumeGame(gameId);
+      this.gamesService.serve(gameId);
     }
   }
 

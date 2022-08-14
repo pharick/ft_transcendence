@@ -13,8 +13,8 @@ const WatcherList: FC<WatcherListProps> = ({ watchers }) => {
     <section className={styles.watcherListSection}>
       <h2 className="mt-0">{watchers.length} users watching game</h2>
       <ul className={styles.watcherList}>
-        {watchers.map((user) => (
-          <li className={styles.item}>
+        {watchers.map((user, index) => (
+          <li key={index} className={styles.item}>
             <PlayerBlockSmall user={user} showUsername={false} />
           </li>
         ))}

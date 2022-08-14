@@ -15,9 +15,15 @@ export interface Game {
   score1: number;
   score2: number;
   durationMs: number;
-  isPlayer1Turn: boolean;
+  status: GameStatus;
   isRanked: boolean;
   isTraining: boolean;
+}
+
+export enum GameStatus {
+  Player1Serve,
+  Player2Serve,
+  OnGame,
 }
 
 export interface GameFrame {
@@ -31,8 +37,13 @@ export interface GameFrame {
   club2Pos: number;
   score1: number;
   score2: number;
-  isPaused: boolean;
-  isPlayer1Turn: boolean;
+  status: GameStatus;
   durationMs: number;
   isCompleted: boolean;
+}
+
+export interface GameClients {
+  watchers: Player[];
+  player1online: boolean;
+  player2online: boolean;
 }

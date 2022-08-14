@@ -28,7 +28,7 @@ const UserBlock: FC<UserBlockProps> = ({ user }) => {
       setStatus(data.status);
     };
     getStatus().then();
-  }, [user]);
+  }, [user, userContext.user]);
 
   let username = user?.username || 'Mr. Wall';
   if (userContext.user?.id == user?.id) username += ' (you)';

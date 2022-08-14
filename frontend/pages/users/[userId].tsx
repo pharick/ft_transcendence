@@ -7,6 +7,7 @@ import { useContext } from 'react';
 import CompletedGameList from '../../components/games/completedGameList';
 import UserBlock from '../../components/users/userBlock';
 import UserProfile from '../../components/users/userProfile';
+import styles from '../../styles/UserPage.module.css';
 
 interface UserPageProps {
   user: User;
@@ -34,7 +35,7 @@ const UserPage: NextPage<UserPageProps> = ({ user, completedGames }) => {
   return (
     <>
       <Head>
-        <title>Player {user.username}</title>
+        <title>{`Player ${user.username}`}</title>
       </Head>
 
       <div className="row">
@@ -42,7 +43,9 @@ const UserPage: NextPage<UserPageProps> = ({ user, completedGames }) => {
           <UserBlock user={user} />
 
           {userContext.user?.id != user.id ? (
-            <ul className="mt-4">
+            <ul
+              className={`${styles.buttonsList} mt-4 d-flex justify-content-center flex-wrap`}
+            >
               <li>
                 <GameInviteButton user={user} />
               </li>

@@ -80,6 +80,9 @@ button:disabled {
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-decoration: none;
+    padding: 0;
+    margin: 0;
 }
 
 .image-button:hover {
@@ -97,6 +100,16 @@ button:disabled {
     color: black;
 }
 
+.icon-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.icon-button img {
+    filter: invert(100%);
+}
+
 input[type=text] {
     border: 2px solid lightgray;
     border-radius: 3px;
@@ -112,7 +125,6 @@ input[type=text] {
     border: 2px solid rgb(189, 215, 255);
     padding: 0.5em 1em;
     border-radius: 0.5em;
-    width: 100%;
     box-shadow: 1px 1px 5px 1px #cccccc;
 }
 

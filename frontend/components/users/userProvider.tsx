@@ -2,7 +2,6 @@ import {
   createContext,
   FC,
   ReactNode,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -16,17 +15,6 @@ import { io } from 'socket.io-client';
 interface UserProviderProps {
   children?: ReactNode;
 }
-
-const socket = io(
-  `${
-    process.env.NODE_ENV == 'development'
-      ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
-      : ''
-  }/status`,
-  {
-    autoConnect: false,
-  },
-);
 
 interface UserContextInterface {
   user?: User;
@@ -56,7 +44,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
     localStorage.clear();
   };
 
-  const getUser = useCallback(async () => {
+  const getUser = async () => {
     const userResponse = await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: '/api/users/me',
@@ -65,18 +53,28 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
       const user = await userResponse?.json();
       setUser(user);
     }
-  }, []);
+  };
 
   useEffect(() => {
     getUser().then();
+  }, []);
 
-    socket.auth = { token: localStorage.getItem('token') };
-    socket.connect();
+  useEffect(() => {
+    const statusSocket = io(
+      `${
+        process.env.NODE_ENV == 'development'
+          ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+          : ''
+      }/status`,
+      {
+        auth: { token: localStorage.getItem('token') },
+      },
+    );
 
     return () => {
-      socket.disconnect();
+      statusSocket.disconnect();
     };
-  }, [getUser]);
+  }, [user]);
 
   const value = useMemo(
     () => ({
