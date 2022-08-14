@@ -80,6 +80,9 @@ button:disabled {
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-decoration: none;
+    padding: 0;
+    margin: 0;
 }
 
 .image-button:hover {
@@ -95,6 +98,16 @@ button:disabled {
 .image-button:not(:disabled):hover {
     box-shadow: none;
     color: black;
+}
+
+.icon-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.icon-button img {
+    filter: invert(100%);
 }
 
 input[type=text] {

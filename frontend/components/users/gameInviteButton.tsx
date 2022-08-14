@@ -3,6 +3,8 @@ import { User } from '../../types/interfaces';
 import { CreatePendingGameDto } from '../../types/dtos';
 import { fetchWithHandleErrors } from '../../utils';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
+import Image from 'next/image';
+import pingpong from '../../images/pingpong.svg';
 
 interface InviteProps {
   user: User;
@@ -39,14 +41,15 @@ const GameInviteButton: FC<InviteProps> = ({ user }) => {
     ? 'Invited'
     : isError
     ? 'Already invited'
-    : 'Invite to the game';
+    : 'Invite to play';
 
   return (
     <button
       disabled={isSuccess || isError}
-      className={className}
+      className={`${className} icon-button`}
       onClick={handleGameInvite}
     >
+      <Image src={pingpong} alt={text} width={25} height={25} />
       {text}
     </button>
   );
