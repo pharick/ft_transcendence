@@ -39,7 +39,7 @@ const UserPage: NextPage<UserPageProps> = ({ user, completedGames }) => {
       </Head>
 
       <div className="row">
-        <div className="col-lg-4 mx-auto">
+        <div className="col-md-5 col-lg-4 col-xl-3 mx-auto">
           <UserBlock user={user} />
 
           {userContext.user?.id != user.id ? (
@@ -54,7 +54,7 @@ const UserPage: NextPage<UserPageProps> = ({ user, completedGames }) => {
             <UserProfile />
           )}
         </div>
-        <div className="col-lg">
+        <div className="col-md">
           <h2>Completed games</h2>
           <CompletedGameList games={completedGames} />
         </div>

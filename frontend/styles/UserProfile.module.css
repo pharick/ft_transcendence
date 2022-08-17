@@ -17,6 +17,7 @@
 
 .input input {
     flex: 1;
+    width: 100px;
 }
 
 .submit {
