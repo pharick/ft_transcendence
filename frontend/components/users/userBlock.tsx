@@ -30,8 +30,8 @@ const UserBlock: FC<UserBlockProps> = ({ user }) => {
     getStatus().then();
   }, [user, userContext.user]);
 
-  let username = user?.username || 'Mr. Wall';
-  if (userContext.user?.id == user?.id) username += ' (you)';
+  let username = user.username;
+  if (userContext.user?.id == user.id) username += ' (you)';
 
   return (
     <article className={styles.userBlock}>
@@ -46,7 +46,7 @@ const UserBlock: FC<UserBlockProps> = ({ user }) => {
         />
         {user && <p className={styles.rank}>{user.rank}</p>}
       </div>
-      <p className={styles.username}>{user ? `${username}` : 'Mr. Wall'}</p>
+      <p className={styles.username}>{username}</p>
       <div className={styles.status}>
         <div
           className={`${styles.statusCircle} ${

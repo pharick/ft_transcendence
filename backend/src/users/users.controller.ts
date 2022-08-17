@@ -23,7 +23,7 @@ import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { randomUUID } from 'crypto';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { UpdateUserProfileDto } from './updateUserProfile.dto';
 
 const storage = diskStorage({
   destination: './static/avatars',
@@ -78,8 +78,8 @@ export class UsersController {
   @Patch(':id')
   async updateProfile(
     @Param('id', new ParseIntPipe()) userId: number,
-    @Body() profile: QueryDeepPartialEntity<User>,
+    @Body() updateUserProfileDto: UpdateUserProfileDto,
   ) {
-    await this.usersService.updateProfile(userId, profile);
+    await this.usersService.updateProfile(userId, updateUserProfileDto);
   }
 }

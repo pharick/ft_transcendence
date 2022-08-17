@@ -14,6 +14,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UserStatusModule } from './userStatus/userStatus.module';
 import { ChatModule } from './chat/chat.module';
+import { ChatRoom } from './chat/chatRoom.entity';
+import { ChatRoomUser } from './chat/chatRoomUser.entity';
 
 @Module({
   imports: [
@@ -29,7 +31,7 @@ import { ChatModule } from './chat/chat.module';
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DATABASE'),
         synchronize: true,
-        entities: [User, CompletedGame, PendingGame],
+        entities: [User, CompletedGame, PendingGame, ChatRoom, ChatRoomUser],
       }),
     }),
     ServeStaticModule.forRoot({

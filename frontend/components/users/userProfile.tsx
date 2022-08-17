@@ -9,45 +9,44 @@ import {
 
 import styles from '../../styles/UserProfile.module.css';
 
-import { User } from '../../types/interfaces';
 import { UserContext } from './userProvider';
 import { fetchWithHandleErrors } from '../../utils';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 import { useRouter } from 'next/router';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { UpdateUserProfileDto } from '../../types/dtos';
 
 const UserProfile: FC = () => {
-  const userContext = useContext(UserContext);
-  const [profile, setProfile] = useState<Partial<User>>({
-    username: userContext.user?.username,
-  });
-  const [avatar, setAvatar] = useState<File>();
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
-  const avatarInput = useRef<HTMLInputElement>(null);
+  const userContext = useContext(UserContext);
   const router = useRouter();
 
-  const updateProfile = async (e: FormEvent) => {
-    e.preventDefault();
+  const [avatar, setAvatar] = useState<File>();
+  const avatarInput = useRef<HTMLInputElement>(null);
+
+  const profileForm = useForm<UpdateUserProfileDto>();
+
+  const updateProfile: SubmitHandler<UpdateUserProfileDto> = async (data) => {
+    console.log(data);
     await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: `/api/users/${userContext.user?.id}`,
       method: 'PATCH',
-      body: profile,
+      body: data,
     });
     router.reload();
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setProfile((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
   const handleChangeAvatar = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target?.files && e.target?.files.length > 0)
+    if (e.target?.files && e.target?.files.length > 0) {
       setAvatar(e.target?.files[0]);
+    }
   };
 
   const uploadAvatar = async (e: FormEvent) => {
     e.preventDefault();
-    if (!avatar) return;
+    if (!avatar || (avatar.type != 'image/jpeg' && avatar.type != 'image/png'))
+      return;
     const body = new FormData();
     body.append('avatar', avatar);
     await fetchWithHandleErrors({
@@ -56,7 +55,6 @@ const UserProfile: FC = () => {
       method: 'PUT',
       body,
     });
-    if (avatarInput.current) avatarInput.current.value = '';
     setAvatar(undefined);
     router.reload();
   };
@@ -79,17 +77,19 @@ const UserProfile: FC = () => {
 
       <form
         className={styles.form}
-        id="change-nickname"
-        onSubmit={updateProfile}
+        onSubmit={profileForm.handleSubmit(updateProfile)}
       >
         <div className={styles.input}>
           <label htmlFor="username">Username</label>
           <input
             type="text"
             id="username"
-            name="username"
-            value={profile.username}
-            onChange={handleChange}
+            {...profileForm.register('username', {
+              required: true,
+              minLength: 3,
+              maxLength: 15,
+              value: userContext.user.username,
+            })}
           />
         </div>
         <button className={styles.submit} type="submit">

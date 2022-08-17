@@ -22,11 +22,11 @@ const Header: FC = () => {
             <a className={styles.mainMenuLink}>Players</a>
           </Link>
         </li>
-        {/*<li>*/}
-        {/*  <Link href="/chat">*/}
-        {/*    <a>Chats</a>*/}
-        {/*  </Link>*/}
-        {/*</li>*/}
+        <li className={styles.mainMenuItem}>
+          <Link href="/chat">
+            <a className={styles.mainMenuLink}>Chat</a>
+          </Link>
+        </li>
       </ul>
 
       <UserHeaderBlock />

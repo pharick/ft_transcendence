@@ -14,3 +14,12 @@ export class MoveClubStopDto {
 export class CreatePendingGameDto {
   player2Id: number;
 }
+
+export class UpdateUserProfileDto {
+  username: string;
+}
+
+export class CreateChatRoomDto {
+  name: string;
+  password?: string;
+}
