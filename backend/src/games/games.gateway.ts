@@ -50,6 +50,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       client.join(gameId);
       client.join(`${gameId}-${userType}`);
+      if (game.isTraining) client.join(`${gameId}-${GameUserType.Player2}`);
 
       if (user && userType != GameUserType.Watcher) {
         client.join(`user-${user.id}`);

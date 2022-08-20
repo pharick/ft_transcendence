@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ChatMessage } from './chatMessage.entity';
 
 @Entity()
 export class ChatRoom {
@@ -10,4 +11,7 @@ export class ChatRoom {
 
   @Column({ nullable: true })
   password: string;
+
+  @OneToMany(() => ChatMessage, (message) => message.room)
+  messages: ChatMessage[];
 }

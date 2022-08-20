@@ -1,39 +1,58 @@
-import React, { FC, FormEvent, useContext, useState } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import { fetchWithHandleErrors } from '../../utils';
 import { CreateChatRoomDto } from '../../types/dtos';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { ChatRoom } from '../../types/interfaces';
 
 const ChatRooms: FC = () => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
-  const [newChatroomName, setNewChatroomName] = useState('');
+  const createRoomForm = useForm<CreateChatRoomDto>();
+  const [rooms, setRooms] = useState<ChatRoom[]>([]);
 
-  const createChatroom = async (e: FormEvent) => {
-    e.preventDefault();
-    if (newChatroomName.length == 0) return;
-    const createChatRoomDto: CreateChatRoomDto = {
-      name: newChatroomName,
-    };
-    const response = await fetchWithHandleErrors({
+  const createRoom: SubmitHandler<CreateChatRoomDto> = async (data) => {
+    await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: '/api/chat/rooms',
       method: 'PUT',
-      body: createChatRoomDto,
+      body: data,
     });
-    console.log(response);
   };
+
+  useEffect(() => {
+    const loadRooms = async () => {
+      const response = await fetchWithHandleErrors({
+        requestErrorHandlerContext,
+        url: '/api/chat/rooms',
+      });
+      const rooms: ChatRoom[] = await response.json();
+      setRooms(rooms);
+    };
+    loadRooms().then();
+  });
 
   return (
     <section>
       <h2>Rooms</h2>
-      <form onSubmit={createChatroom}>
+
+      <ul>
+        {rooms.map((room) => (
+          <li key={room.id}>{room.name}</li>
+        ))}
+      </ul>
+
+      <form onSubmit={createRoomForm.handleSubmit(createRoom)}>
         <div className="row align-items-center">
           <div className="col">
             <input
               type="text"
               className="w-100"
               placeholder="New room"
-              value={newChatroomName}
-              onChange={(e) => setNewChatroomName(e.target.value)}
+              {...createRoomForm.register('name', {
+                required: true,
+                minLength: 3,
+                maxLength: 15,
+              })}
             />
           </div>
           <div className="col-auto">

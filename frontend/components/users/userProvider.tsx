@@ -57,7 +57,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
 
   useEffect(() => {
     getUser().then();
-  }, []);
+  });
 
   useEffect(() => {
     const statusSocket = io(
@@ -74,7 +74,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
     return () => {
       statusSocket.disconnect();
     };
-  }, [user]);
+  }, []);
 
   const value = useMemo(
     () => ({

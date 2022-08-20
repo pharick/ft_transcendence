@@ -5,10 +5,17 @@ import { ChatRoomUser } from './chatRoomUser.entity';
 import { ChatRoomController } from './chatRoom.controller';
 import { ChatRoomsService } from './chatRooms.service';
 import { UsersModule } from '../users/users.module';
+import { ChatGateway } from './chat.gateway';
+import { AuthModule } from '../auth/auth.module';
+import { ChatMessage } from './chatMessage.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ChatRoom, ChatRoomUser]), UsersModule],
-  providers: [ChatRoomsService],
+  imports: [
+    TypeOrmModule.forFeature([ChatRoom, ChatRoomUser, ChatMessage]),
+    UsersModule,
+    AuthModule,
+  ],
+  providers: [ChatRoomsService, ChatGateway],
   controllers: [ChatRoomController],
 })
 export class ChatModule {}

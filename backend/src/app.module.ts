@@ -16,6 +16,7 @@ import { UserStatusModule } from './userStatus/userStatus.module';
 import { ChatModule } from './chat/chat.module';
 import { ChatRoom } from './chat/chatRoom.entity';
 import { ChatRoomUser } from './chat/chatRoomUser.entity';
+import { ChatMessage } from './chat/chatMessage.entity';
 
 @Module({
   imports: [
@@ -31,7 +32,14 @@ import { ChatRoomUser } from './chat/chatRoomUser.entity';
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DATABASE'),
         synchronize: true,
-        entities: [User, CompletedGame, PendingGame, ChatRoom, ChatRoomUser],
+        entities: [
+          User,
+          CompletedGame,
+          PendingGame,
+          ChatRoom,
+          ChatRoomUser,
+          ChatMessage,
+        ],
       }),
     }),
     ServeStaticModule.forRoot({

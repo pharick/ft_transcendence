@@ -15,7 +15,7 @@ export class ChatRoomsService {
     private usersService: UsersService,
   ) {}
 
-  async createRoom(
+  async create(
     name: string,
     password: string,
     userId: number,
@@ -34,5 +34,13 @@ export class ChatRoomsService {
     });
     await this.roomUserRepository.save(roomUser);
     return savedChatRoom;
+  }
+
+  findAll(): Promise<ChatRoom[]> {
+    return this.chatRoomsRepository.find();
+  }
+
+  findOne(id: number): Promise<ChatRoom> {
+    return this.chatRoomsRepository.findOneBy({ id });
   }
 }

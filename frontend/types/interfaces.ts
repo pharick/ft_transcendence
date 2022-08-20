@@ -88,3 +88,17 @@ export enum UserStatus {
 export interface UserStatusInterface {
   status: UserStatus;
 }
+
+export interface ChatRoom {
+  id: number;
+  name: string;
+  password?: string;
+}
+
+export interface ChatMessage {
+  id: number;
+  date: Date;
+  user: User;
+  room: ChatRoom;
+  text: string;
+}
