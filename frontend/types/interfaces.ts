@@ -102,3 +102,11 @@ export interface ChatMessage {
   room: ChatRoom;
   text: string;
 }
+
+export interface ChatRoomUser {
+  id: number;
+  user: User;
+  isBanned: boolean;
+  isAdmin: boolean;
+  isOnline: boolean;
+}

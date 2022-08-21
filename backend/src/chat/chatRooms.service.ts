@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ChatRoomUser } from './chatRoomUser.entity';
 import { UsersService } from '../users/users.service';
-import { User } from '../users/user.entity';
 
 @Injectable()
 export class ChatRoomsService {
@@ -45,11 +44,22 @@ export class ChatRoomsService {
     return this.chatRoomsRepository.findOneBy({ id });
   }
 
-  async authenticate(room: ChatRoom, user: User): Promise<ChatRoomUser> {
+  async authenticate(roomId: number, userId: number): Promise<ChatRoomUser> {
+    const room = await this.chatRoomsRepository.findOneBy({ id: roomId });
+    const user = await this.usersService.findOne(userId);
     if (!room || !user) return undefined;
     const roomUser = await this.roomUserRepository.findOneBy({ user, room });
     if (roomUser) return roomUser;
     const newRoomUser = this.roomUserRepository.create({ user, room });
     return this.roomUserRepository.save(newRoomUser);
+  }
+
+  async getRoomUsers(roomId: number): Promise<ChatRoomUser[]> {
+    const room = await this.chatRoomsRepository.findOneBy({ id: roomId });
+    if (!room) return undefined;
+    return this.roomUserRepository.find({
+      where: { room },
+      relations: ['user'],
+    });
   }
 }

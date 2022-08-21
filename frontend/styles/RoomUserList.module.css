@@ -1,0 +1,15 @@
+.roomUserList {
+    list-style: none;
+    padding: 0;
+}
+
+.block {
+    border-bottom: 1px solid lightgray;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.offline {
+    opacity: 30%;
+}
