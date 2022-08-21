@@ -17,6 +17,7 @@ const ChatRooms: FC = () => {
       method: 'PUT',
       body: data,
     });
+    createRoomForm.reset();
   };
 
   useEffect(() => {

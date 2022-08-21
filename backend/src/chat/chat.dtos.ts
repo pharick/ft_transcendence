@@ -8,3 +8,8 @@ export class CreateChatRoomDto {
   @Length(3, 30)
   password?: string;
 }
+
+export class ChatMessageDto {
+  roomId: number;
+  text: string;
+}

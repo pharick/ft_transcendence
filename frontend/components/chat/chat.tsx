@@ -6,6 +6,8 @@ import { format } from 'date-fns';
 
 import styles from '../../styles/Chat.module.css';
 import { UserContext } from '../users/userProvider';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { ChatMessageDto } from '../../types/dtos';
 
 interface ChatProps {
   room: ChatRoom;
@@ -16,6 +18,7 @@ const Chat: FC<ChatProps> = ({ room }) => {
   const messageList = useRef<HTMLUListElement>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const userContext = useContext(UserContext);
+  const newMessageForm = useForm<ChatMessageDto>();
 
   useEffect(() => {
     const socket = io(
@@ -35,6 +38,11 @@ const Chat: FC<ChatProps> = ({ room }) => {
       socket.disconnect();
     };
   }, []);
+
+  const sendMessage: SubmitHandler<ChatMessageDto> = async (data) => {
+    console.log(data);
+    newMessageForm.reset();
+  };
 
   return (
     <section>
@@ -67,12 +75,22 @@ const Chat: FC<ChatProps> = ({ room }) => {
       </ul>
 
       {userContext.user ? (
-        <form className="d-flex">
+        <form
+          className="d-flex"
+          onSubmit={newMessageForm.handleSubmit(sendMessage)}
+        >
+          <input
+            type="hidden"
+            value={room.id}
+            {...newMessageForm.register('roomId', { required: true })}
+          />
           <input
             className="flex-grow-1"
             type="text"
             placeholder="New message"
+            {...newMessageForm.register('text', { required: true })}
           />
+
           <button type="submit">Send</button>
         </form>
       ) : (

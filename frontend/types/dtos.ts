@@ -23,3 +23,8 @@ export class CreateChatRoomDto {
   name: string;
   password?: string;
 }
+
+export class ChatMessageDto {
+  roomId: number;
+  text: string;
+}

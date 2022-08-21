@@ -10,6 +10,7 @@ import { User } from '../users/user.entity';
 import { ChatRoom } from './chatRoom.entity';
 import { ChatRoomsService } from './chatRooms.service';
 import { AuthService } from '../auth/auth.service';
+import { ChatRoomUser } from './chatRoomUser.entity';
 
 @WebSocketGateway({ namespace: 'chat', cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -26,8 +27,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { token, roomId } = client.handshake.auth;
     const room: ChatRoom = await this.chatRoomService.findOne(roomId);
     const user: User = await this.authService.getUser(token);
+    const roomUser: ChatRoomUser = await this.chatRoomService.authenticate(
+      room,
+      user,
+    );
 
-    if (!room) {
+    if (!roomUser) {
       client.disconnect();
     } else {
       client.join(`room-${room.id}`);
