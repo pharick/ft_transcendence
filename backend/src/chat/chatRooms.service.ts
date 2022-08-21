@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ChatRoom } from './chatRoom.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ChatRoomUser } from './chatRoomUser.entity';
 import { UsersService } from '../users/users.service';
+import { ChatGateway } from './chat.gateway';
 
 @Injectable()
 export class ChatRoomsService {
@@ -13,6 +14,8 @@ export class ChatRoomsService {
     @InjectRepository(ChatRoomUser)
     private roomUserRepository: Repository<ChatRoomUser>,
     private usersService: UsersService,
+    @Inject(forwardRef(() => ChatGateway))
+    private chatGateway: ChatGateway,
   ) {}
 
   async create(
@@ -54,12 +57,21 @@ export class ChatRoomsService {
     return this.roomUserRepository.save(newRoomUser);
   }
 
-  async getRoomUsers(roomId: number): Promise<ChatRoomUser[]> {
+  async getRoomUsers(
+    roomId: number,
+  ): Promise<(ChatRoomUser & { isOnline?: boolean })[]> {
     const room = await this.chatRoomsRepository.findOneBy({ id: roomId });
     if (!room) return undefined;
-    return this.roomUserRepository.find({
-      where: { room },
-      relations: ['user'],
+    const roomUsers: (ChatRoomUser & { isOnline?: boolean })[] =
+      await this.roomUserRepository.find({
+        where: { room },
+        relations: ['user'],
+      });
+    roomUsers.forEach((roomUser) => {
+      roomUser.isOnline = this.chatGateway.server.adapter.rooms.has(
+        `user-${roomUser.user.id}`,
+      );
     });
+    return roomUsers;
   }
 }

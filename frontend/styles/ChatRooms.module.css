@@ -1,0 +1,28 @@
+.list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.link {
+    text-decoration: none;
+    color: black;
+}
+
+.link:hover {
+    color: black;
+}
+
+.block {
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 10px;
+    margin: 5px;
+    width: 200px;
+}
+
+.block:hover {
+    box-shadow: 1px 1px 5px gray;
+    transform: translate(-1px, -1px);
+}

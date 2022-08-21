@@ -24,18 +24,11 @@ const ChatPage: NextPage<ChatPageProps> = ({ room }) => {
   return (
     <>
       <Head>
-        <title>Chat</title>
+        <title>{`Chat room «${room.name}»`}</title>
       </Head>
 
-      <div className="row">
-        <div className="col-md-6 col-lg-5 col-xl-3">
-          <ChatRooms />
-        </div>
-        <div className="col">
-          <h1>{room.name}</h1>
-          <Chat room={room} />
-        </div>
-      </div>
+      <h1>Chat room «{room.name}»</h1>
+      <Chat room={room} />
     </>
   );
 };

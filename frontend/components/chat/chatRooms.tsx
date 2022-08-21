@@ -5,8 +5,13 @@ import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ChatRoom } from '../../types/interfaces';
 
+import styles from '../../styles/ChatRooms.module.css';
+import Link from 'next/link';
+import { UserContext } from '../users/userProvider';
+
 const ChatRooms: FC = () => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
+  const userContext = useContext(UserContext);
   const createRoomForm = useForm<CreateChatRoomDto>();
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
 
@@ -34,33 +39,39 @@ const ChatRooms: FC = () => {
 
   return (
     <section>
-      <h2>Rooms</h2>
-
-      <ul>
+      <ul className={styles.list}>
         {rooms.map((room) => (
-          <li key={room.id}>{room.name}</li>
+          <li key={room.id}>
+            <Link href={`/chat/${room.id}`}>
+              <a className={styles.link}>
+                <article className={styles.block}>{room.name}</article>
+              </a>
+            </Link>
+          </li>
         ))}
       </ul>
 
-      <form onSubmit={createRoomForm.handleSubmit(createRoom)}>
-        <div className="row align-items-center">
-          <div className="col">
-            <input
-              type="text"
-              className="w-100"
-              placeholder="New room"
-              {...createRoomForm.register('name', {
-                required: true,
-                minLength: 3,
-                maxLength: 15,
-              })}
-            />
+      {userContext.user && (
+        <form onSubmit={createRoomForm.handleSubmit(createRoom)}>
+          <div className="row align-items-center">
+            <div className="col">
+              <input
+                type="text"
+                className="w-100"
+                placeholder="New room"
+                {...createRoomForm.register('name', {
+                  required: true,
+                  minLength: 3,
+                  maxLength: 15,
+                })}
+              />
+            </div>
+            <div className="col-auto">
+              <button type="submit">Create</button>
+            </div>
           </div>
-          <div className="col-auto">
-            <button type="submit">Create</button>
-          </div>
-        </div>
-      </form>
+        </form>
+      )}
     </section>
   );
 };

@@ -6,7 +6,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Namespace, Socket } from 'socket.io';
-import { Logger } from '@nestjs/common';
+import { forwardRef, Inject, Logger } from '@nestjs/common';
 import { User } from '../users/user.entity';
 import { ChatRoom } from './chatRoom.entity';
 import { ChatRoomsService } from './chatRooms.service';
@@ -22,6 +22,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private logger = new Logger('ChatGateway');
 
   constructor(
+    @Inject(forwardRef(() => ChatRoomsService))
     private chatRoomService: ChatRoomsService,
     private chatMessagesService: ChatMessagesService,
     private authService: AuthService,
@@ -50,7 +51,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.join(`room-${room.id}`);
     client.join(`user-${user.id}`);
 
-    await this.sendClients(room.id);
+    this.server
+      .to(`room-${roomId}`)
+      .emit('sendClients', await this.chatRoomService.getRoomUsers(roomId));
     this.server
       .to(`user-${user.id}`)
       .emit(
@@ -65,8 +68,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleDisconnect(client: Socket) {
     const { roomId } = client.handshake.auth;
-    const room: ChatRoom = await this.chatRoomService.findOne(roomId);
-    await this.sendClients(room.id);
+    this.server
+      .to(`room-${roomId}`)
+      .emit('sendClients', this.chatRoomService.getRoomUsers(roomId));
     this.logger.log(`Chat client disconnected: ${client.id}`);
   }
 
@@ -85,16 +89,5 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
     console.log(message);
     this.server.to(`room-${roomId}`).emit('messageToClient', message);
-  }
-
-  private async sendClients(roomId: number) {
-    const roomUsers: (ChatRoomUser & { isOnline?: boolean })[] =
-      await this.chatRoomService.getRoomUsers(roomId);
-    roomUsers.forEach((roomUser) => {
-      roomUser.isOnline = this.server.adapter.rooms.has(
-        `user-${roomUser.user.id}`,
-      );
-    });
-    this.server.to(`room-${roomId}`).emit('sendClients', roomUsers);
   }
 }
