@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { ChatRoomUser } from './chatRoomUser.entity';
 import { UsersService } from '../users/users.service';
 import { ChatGateway } from './chat.gateway';
+import { ChatRoomType } from './chat.dtos';
 
 @Injectable()
 export class ChatRoomsService {
@@ -20,6 +21,7 @@ export class ChatRoomsService {
 
   async create(
     name: string,
+    type: ChatRoomType,
     password: string,
     userId: number,
   ): Promise<ChatRoom> {
@@ -27,6 +29,7 @@ export class ChatRoomsService {
     if (!user) return undefined;
     const chatRoom = this.chatRoomsRepository.create({
       name,
+      type,
       password,
     });
     const savedChatRoom = await this.chatRoomsRepository.save(chatRoom);
@@ -39,8 +42,12 @@ export class ChatRoomsService {
     return savedChatRoom;
   }
 
-  findAll(): Promise<ChatRoom[]> {
-    return this.chatRoomsRepository.find();
+  findAll(privateRoom = false): Promise<ChatRoom[]> {
+    if (privateRoom) return this.chatRoomsRepository.find();
+    return this.chatRoomsRepository.findBy([
+      { type: ChatRoomType.Public },
+      { type: ChatRoomType.Protected },
+    ]);
   }
 
   findOne(id: number): Promise<ChatRoom> {
@@ -53,6 +60,7 @@ export class ChatRoomsService {
     if (!room || !user) return undefined;
     const roomUser = await this.roomUserRepository.findOneBy({ user, room });
     if (roomUser) return roomUser;
+    if (room.type == ChatRoomType.Private) return undefined;
     const newRoomUser = this.roomUserRepository.create({ user, room });
     return this.roomUserRepository.save(newRoomUser);
   }

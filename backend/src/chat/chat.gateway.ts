@@ -44,6 +44,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
 
     if (!roomUser) {
+      client.emit('forbidden');
       client.disconnect();
       return;
     }

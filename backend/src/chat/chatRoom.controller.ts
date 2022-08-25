@@ -14,7 +14,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { CreateChatRoomDto } from './chat.dtos';
 import { ChatRoom } from './chatRoom.entity';
-import { Game } from '../games/games.interfaces';
 
 @Controller('chat/rooms')
 export class ChatRoomController {
@@ -24,9 +23,9 @@ export class ChatRoomController {
   @UseGuards(JwtAuthGuard)
   create(
     @Req() request: Request,
-    @Body() { name, password }: CreateChatRoomDto,
+    @Body() { name, type, password }: CreateChatRoomDto,
   ): Promise<ChatRoom> {
-    return this.chatRoomsService.create(name, password, request.user.id);
+    return this.chatRoomsService.create(name, type, password, request.user.id);
   }
 
   @Get()

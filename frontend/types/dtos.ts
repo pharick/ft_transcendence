@@ -19,8 +19,15 @@ export class UpdateUserProfileDto {
   username: string;
 }
 
+export enum ChatRoomType {
+  Public,
+  Private,
+  Protected,
+}
+
 export class CreateChatRoomDto {
   name: string;
+  type: ChatRoomType;
   password?: string;
 }
 

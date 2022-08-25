@@ -125,6 +125,19 @@ input[type=text] {
     margin: 0;
 }
 
+input:disabled {
+    opacity: 40%;
+}
+
+select {
+    appearance: none;
+    font-size: 1em;
+    padding: 5px;
+    border: 2px solid lightgray;
+    border-radius: 3px;
+    box-sizing: content-box;
+}
+
 .warning-message {
     margin: 0;
     color: white;

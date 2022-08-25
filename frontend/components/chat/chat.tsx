@@ -16,6 +16,7 @@ interface ChatProps {
 
 const Chat: FC<ChatProps> = ({ room }) => {
   const [socket, setSocket] = useState<Socket>();
+  const [forbidden, setForbidden] = useState(false);
   const messageList = useRef<HTMLUListElement>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [roomUsers, setRoomUsers] = useState<ChatRoomUser[]>([]);
@@ -46,6 +47,10 @@ const Chat: FC<ChatProps> = ({ room }) => {
       setMessages((messages) => [...messages, message]);
     });
 
+    socket.on('forbidden', () => {
+      setForbidden(true);
+    });
+
     setSocket(socket);
 
     return () => {
@@ -65,6 +70,10 @@ const Chat: FC<ChatProps> = ({ room }) => {
     socket.emit('messageToServer', data);
     newMessageForm.reset();
   };
+
+  if (forbidden) {
+    return <p>Room is forbidden</p>;
+  }
 
   return (
     <section>
