@@ -48,9 +48,9 @@ class GameProcessor {
   private _gameTimer: NodeJS.Timer;
   private _durationMs: number;
   private _isCompleted: boolean;
-  private _wallWidth: number[] = [0];
-  private _wallHeight: number[] = [0];
-  private _wallPos: number[] = [0];
+  private _wallWidth: number[] = [];
+  private _wallHeight: number[] = [];
+  private _wallPos: number[] = [];
 
   constructor(
     isRanked: boolean,
@@ -65,6 +65,9 @@ class GameProcessor {
       this._wallWidth.push(8);
       this._wallHeight.push(120);
       this._wallPos.push(100);
+      this._wallWidth.push(8);
+      this._wallHeight.push(120);
+      this._wallPos.push(400);
     }
     this._ballSpeed = this._startingBallSpeed;
     this._club1Pos = this.fieldHeight / 2;
@@ -76,7 +79,6 @@ class GameProcessor {
     this.player1Id = player1Id;
     this.player2Id = player2Id;
     this.isRanked = isRanked;
-    this._wallPos[0] = this.fieldHeight / 2;
 
     this.newRound();
 
@@ -221,7 +223,19 @@ class GameProcessor {
     return 180;
   }
 
-  private checkClubsCollisions() {
+  private checkClubsBarriersCollisions() {
+    for (let i = 0; i < this._wallWidth.length; ++i) {
+      if (
+        this.ballLeft < this.club1Right &&
+        this.ballBottom > this.club1Top &&
+        this.ballTop < this.club1Bottom
+      ) {
+        this.ballLeft = this.club1Right;
+        this._ballDirection =
+          this.calculateClubRebound(this.club1Bottom - this.ballTop) -
+          this._ballDirection;
+      }
+    }
     if (
       this.ballLeft < this.club1Right &&
       this.ballBottom > this.club1Top &&
@@ -279,7 +293,7 @@ class GameProcessor {
     this._ballY += Math.sin(radians(this._ballDirection)) * this._ballSpeed;
 
     this.checkBordersCollisions();
-    this.checkClubsCollisions();
+    this.checkClubsBarriersCollisions();
     this.checkGoals();
     this.moveClubs();
 

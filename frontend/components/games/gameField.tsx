@@ -98,7 +98,7 @@ const GameField: FC<PongProps> = ({ game }) => {
 
     // wall
     ctx.fillStyle = 'white';
-    console.log(`${wallWidth.length}`);
+    console.log(`${wallPos}`);
     for (let i = 0; i < wallWidth.length; ++i) {
       ctx.fillRect(
         canvas.width / 2 - wallWidth[i] / 2,
