@@ -22,13 +22,14 @@ class GameProcessor {
   private readonly _startingBallSpeed: number = 20;
   private readonly _ballSpeedDelta = 0.5;
   private readonly _frameDelta: number = 40;
-  private readonly _max_score: number = 11;
+  private readonly _maxScore: number = 11;
 
   public readonly fieldWidth: number = 800;
   public readonly fieldHeight: number = 600;
   public readonly player1Id: number;
   public readonly player2Id: number;
-  public readonly isRanked;
+  public readonly isRanked: boolean;
+  public readonly isCustomization: boolean;
 
   private readonly _clubHeightRight: number;
   private readonly _clubHeightLeft: number;
@@ -47,8 +48,24 @@ class GameProcessor {
   private _gameTimer: NodeJS.Timer;
   private _durationMs: number;
   private _isCompleted: boolean;
+  private _wallWidth: number[] = [0];
+  private _wallHeight: number[] = [0];
+  private _wallPos: number[] = [0];
 
-  constructor(isRanked: boolean, player1Id: number, player2Id?: number) {
+  constructor(
+    isRanked: boolean,
+    player1Id: number,
+    player2Id?: number,
+    isCustomization = true,
+  ) {
+    if (!isCustomization) {
+      this._wallWidth.push(0);
+      this._wallHeight.push(0);
+    } else {
+      this._wallWidth.push(8);
+      this._wallHeight.push(120);
+      this._wallPos.push(100);
+    }
     this._ballSpeed = this._startingBallSpeed;
     this._club1Pos = this.fieldHeight / 2;
     this._club2Pos = this.fieldHeight / 2;
@@ -59,6 +76,7 @@ class GameProcessor {
     this.player1Id = player1Id;
     this.player2Id = player2Id;
     this.isRanked = isRanked;
+    this._wallPos[0] = this.fieldHeight / 2;
 
     this.newRound();
 
@@ -235,7 +253,7 @@ class GameProcessor {
       this._score2++;
       this.newRound();
     }
-    if (this._score1 >= this._max_score || this._score2 >= this._max_score) {
+    if (this._score1 >= this._maxScore || this._score2 >= this._maxScore) {
       this._isCompleted = true;
     }
   }
@@ -267,7 +285,7 @@ class GameProcessor {
 
     this._durationMs += this._frameDelta;
 
-    if (this._score1 == this._max_score || this._score2 == this._max_score) {
+    if (this._score1 == this._maxScore || this._score2 == this._maxScore) {
       this._isCompleted = true;
     }
   }
@@ -312,6 +330,9 @@ class GameProcessor {
       status: this._status,
       durationMs: this._durationMs,
       isCompleted: this._isCompleted,
+      wallWidth: this._wallWidth,
+      wallHeight: this._wallHeight,
+      wallPos: this._wallPos,
     };
   }
 }
