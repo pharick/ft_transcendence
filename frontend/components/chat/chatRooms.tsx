@@ -31,10 +31,11 @@ const ChatRooms: FC = () => {
         url: '/api/chat/rooms',
       });
       const rooms: ChatRoom[] = await response.json();
+      console.log(rooms);
       setRooms(rooms);
     };
     loadRooms().then();
-  });
+  }, []);
 
   return (
     <section>

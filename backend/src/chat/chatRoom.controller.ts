@@ -29,8 +29,9 @@ export class ChatRoomController {
   }
 
   @Get()
-  findAll(): Promise<ChatRoom[]> {
-    return this.chatRoomsService.findAll();
+  @UseGuards(JwtAuthGuard)
+  findAll(@Req() request: Request): Promise<ChatRoom[]> {
+    return this.chatRoomsService.findAll(request.user.id);
   }
 
   @Get(':id')

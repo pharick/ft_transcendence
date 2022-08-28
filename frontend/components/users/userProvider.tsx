@@ -20,7 +20,6 @@ interface UserContextInterface {
   user?: User;
   handleLogin?: (code: string, params: URLSearchParams) => void;
   handleLogout?: () => void;
-  userSessionId?: string;
 }
 
 export const UserContext = createContext<UserContextInterface>({});

@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ChatMessage } from './chatMessage.entity';
+import { ChatRoomUser } from './chatRoomUser.entity';
 
 export enum ChatRoomType {
   Public,
@@ -20,6 +21,9 @@ export class ChatRoom {
 
   @Column({ nullable: true })
   password: string;
+
+  @OneToMany(() => ChatRoomUser, (roomUser) => roomUser.room)
+  users: ChatRoomUser[];
 
   @OneToMany(() => ChatMessage, (message) => message.room)
   messages: ChatMessage[];

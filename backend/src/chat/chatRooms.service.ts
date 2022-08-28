@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ChatRoom } from './chatRoom.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ChatRoomUser } from './chatRoomUser.entity';
 import { UsersService } from '../users/users.service';
 import { ChatGateway } from './chat.gateway';
@@ -42,12 +42,23 @@ export class ChatRoomsService {
     return savedChatRoom;
   }
 
-  findAll(privateRoom = false): Promise<ChatRoom[]> {
-    if (privateRoom) return this.chatRoomsRepository.find();
-    return this.chatRoomsRepository.findBy([
-      { type: ChatRoomType.Public },
-      { type: ChatRoomType.Protected },
-    ]);
+  async findAll(userId: number): Promise<ChatRoom[]> {
+    const myRoomIds = (
+      await this.roomUserRepository.find({
+        where: {
+          user: { id: userId },
+        },
+        relations: ['room'],
+      })
+    ).map((roomUser) => roomUser.room.id);
+    return this.chatRoomsRepository.find({
+      where: [
+        { type: ChatRoomType.Public },
+        { type: ChatRoomType.Protected },
+        { id: In(myRoomIds) },
+      ],
+      relations: ['users', 'users.user'],
+    });
   }
 
   findOne(id: number): Promise<ChatRoom> {
