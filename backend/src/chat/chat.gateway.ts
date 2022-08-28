@@ -37,7 +37,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { roomId } = client.handshake.auth;
     this.server
       .to(`room-${roomId}`)
-      .emit('sendClients', this.chatRoomService.getRoomUsers(roomId));
+      .emit('sendClients', await this.chatRoomService.getRoomUsers(roomId));
     this.logger.log(`Chat client disconnected: ${client.id}`);
   }
 

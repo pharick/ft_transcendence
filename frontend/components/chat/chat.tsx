@@ -43,6 +43,8 @@ const Chat: FC<ChatProps> = ({ room }) => {
     );
 
     socket.on('sendClients', (clients: ChatRoomUser[]) => {
+      console.log('CLIENTS');
+      console.log(clients);
       setRoomUsers(clients);
     });
 
