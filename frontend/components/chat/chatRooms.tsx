@@ -3,10 +3,14 @@ import Link from 'next/link';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { fetchWithHandleErrors } from '../../utils';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
-import { ChatRoomType, CreateChatRoomDto } from '../../types/dtos';
-import { ChatRoom } from '../../types/interfaces';
+import { CreateChatRoomDto } from '../../types/dtos';
+import { ChatRoom, ChatRoomType } from '../../types/interfaces';
 import { UserContext } from '../users/userProvider';
 import styles from '../../styles/ChatRooms.module.css';
+import Image from 'next/image';
+import publicRoom from '../../images/public.svg';
+import privateRoom from '../../images/private.svg';
+import protectedRoom from '../../images/protected.svg';
 
 const ChatRooms: FC = () => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
@@ -20,6 +24,7 @@ const ChatRooms: FC = () => {
       url: '/api/chat/rooms',
       method: 'PUT',
       body: data,
+      authRequired: true,
     });
     createRoomForm.reset();
   };
@@ -29,9 +34,10 @@ const ChatRooms: FC = () => {
       const response = await fetchWithHandleErrors({
         requestErrorHandlerContext,
         url: '/api/chat/rooms',
+        authRequired: true,
       });
+      if (!response.ok) return;
       const rooms: ChatRoom[] = await response.json();
-      console.log(rooms);
       setRooms(rooms);
     };
     loadRooms().then();
@@ -39,12 +45,33 @@ const ChatRooms: FC = () => {
 
   return (
     <section>
-      <ul className={styles.list}>
+      <ul className={`${styles.list} row`}>
         {rooms.map((room) => (
-          <li key={room.id}>
+          <li key={room.id} className="col-md-6">
             <Link href={`/chat/${room.id}`}>
               <a className={styles.link}>
-                <article className={styles.block}>{room.name}</article>
+                <article className={styles.block}>
+                  <Image
+                    src={
+                      room.type == ChatRoomType.Public
+                        ? publicRoom
+                        : room.type == ChatRoomType.Private
+                          ? privateRoom
+                          : protectedRoom
+                    }
+                    width={30}
+                    height={30}
+                  />
+                  <p className={styles.name}>
+                    {room.name}
+                    {room.users
+                      .filter((user) => user.isAdmin)
+                      .map((user) => user.user.id)
+                      .includes(userContext.user?.id) && (
+                        ' (you are admin)'
+                      )}
+                  </p>
+                </article>
               </a>
             </Link>
           </li>

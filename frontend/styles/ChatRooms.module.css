@@ -1,8 +1,6 @@
 .list {
     list-style: none;
     padding: 0;
-    display: flex;
-    flex-wrap: wrap;
 }
 
 .link {
@@ -19,10 +17,15 @@
     border-radius: 3px;
     padding: 10px;
     margin: 5px;
-    width: 200px;
+    display: flex;
+    align-items: center;
 }
 
 .block:hover {
     box-shadow: 1px 1px 5px gray;
     transform: translate(-1px, -1px);
+}
+
+.name {
+    margin-left: 20px;
 }

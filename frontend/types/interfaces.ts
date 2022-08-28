@@ -89,10 +89,18 @@ export interface UserStatusInterface {
   status: UserStatus;
 }
 
+export enum ChatRoomType {
+  Public,
+  Private,
+  Protected,
+}
+
 export interface ChatRoom {
   id: number;
   name: string;
+  type: ChatRoomType;
   password?: string;
+  users: ChatRoomUser[];
 }
 
 export interface ChatMessage {
