@@ -117,7 +117,7 @@ button:disabled {
     filter: invert(100%);
 }
 
-input[type=text] {
+input[type=text], input[type=password] {
     border: 2px solid lightgray;
     border-radius: 3px;
     font-size: 1em;

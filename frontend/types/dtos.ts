@@ -35,3 +35,7 @@ export class ChatMessageDto {
   roomId: number;
   text: string;
 }
+
+export class ChatRoomPasswordDto {
+  password: string;
+}

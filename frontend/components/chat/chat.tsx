@@ -1,14 +1,18 @@
-import { FC, useContext, useEffect, useRef, useState } from 'react';
+import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import { ChatMessage, ChatRoom, ChatRoomUser } from '../../types/interfaces';
 import { io, Socket } from 'socket.io-client';
 import { utcToZonedTime } from 'date-fns-tz';
 import { format } from 'date-fns';
 import { UserContext } from '../users/userProvider';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { ChatMessageDto } from '../../types/dtos';
-
-import styles from '../../styles/Chat.module.css';
+import { ChatMessageDto, ChatRoomPasswordDto } from '../../types/dtos';
 import RoomUserList from './roomUserList';
+import dynamic from 'next/dynamic';
+const Modal = dynamic(() => import('../../components/layout/modal'), {
+  ssr: false,
+});
+import { useRouter } from 'next/router';
+import styles from '../../styles/Chat.module.css';
 
 interface ChatProps {
   room: ChatRoom;
@@ -20,8 +24,11 @@ const Chat: FC<ChatProps> = ({ room }) => {
   const messageList = useRef<HTMLUListElement>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [roomUsers, setRoomUsers] = useState<ChatRoomUser[]>([]);
+  const [passwordRequired, setPasswordRequired] = useState(false);
   const userContext = useContext(UserContext);
+  const roomPasswordForm = useForm<ChatRoomPasswordDto>();
   const newMessageForm = useForm<ChatMessageDto>();
+  const router = useRouter();
 
   useEffect(() => {
     const socket = io(
@@ -51,6 +58,10 @@ const Chat: FC<ChatProps> = ({ room }) => {
       setForbidden(true);
     });
 
+    socket.on('passwordRequired', () => {
+      setPasswordRequired(true);
+    });
+
     setSocket(socket);
 
     return () => {
@@ -66,7 +77,13 @@ const Chat: FC<ChatProps> = ({ room }) => {
       messageList.current.scrollTop = messageList.current.scrollHeight;
   }, [messages]);
 
-  const sendMessage: SubmitHandler<ChatMessageDto> = async (data) => {
+  const enterPassword: SubmitHandler<ChatRoomPasswordDto> = (data) => {
+    socket.emit('enterPassword', data);
+    roomPasswordForm.reset();
+    setPasswordRequired(false);
+  };
+
+  const sendMessage: SubmitHandler<ChatMessageDto> = (data) => {
     socket.emit('messageToServer', data);
     newMessageForm.reset();
   };
@@ -134,6 +151,27 @@ const Chat: FC<ChatProps> = ({ room }) => {
           <RoomUserList roomUsers={roomUsers} />
         </div>
       </div>
+
+      <Modal
+        isOpen={passwordRequired}
+        title="Enter protected room password"
+        cancelButtonText="Cancel"
+        cancelButtonHandler={() => {
+          router.push('/chat').then();
+        }}
+      >
+        <form
+          className="d-flex"
+          onSubmit={roomPasswordForm.handleSubmit(enterPassword)}
+        >
+          <input
+            className="flex-grow-1"
+            type="password"
+            {...roomPasswordForm.register('password')}
+          />
+          <button type="submit">Enter</button>
+        </form>
+      </Modal>
     </section>
   );
 };

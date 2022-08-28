@@ -56,8 +56,8 @@ const ChatRooms: FC = () => {
                       room.type == ChatRoomType.Public
                         ? publicRoom
                         : room.type == ChatRoomType.Private
-                          ? privateRoom
-                          : protectedRoom
+                        ? privateRoom
+                        : protectedRoom
                     }
                     width={30}
                     height={30}
@@ -67,9 +67,7 @@ const ChatRooms: FC = () => {
                     {room.users
                       .filter((user) => user.isAdmin)
                       .map((user) => user.user.id)
-                      .includes(userContext.user?.id) && (
-                        ' (you are admin)'
-                      )}
+                      .includes(userContext.user?.id) && ' (you are admin)'}
                   </p>
                 </article>
               </a>

@@ -1,11 +1,10 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { ChatRoom } from './chatRoom.entity';
+import { ChatRoom, ChatRoomType } from './chatRoom.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { ChatRoomUser } from './chatRoomUser.entity';
 import { UsersService } from '../users/users.service';
 import { ChatGateway } from './chat.gateway';
-import { ChatRoomType } from './chat.dtos';
 
 @Injectable()
 export class ChatRoomsService {
@@ -65,15 +64,24 @@ export class ChatRoomsService {
     return this.chatRoomsRepository.findOneBy({ id });
   }
 
-  async authenticate(roomId: number, userId: number): Promise<ChatRoomUser> {
+  async authenticate(
+    roomId: number,
+    userId: number,
+    password: string = null,
+  ): Promise<ChatRoomUser> {
     const room = await this.chatRoomsRepository.findOneBy({ id: roomId });
     const user = await this.usersService.findOne(userId);
     if (!room || !user) return undefined;
     const roomUser = await this.roomUserRepository.findOneBy({ user, room });
     if (roomUser) return roomUser;
-    if (room.type == ChatRoomType.Private) return undefined;
-    const newRoomUser = this.roomUserRepository.create({ user, room });
-    return this.roomUserRepository.save(newRoomUser);
+    if (
+      room.type == ChatRoomType.Public ||
+      (room.type == ChatRoomType.Protected && room.password === password)
+    ) {
+      const newRoomUser = this.roomUserRepository.create({ user, room });
+      return this.roomUserRepository.save(newRoomUser);
+    }
+    return undefined;
   }
 
   async getRoomUsers(
