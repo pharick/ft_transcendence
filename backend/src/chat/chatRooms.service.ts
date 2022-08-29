@@ -2,7 +2,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ChatRoom, ChatRoomType } from './chatRoom.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { ChatRoomUser } from './chatRoomUser.entity';
+import { ChatRoomUser, ChatRoomUserType } from './chatRoomUser.entity';
 import { UsersService } from '../users/users.service';
 import { ChatGateway } from './chat.gateway';
 
@@ -35,7 +35,7 @@ export class ChatRoomsService {
     const roomUser = this.roomUserRepository.create({
       user,
       room: savedChatRoom,
-      isAdmin: true,
+      type: ChatRoomUserType.Owner,
     });
     await this.roomUserRepository.save(roomUser);
     return savedChatRoom;
@@ -100,5 +100,12 @@ export class ChatRoomsService {
       );
     });
     return roomUsers;
+  }
+
+  async resetBan(roomUserId: number) {
+    await this.roomUserRepository.update(
+      { id: roomUserId },
+      { bannedUntil: null },
+    );
   }
 }

@@ -1,15 +1,16 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import ReadyGameBlock from './readyGameBlock';
 import PendingGameBlock from './pendingGameBlock';
 import { Game, Notifications, PendingGame } from '../../types/interfaces';
-
+import { UserContext } from '../users/userProvider';
 import styles from '../../styles/Notifications.module.css';
 
 const Notifications: FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [games, setGames] = useState<Game[]>([]);
   const [pendingGames, setPendingGames] = useState<PendingGame[]>([]);
+  const userContext = useContext(UserContext);
 
   useEffect(() => {
     setGames([]);
@@ -47,7 +48,7 @@ const Notifications: FC = () => {
       socket.off('newMessages');
       socket.disconnect();
     };
-  }, []);
+  }, [userContext.user?.id]);
 
   if (isConnected) {
     return (

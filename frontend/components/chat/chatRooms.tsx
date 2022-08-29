@@ -4,7 +4,11 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { fetchWithHandleErrors } from '../../utils';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 import { CreateChatRoomDto } from '../../types/dtos';
-import { ChatRoom, ChatRoomType } from '../../types/interfaces';
+import {
+  ChatRoom,
+  ChatRoomType,
+  ChatRoomUserType,
+} from '../../types/interfaces';
 import { UserContext } from '../users/userProvider';
 import styles from '../../styles/ChatRooms.module.css';
 import Image from 'next/image';
@@ -27,19 +31,22 @@ const ChatRooms: FC = () => {
       authRequired: true,
     });
     createRoomForm.reset();
+    await loadRooms();
+  };
+
+  const loadRooms = async () => {
+    const response = await fetchWithHandleErrors({
+      requestErrorHandlerContext,
+      url: '/api/chat/rooms',
+      authRequired: true,
+    });
+    if (!response.ok) return;
+    const rooms: ChatRoom[] = await response.json();
+    setRooms(rooms);
   };
 
   useEffect(() => {
-    const loadRooms = async () => {
-      const response = await fetchWithHandleErrors({
-        requestErrorHandlerContext,
-        url: '/api/chat/rooms',
-        authRequired: true,
-      });
-      if (!response.ok) return;
-      const rooms: ChatRoom[] = await response.json();
-      setRooms(rooms);
-    };
+    console.log('loadrooms');
     loadRooms().then();
   }, []);
 
@@ -65,7 +72,11 @@ const ChatRooms: FC = () => {
                   <p className={styles.name}>
                     {room.name}
                     {room.users
-                      .filter((user) => user.isAdmin)
+                      .filter(
+                        (user) =>
+                          user.type == ChatRoomUserType.Owner ||
+                          user.type == ChatRoomUserType.Admin,
+                      )
                       .map((user) => user.user.id)
                       .includes(userContext.user?.id) && ' (you are admin)'}
                   </p>

@@ -1,5 +1,10 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
-import { ChatMessage, ChatRoom, ChatRoomUser } from '../../types/interfaces';
+import {
+  ChatMessage,
+  ChatRoom,
+  ChatRoomUser,
+  ChatRoomUserType,
+} from '../../types/interfaces';
 import { io, Socket } from 'socket.io-client';
 import { utcToZonedTime } from 'date-fns-tz';
 import { format } from 'date-fns';
@@ -8,11 +13,12 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { ChatMessageDto, ChatRoomPasswordDto } from '../../types/dtos';
 import RoomUserList from './roomUserList';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
+import styles from '../../styles/Chat.module.css';
+
 const Modal = dynamic(() => import('../../components/layout/modal'), {
   ssr: false,
 });
-import { useRouter } from 'next/router';
-import styles from '../../styles/Chat.module.css';
 
 interface ChatProps {
   room: ChatRoom;
@@ -21,13 +27,14 @@ interface ChatProps {
 const Chat: FC<ChatProps> = ({ room }) => {
   const [socket, setSocket] = useState<Socket>();
   const [forbidden, setForbidden] = useState(false);
-  const messageList = useRef<HTMLUListElement>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [roomUsers, setRoomUsers] = useState<ChatRoomUser[]>([]);
   const [passwordRequired, setPasswordRequired] = useState(false);
+  const [currentUser, setCurrentUser] = useState<ChatRoomUser>();
   const userContext = useContext(UserContext);
   const roomPasswordForm = useForm<ChatRoomPasswordDto>();
   const newMessageForm = useForm<ChatMessageDto>();
+  const messageList = useRef<HTMLUListElement>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -43,9 +50,14 @@ const Chat: FC<ChatProps> = ({ room }) => {
     );
 
     socket.on('sendClients', (clients: ChatRoomUser[]) => {
-      console.log('CLIENTS');
-      console.log(clients);
       setRoomUsers(clients);
+      console.log(clients);
+      console.log(userContext.user);
+      const me = clients.find(
+        (client) => client.user.id == userContext.user?.id,
+      );
+      console.log(me);
+      if (me) setCurrentUser(me);
     });
 
     socket.on('initMessages', (messages: ChatMessage[]) => {
@@ -65,6 +77,7 @@ const Chat: FC<ChatProps> = ({ room }) => {
     });
 
     setSocket(socket);
+    console.log('connect');
 
     return () => {
       socket.off('sendClients');
@@ -72,7 +85,7 @@ const Chat: FC<ChatProps> = ({ room }) => {
       socket.off('messageToClient');
       socket.disconnect();
     };
-  }, []);
+  }, [userContext.user?.id]);
 
   useEffect(() => {
     if (messageList.current)
@@ -97,7 +110,7 @@ const Chat: FC<ChatProps> = ({ room }) => {
   return (
     <section>
       <div className="row">
-        <div className="col">
+        <div className="col-md">
           <ul className={styles.chatList} ref={messageList}>
             {messages.map((message) => (
               <li
@@ -149,8 +162,8 @@ const Chat: FC<ChatProps> = ({ room }) => {
             <p className="warning-message">Please login to send messages</p>
           )}
         </div>
-        <div className="col-3">
-          <RoomUserList roomUsers={roomUsers} />
+        <div className="col-md-3">
+          <RoomUserList roomUsers={roomUsers} currentUser={currentUser} />
         </div>
       </div>
 

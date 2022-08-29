@@ -8,6 +8,12 @@ import {
 import { ChatRoom } from './chatRoom.entity';
 import { User } from '../users/user.entity';
 
+export enum ChatRoomUserType {
+  Owner,
+  Admin,
+  Common,
+}
+
 @Entity()
 @Index(['room', 'user'], { unique: true })
 export class ChatRoomUser {
@@ -20,9 +26,12 @@ export class ChatRoomUser {
   @ManyToOne(() => User)
   user: User;
 
-  @Column({ default: false })
-  isBanned: boolean;
+  @Column({ default: ChatRoomUserType.Common })
+  type: ChatRoomUserType;
 
-  @Column({ default: false })
-  isAdmin: boolean;
+  @Column({ default: null })
+  bannedUntil: Date;
+
+  @Column({ default: null })
+  mutedUntil: Date;
 }

@@ -111,10 +111,17 @@ export interface ChatMessage {
   text: string;
 }
 
+export enum ChatRoomUserType {
+  Owner,
+  Admin,
+  Common,
+}
+
 export interface ChatRoomUser {
   id: number;
   user: User;
-  isBanned: boolean;
-  isAdmin: boolean;
+  type: ChatRoomUserType;
+  bannedUntil: Date;
+  mutedUntil: Date;
   isOnline: boolean;
 }

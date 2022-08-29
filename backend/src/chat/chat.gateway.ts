@@ -84,29 +84,41 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       password,
     );
 
-    if (!roomUser && room.type == ChatRoomType.Private) {
+    const isBanned = await this.checkBan(roomUser);
+
+    if ((!roomUser && room.type == ChatRoomType.Private) || isBanned) {
       client.emit('forbidden');
       client.disconnect();
       return;
     } else if (!roomUser && room.type == ChatRoomType.Protected) {
       client.emit('passwordRequired');
-    }
+    } else {
+      client.join(`room-${room.id}`);
+      client.join(`user-${user.id}`);
 
-    client.join(`room-${room.id}`);
-    client.join(`user-${user.id}`);
+      this.server
+        .to(`room-${roomId}`)
+        .emit('sendClients', await this.chatRoomService.getRoomUsers(roomId));
+      this.server
+        .to(`user-${user.id}`)
+        .emit(
+          'initMessages',
+          await this.chatMessagesService.findAllByRoom(room.id),
+        );
 
-    this.server
-      .to(`room-${roomId}`)
-      .emit('sendClients', await this.chatRoomService.getRoomUsers(roomId));
-    this.server
-      .to(`user-${user.id}`)
-      .emit(
-        'initMessages',
-        await this.chatMessagesService.findAllByRoom(room.id),
+      this.logger.log(
+        `Chat client ${client.id} (user ${user?.id}) connected to ${room.name} room`,
       );
+    }
+  }
 
-    this.logger.log(
-      `Chat client ${client.id} (user ${user?.id}) connected to ${room.name} room`,
-    );
+  private async checkBan(roomUser: ChatRoomUser): Promise<boolean> {
+    if (!roomUser.bannedUntil) return false;
+    const now = new Date();
+    if (roomUser.bannedUntil <= now) {
+      await this.chatRoomService.resetBan(roomUser.id);
+      return false;
+    }
+    return true;
   }
 }

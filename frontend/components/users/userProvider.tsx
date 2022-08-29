@@ -10,7 +10,7 @@ import {
 import { User } from '../../types/interfaces';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 import { fetchWithHandleErrors } from '../../utils';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 interface UserProviderProps {
   children?: ReactNode;
@@ -25,7 +25,7 @@ interface UserContextInterface {
 export const UserContext = createContext<UserContextInterface>({});
 
 const UserProvider: FC<UserProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User>(null);
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
   const handleLogin = async (code: string) => {
@@ -39,7 +39,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
   };
 
   const handleLogout = () => {
-    setUser(undefined);
+    setUser(null);
     localStorage.clear();
   };
 
@@ -56,9 +56,10 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
 
   useEffect(() => {
     getUser().then();
-  });
+  }, []);
 
   useEffect(() => {
+    console.log(localStorage.getItem('token'));
     const statusSocket = io(
       `${
         process.env.NODE_ENV == 'development'
@@ -70,10 +71,13 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
       },
     );
 
+    console.log('connect');
+
     return () => {
+      console.log('disconnect');
       statusSocket.disconnect();
     };
-  }, []);
+  }, [user?.id]);
 
   const value = useMemo(
     () => ({

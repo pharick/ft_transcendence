@@ -13,3 +13,11 @@
 .offline {
     opacity: 30%;
 }
+
+.buttons {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0 auto;
+    align-items: center;
+}
