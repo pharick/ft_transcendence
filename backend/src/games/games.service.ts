@@ -15,6 +15,16 @@ const random = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
+function findThirdCoordinate(
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  x: number,
+): number {
+  return y1 + ((y2 - y1) / (x2 - x1)) * (x - x1);
+}
+
 class GameProcessor {
   private readonly _ballRadius: number = 4;
   private readonly _clubWidth: number = 8;
@@ -164,6 +174,22 @@ class GameProcessor {
     return this.fieldWidth - this._ballRadius * 2 - this._clubWidth;
   }
 
+  getWallTop(centerPos: number, wallHeight: number): number {
+    return centerPos - wallHeight / 2;
+  }
+
+  getWallBottom(centerPos: number, wallHeight: number): number {
+    return centerPos + wallHeight / 2;
+  }
+
+  getWallRight(wallWidth: number): number {
+    return this.fieldWidth / 2 + this._ballRadius * 2 + wallWidth;
+  }
+
+  getWallLeft(wallWidth: number): number {
+    return this.fieldWidth / 2 - this._ballRadius * 2 - wallWidth;
+  }
+
   moveClubStart(isClub1: boolean, up: boolean) {
     if (isClub1) {
       this._club1Delta = up ? -this._moveClubDelta : this._moveClubDelta;
@@ -223,19 +249,49 @@ class GameProcessor {
     return 180;
   }
 
-  private checkClubsBarriersCollisions() {
-    for (let i = 0; i < this._wallWidth.length; ++i) {
-      if (
-        this.ballLeft < this.club1Right &&
-        this.ballBottom > this.club1Top &&
-        this.ballTop < this.club1Bottom
-      ) {
-        this.ballLeft = this.club1Right;
-        this._ballDirection =
-          this.calculateClubRebound(this.club1Bottom - this.ballTop) -
-          this._ballDirection;
-      }
+  checkBarrierCollision(prevValueX: number, prevValueY, i: number) {
+    if (prevValueX <= this.fieldWidth / 2) {
+      this.checkBarrierLeft(prevValueX, prevValueY, i);
+    } else {
+      this.checkBarrierRight(prevValueX, prevValueY, i);
     }
+  }
+
+  private checkBarrierLeft(prevValueX: number, prevValueY: number, i: number) {
+    const y = findThirdCoordinate(
+      prevValueX,
+      prevValueY,
+      this._ballX,
+      this._ballY,
+      this.getWallLeft(this._wallWidth[i]),
+    );
+    if (
+      this.getWallBottom(this._wallPos[i], this._wallHeight[i]) > y &&
+      y > this.getWallTop(this._wallPos[i], this._wallHeight[i])
+    ) {
+      this.ballRight = this.getWallLeft(this._wallWidth[i]);
+      this._ballDirection = 180 - this._ballDirection;
+    }
+  }
+
+  private checkBarrierRight(prevValueX: number, prevValueY, i: number) {
+    const y = findThirdCoordinate(
+      prevValueX,
+      prevValueY,
+      this._ballX,
+      this._ballY,
+      this.getWallRight(this._wallWidth[i]),
+    );
+    if (
+      this.getWallBottom(this._wallPos[i], this._wallHeight[i]) > y &&
+      y > this.getWallTop(this._wallPos[i], this._wallHeight[i])
+    ) {
+      this.ballLeft = this.getWallRight(this._wallWidth[i]);
+      this._ballDirection = 180 - this._ballDirection;
+    }
+  }
+
+  private checkClubsBarriersCollisions(prevValueX: number, prevValueY: number) {
     if (
       this.ballLeft < this.club1Right &&
       this.ballBottom > this.club1Top &&
@@ -255,6 +311,16 @@ class GameProcessor {
       this._ballDirection =
         this.calculateClubRebound(this.club1Bottom - this.ballTop) -
         this._ballDirection;
+    }
+    for (let i = 0; i < this._wallWidth.length; ++i) {
+      if (
+        (prevValueX < this.getWallLeft(this._wallWidth[i]) &&
+          this.getWallLeft(this._wallWidth[i]) < this._ballX) ||
+        (prevValueX > this.getWallRight(this._wallWidth[i]) &&
+          this.getWallRight(this._wallWidth[i]) > this._ballX)
+      ) {
+        this.checkBarrierCollision(prevValueX, prevValueY, i);
+      }
     }
   }
 
@@ -289,11 +355,13 @@ class GameProcessor {
   }
 
   calculateNextFrame() {
+    const tempX = this._ballX;
+    const tempY = this._ballY;
     this._ballX += Math.cos(radians(this._ballDirection)) * this._ballSpeed;
     this._ballY += Math.sin(radians(this._ballDirection)) * this._ballSpeed;
 
     this.checkBordersCollisions();
-    this.checkClubsBarriersCollisions();
+    this.checkClubsBarriersCollisions(tempX, tempY);
     this.checkGoals();
     this.moveClubs();
 
