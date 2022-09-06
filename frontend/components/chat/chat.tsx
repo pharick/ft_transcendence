@@ -1,10 +1,5 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
-import {
-  ChatMessage,
-  ChatRoom,
-  ChatRoomUser,
-  ChatRoomUserType,
-} from '../../types/interfaces';
+import { ChatMessage, ChatRoom, ChatRoomUser } from '../../types/interfaces';
 import { io, Socket } from 'socket.io-client';
 import { utcToZonedTime } from 'date-fns-tz';
 import { format } from 'date-fns';
@@ -51,12 +46,9 @@ const Chat: FC<ChatProps> = ({ room }) => {
 
     socket.on('sendClients', (clients: ChatRoomUser[]) => {
       setRoomUsers(clients);
-      console.log(clients);
-      console.log(userContext.user);
       const me = clients.find(
         (client) => client.user.id == userContext.user?.id,
       );
-      console.log(me);
       if (me) setCurrentUser(me);
     });
 
@@ -77,7 +69,6 @@ const Chat: FC<ChatProps> = ({ room }) => {
     });
 
     setSocket(socket);
-    console.log('connect');
 
     return () => {
       socket.off('sendClients');

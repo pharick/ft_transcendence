@@ -10,7 +10,7 @@ import {
 import { User } from '../../types/interfaces';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 import { fetchWithHandleErrors } from '../../utils';
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 interface UserProviderProps {
   children?: ReactNode;
@@ -59,7 +59,6 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    console.log(localStorage.getItem('token'));
     const statusSocket = io(
       `${
         process.env.NODE_ENV == 'development'
@@ -71,10 +70,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
       },
     );
 
-    console.log('connect');
-
     return () => {
-      console.log('disconnect');
       statusSocket.disconnect();
     };
   }, [user?.id]);

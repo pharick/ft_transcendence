@@ -20,6 +20,7 @@ const ChatRooms: FC = () => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
   const userContext = useContext(UserContext);
   const createRoomForm = useForm<CreateChatRoomDto>();
+  const [isProtected, setIsProtected] = useState(false);
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
 
   const createRoom: SubmitHandler<CreateChatRoomDto> = async (data) => {
@@ -46,7 +47,6 @@ const ChatRooms: FC = () => {
   };
 
   useEffect(() => {
-    console.log('loadrooms');
     loadRooms().then();
   }, []);
 
@@ -72,11 +72,11 @@ const ChatRooms: FC = () => {
                   <p className={styles.name}>
                     {room.name}
                     {room.users
-                      .filter(
-                        (user) =>
-                          user.type == ChatRoomUserType.Owner ||
-                          user.type == ChatRoomUserType.Admin,
-                      )
+                      .filter((user) => user.type == ChatRoomUserType.Owner)
+                      .map((user) => user.user.id)
+                      .includes(userContext.user?.id) && ' (you are owner)'}
+                    {room.users
+                      .filter((user) => user.type == ChatRoomUserType.Admin)
                       .map((user) => user.user.id)
                       .includes(userContext.user?.id) && ' (you are admin)'}
                   </p>
@@ -106,11 +106,19 @@ const ChatRooms: FC = () => {
               <select
                 className="w-100 m-0"
                 {...createRoomForm.register('type')}
+                onChange={(e) => {
+                  setIsProtected(
+                    parseInt(e.target.value) == ChatRoomType.Protected,
+                  );
+                }}
               >
                 {Object.keys(ChatRoomType)
                   .filter((key) => isNaN(Number(key)))
                   .map((key) => (
-                    <option key={key} value={Object(ChatRoomType)[key]}>
+                    <option
+                      key={Object(ChatRoomType)[key]}
+                      value={Object(ChatRoomType)[key]}
+                    >
                       {key}
                     </option>
                   ))}
@@ -121,9 +129,7 @@ const ChatRooms: FC = () => {
                 type="text"
                 className="w-100"
                 placeholder="Password"
-                disabled={
-                  createRoomForm.getValues('type') != ChatRoomType.Protected
-                }
+                disabled={!isProtected}
                 {...createRoomForm.register('password', {
                   maxLength: 15,
                 })}

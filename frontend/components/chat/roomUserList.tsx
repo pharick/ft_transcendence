@@ -1,10 +1,8 @@
 import { FC } from 'react';
 import { ChatRoomUser, ChatRoomUserType } from '../../types/interfaces';
 import PlayerBlockSmall from '../users/playerBlockSmall';
-import Image from 'next/image';
 import styles from '../../styles/RoomUserList.module.css';
-import adminImage from '../../images/admin.svg';
-import banImage from '../../images/ban.svg';
+import RoomUserButtons from './roomUserButtons';
 
 interface RoomUserListProps {
   roomUsers: ChatRoomUser[];
@@ -34,31 +32,9 @@ const RoomUserList: FC<RoomUserListProps> = ({ roomUsers, currentUser }) => {
                     : ''}
                 </p>
 
-                {(currentUser?.type == ChatRoomUserType.Owner ||
-                  currentUser?.type == ChatRoomUserType.Admin) && (
-                  <ul className={styles.buttons}>
-                    <li>
-                      <button className="icon-button">
-                        <Image
-                          src={adminImage}
-                          alt="Admin"
-                          width={20}
-                          height={20}
-                        />
-                      </button>
-                    </li>
-                    <li>
-                      <button className="icon-button">
-                        <Image
-                          src={banImage}
-                          alt="Ban"
-                          width={20}
-                          height={20}
-                        />
-                      </button>
-                    </li>
-                  </ul>
-                )}
+                <div className="ms-auto">
+                  <RoomUserButtons user={roomUser} />
+                </div>
               </article>
             </li>
           ))}
