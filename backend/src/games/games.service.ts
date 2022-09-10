@@ -39,7 +39,6 @@ class GameProcessor {
   public readonly player1Id: number;
   public readonly player2Id: number;
   public readonly isRanked: boolean;
-  public readonly isCustomization: boolean;
 
   private readonly _clubHeightRight: number;
   private readonly _clubHeightLeft: number;
@@ -66,11 +65,15 @@ class GameProcessor {
     isRanked: boolean,
     player1Id: number,
     player2Id?: number,
-    isCustomization = true,
+    mode = 0,
   ) {
-    if (!isCustomization) {
+    if (mode == 0) {
       this._wallWidth.push(0);
       this._wallHeight.push(0);
+    } else if (mode == 1) {
+      this._wallWidth.push(8);
+      this._wallHeight.push(200);
+      this._wallPos.push(250);
     } else {
       this._wallWidth.push(8);
       this._wallHeight.push(120);

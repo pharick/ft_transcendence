@@ -18,6 +18,7 @@ const GameInviteButton: FC<InviteProps> = ({ user }) => {
   const handleGameInvite = async () => {
     const createPendingGameDto: CreatePendingGameDto = {
       player2Id: user.id,
+      mode: 0,
     };
 
     const response = await fetchWithHandleErrors({
@@ -41,7 +42,7 @@ const GameInviteButton: FC<InviteProps> = ({ user }) => {
     ? 'Invited'
     : isError
     ? 'Already invited'
-    : 'Invite to play';
+    : 'Invite to origin game';
 
   return (
     <button
