@@ -39,11 +39,11 @@ class GameBarrier {
   }
 
   get top(): number {
-    return this.y - this.width / 2;
+    return this.y - this.height / 2;
   }
 
   get bottom(): number {
-    return this.y + this.width / 2;
+    return this.y + this.height / 2;
   }
 
   get right(): number {
@@ -118,10 +118,10 @@ class GameProcessor {
   private getBarriers(mode: number): GameBarrier[] {
     const barriers: GameBarrier[] = [];
     if (mode == 1) {
-      barriers.push(new GameBarrier(8, 200, this.fieldWidth, 250));
-    } else {
-      barriers.push(new GameBarrier(8, 120, this.fieldWidth, 100));
-      barriers.push(new GameBarrier(8, 120, this.fieldWidth, 400));
+      barriers.push(new GameBarrier(8, 200, this.fieldWidth / 2, 250));
+    } else if (mode == 2) {
+      barriers.push(new GameBarrier(8, 120, this.fieldWidth / 2, 100));
+      barriers.push(new GameBarrier(8, 120, this.fieldWidth / 2, 400));
     }
     return barriers;
   }
@@ -263,10 +263,10 @@ class GameProcessor {
 
   private checkBarrierCollision(
     prevBallX: number,
-    prevBallY,
+    prevBallY: number,
     barrier: GameBarrier,
   ) {
-    if (prevBallX <= this.fieldWidth / 2) {
+    if (prevBallX <= barrier.x) {
       this.checkBarrierLeft(prevBallX, prevBallY, barrier);
     } else {
       this.checkBarrierRight(prevBallX, prevBallY, barrier);
@@ -293,7 +293,7 @@ class GameProcessor {
 
   private checkBarrierRight(
     prevBallX: number,
-    prevBallY,
+    prevBallY: number,
     barrier: GameBarrier,
   ) {
     const y = findThirdCoordinate(
@@ -303,7 +303,7 @@ class GameProcessor {
       this._ballY,
       barrier.right,
     );
-    if (barrier.bottom > y && barrier.top) {
+    if (barrier.bottom > y && barrier.top < y) {
       this.ballLeft = barrier.right;
       this._ballDirection = 180 - this._ballDirection;
     }

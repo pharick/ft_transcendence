@@ -21,8 +21,6 @@ const GameInviteButton: FC<InviteProps> = ({ user }) => {
       mode: 0,
     };
 
-    console.log(createPendingGameDto);
-
     const response = await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: '/api/pending/',

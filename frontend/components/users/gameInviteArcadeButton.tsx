@@ -24,7 +24,6 @@ const GameInviteArcadeButton: FC<InviteProps> = ({ user }) => {
 
   const handleGameInvite = async () => {
     setIsOpen(false);
-    console.log(mode);
     const createPendingGameDto: CreatePendingGameDto = {
       player2Id: user.id,
       mode: parseInt(mode, 10),
@@ -77,7 +76,7 @@ const GameInviteArcadeButton: FC<InviteProps> = ({ user }) => {
       >
         {
           <div>
-            <form action="select1.php" method="post">
+            <form method="post">
               <p>
                 <select
                   size={1}

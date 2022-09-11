@@ -27,7 +27,6 @@ const UserProfile: FC = () => {
   const profileForm = useForm<UpdateUserProfileDto>();
 
   const updateProfile: SubmitHandler<UpdateUserProfileDto> = async (data) => {
-    console.log(data);
     await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: `/api/users/${userContext.user?.id}`,

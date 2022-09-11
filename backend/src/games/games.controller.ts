@@ -19,7 +19,7 @@ export class GamesController {
   @Put()
   @UseGuards(JwtAuthGuard)
   async createTraining(@Req() request: Request): Promise<Game> {
-    return await this.gamesService.create(false, request.user.id);
+    return await this.gamesService.create(false, request.user.id, null, 2);
   }
 
   @Get()

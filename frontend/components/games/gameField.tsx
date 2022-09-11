@@ -96,10 +96,9 @@ const GameField: FC<PongProps> = ({ game }) => {
 
     // wall
     ctx.fillStyle = 'white';
-    // console.log(`${wallPos}`);
     for (const barrier of barriers) {
       ctx.fillRect(
-        canvas.width / 2 - barrier.width / 2,
+        barrier.x - barrier.width / 2,
         barrier.y - barrier.height / 2,
         barrier.width,
         barrier.height,

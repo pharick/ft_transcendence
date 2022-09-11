@@ -60,7 +60,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       roomId,
       text,
     );
-    console.log(message);
     this.server.to(`room-${roomId}`).emit('messageToClient', message);
   }
 

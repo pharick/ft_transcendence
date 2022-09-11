@@ -70,7 +70,6 @@ export class UsersController {
     )
     file: Express.Multer.File,
   ) {
-    console.log(file);
     if (request.user.id != userId) throw new ForbiddenException();
     await this.usersService.setAvatar(userId, file.path);
   }

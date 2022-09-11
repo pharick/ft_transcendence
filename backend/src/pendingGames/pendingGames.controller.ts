@@ -40,8 +40,6 @@ export class PendingGamesController {
     @Req() request: Request,
     @Body() { player2Id, mode }: CreatePendingGameDto,
   ): Promise<PendingGame> {
-    console.log('Hello!');
-    console.log(mode);
     return this.pendingGamesService
       .create(request.user.id, player2Id, mode)
       .catch((error) => {
