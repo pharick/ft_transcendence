@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Index } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  Index,
+  Column,
+} from 'typeorm';
 import { User } from '../users/user.entity';
 
 @Entity()
@@ -12,4 +18,7 @@ export class PendingGame {
 
   @ManyToOne(() => User)
   player2: User;
+
+  @Column()
+  mode: number;
 }

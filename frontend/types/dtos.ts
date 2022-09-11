@@ -13,6 +13,7 @@ export class MoveClubStopDto {
 
 export class CreatePendingGameDto {
   player2Id: number;
+  mode?: number;
 }
 
 export class UpdateUserProfileDto {

@@ -35,6 +35,13 @@ export enum GameStatus {
   OnGame,
 }
 
+export interface GameBarrier {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+}
+
 export interface GameFrame {
   ballRadius: number;
   ballX: number;
@@ -49,9 +56,7 @@ export interface GameFrame {
   status: GameStatus;
   durationMs: number;
   isCompleted: boolean;
-  wallWidth: number[];
-  wallHeight: number[];
-  wallPos: number[];
+  barriers: GameBarrier[];
 }
 
 export interface GameClients {

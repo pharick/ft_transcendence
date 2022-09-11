@@ -8,6 +8,7 @@ import CompletedGameList from '../../components/games/completedGameList';
 import UserBlock from '../../components/users/userBlock';
 import UserProfile from '../../components/users/userProfile';
 import styles from '../../styles/UserPage.module.css';
+import GameInviteArcadeButton from '../../components/users/gameInviteArcadeButton';
 
 interface UserPageProps {
   user: User;
@@ -48,6 +49,9 @@ const UserPage: NextPage<UserPageProps> = ({ user, completedGames }) => {
             >
               <li>
                 <GameInviteButton user={user} />
+              </li>
+              <li>
+                <GameInviteArcadeButton user={user} />
               </li>
             </ul>
           ) : (

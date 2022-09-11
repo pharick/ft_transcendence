@@ -15,13 +15,19 @@ export class PendingGamesService {
     private notificationsService: NotificationsService,
   ) {}
 
-  async create(player1Id: number, player2Id: number): Promise<PendingGame> {
+  async create(
+    player1Id: number,
+    player2Id: number,
+    mode: number,
+  ): Promise<PendingGame> {
     const player1 = await this.usersService.findOne(player1Id);
     const player2 = await this.usersService.findOne(player2Id);
     if (!player1 || !player2) return undefined;
+    if (!mode) mode = 0;
     const pendingGame = this.pendingGamesRepository.create({
       player1,
       player2,
+      mode,
     });
     const game = await this.pendingGamesRepository.save(pendingGame);
     await this.notificationsService.send(game.player1.id);
