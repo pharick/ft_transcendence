@@ -25,6 +25,36 @@ function findThirdCoordinate(
   return y1 + ((y2 - y1) / (x2 - x1)) * (x - x1);
 }
 
+class GameBarrier {
+  public width: number;
+  public height: number;
+  public x: number;
+  public y: number;
+
+  constructor(width: number, height: number, x: number, y: number) {
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;
+  }
+
+  get top(): number {
+    return this.y - this.width / 2;
+  }
+
+  get bottom(): number {
+    return this.y + this.width / 2;
+  }
+
+  get right(): number {
+    return this.x + this.width / 2;
+  }
+
+  get left(): number {
+    return this.x - this.width / 2;
+  }
+}
+
 class GameProcessor {
   private readonly _ballRadius: number = 4;
   private readonly _clubWidth: number = 8;
@@ -57,9 +87,7 @@ class GameProcessor {
   private _gameTimer: NodeJS.Timer;
   private _durationMs: number;
   private _isCompleted: boolean;
-  private _wallWidth: number[] = [];
-  private _wallHeight: number[] = [];
-  private _wallPos: number[] = [];
+  private _barriers: GameBarrier[];
 
   constructor(
     isRanked: boolean,
@@ -67,21 +95,6 @@ class GameProcessor {
     player2Id?: number,
     mode = 0,
   ) {
-    if (mode == 0) {
-      this._wallWidth.push(0);
-      this._wallHeight.push(0);
-    } else if (mode == 1) {
-      this._wallWidth.push(8);
-      this._wallHeight.push(200);
-      this._wallPos.push(250);
-    } else {
-      this._wallWidth.push(8);
-      this._wallHeight.push(120);
-      this._wallPos.push(100);
-      this._wallWidth.push(8);
-      this._wallHeight.push(120);
-      this._wallPos.push(400);
-    }
     this._ballSpeed = this._startingBallSpeed;
     this._club1Pos = this.fieldHeight / 2;
     this._club2Pos = this.fieldHeight / 2;
@@ -92,6 +105,7 @@ class GameProcessor {
     this.player1Id = player1Id;
     this.player2Id = player2Id;
     this.isRanked = isRanked;
+    this._barriers = this.getBarriers(mode);
 
     this.newRound();
 
@@ -99,6 +113,17 @@ class GameProcessor {
     this._clubHeightRight = this.isTraining ? this.fieldHeight : 80;
     this._durationMs = 0;
     this._isCompleted = false;
+  }
+
+  private getBarriers(mode: number): GameBarrier[] {
+    const barriers: GameBarrier[] = [];
+    if (mode == 1) {
+      barriers.push(new GameBarrier(8, 200, this.fieldWidth, 250));
+    } else {
+      barriers.push(new GameBarrier(8, 120, this.fieldWidth, 100));
+      barriers.push(new GameBarrier(8, 120, this.fieldWidth, 400));
+    }
+    return barriers;
   }
 
   public get score1(): number {
@@ -177,22 +202,6 @@ class GameProcessor {
     return this.fieldWidth - this._ballRadius * 2 - this._clubWidth;
   }
 
-  getWallTop(centerPos: number, wallHeight: number): number {
-    return centerPos - wallHeight / 2;
-  }
-
-  getWallBottom(centerPos: number, wallHeight: number): number {
-    return centerPos + wallHeight / 2;
-  }
-
-  getWallRight(wallWidth: number): number {
-    return this.fieldWidth / 2 + this._ballRadius * 2 + wallWidth;
-  }
-
-  getWallLeft(wallWidth: number): number {
-    return this.fieldWidth / 2 - this._ballRadius * 2 - wallWidth;
-  }
-
   moveClubStart(isClub1: boolean, up: boolean) {
     if (isClub1) {
       this._club1Delta = up ? -this._moveClubDelta : this._moveClubDelta;
@@ -252,49 +261,55 @@ class GameProcessor {
     return 180;
   }
 
-  checkBarrierCollision(prevValueX: number, prevValueY, i: number) {
-    if (prevValueX <= this.fieldWidth / 2) {
-      this.checkBarrierLeft(prevValueX, prevValueY, i);
+  private checkBarrierCollision(
+    prevBallX: number,
+    prevBallY,
+    barrier: GameBarrier,
+  ) {
+    if (prevBallX <= this.fieldWidth / 2) {
+      this.checkBarrierLeft(prevBallX, prevBallY, barrier);
     } else {
-      this.checkBarrierRight(prevValueX, prevValueY, i);
+      this.checkBarrierRight(prevBallX, prevBallY, barrier);
     }
   }
 
-  private checkBarrierLeft(prevValueX: number, prevValueY: number, i: number) {
+  private checkBarrierLeft(
+    prevBallX: number,
+    prevBallY: number,
+    barrier: GameBarrier,
+  ) {
     const y = findThirdCoordinate(
-      prevValueX,
-      prevValueY,
+      prevBallX,
+      prevBallY,
       this._ballX,
       this._ballY,
-      this.getWallLeft(this._wallWidth[i]),
+      barrier.left,
     );
-    if (
-      this.getWallBottom(this._wallPos[i], this._wallHeight[i]) > y &&
-      y > this.getWallTop(this._wallPos[i], this._wallHeight[i])
-    ) {
-      this.ballRight = this.getWallLeft(this._wallWidth[i]);
+    if (barrier.bottom > y && y > barrier.top) {
+      this.ballRight = barrier.left;
       this._ballDirection = 180 - this._ballDirection;
     }
   }
 
-  private checkBarrierRight(prevValueX: number, prevValueY, i: number) {
+  private checkBarrierRight(
+    prevBallX: number,
+    prevBallY,
+    barrier: GameBarrier,
+  ) {
     const y = findThirdCoordinate(
-      prevValueX,
-      prevValueY,
+      prevBallX,
+      prevBallY,
       this._ballX,
       this._ballY,
-      this.getWallRight(this._wallWidth[i]),
+      barrier.right,
     );
-    if (
-      this.getWallBottom(this._wallPos[i], this._wallHeight[i]) > y &&
-      y > this.getWallTop(this._wallPos[i], this._wallHeight[i])
-    ) {
-      this.ballLeft = this.getWallRight(this._wallWidth[i]);
+    if (barrier.bottom > y && barrier.top) {
+      this.ballLeft = barrier.right;
       this._ballDirection = 180 - this._ballDirection;
     }
   }
 
-  private checkClubsBarriersCollisions(prevValueX: number, prevValueY: number) {
+  private checkClubsCollisions() {
     if (
       this.ballLeft < this.club1Right &&
       this.ballBottom > this.club1Top &&
@@ -315,14 +330,15 @@ class GameProcessor {
         this.calculateClubRebound(this.club1Bottom - this.ballTop) -
         this._ballDirection;
     }
-    for (let i = 0; i < this._wallWidth.length; ++i) {
+  }
+
+  private checkBarriersCollisions(prevBallX: number, prevBallY: number) {
+    for (const barrier of this._barriers) {
       if (
-        (prevValueX < this.getWallLeft(this._wallWidth[i]) &&
-          this.getWallLeft(this._wallWidth[i]) < this._ballX) ||
-        (prevValueX > this.getWallRight(this._wallWidth[i]) &&
-          this.getWallRight(this._wallWidth[i]) > this._ballX)
+        (prevBallX < barrier.left && barrier.left < this._ballX) ||
+        (prevBallX > barrier.right && barrier.right > this._ballX)
       ) {
-        this.checkBarrierCollision(prevValueX, prevValueY, i);
+        this.checkBarrierCollision(prevBallX, prevBallY, barrier);
       }
     }
   }
@@ -358,13 +374,14 @@ class GameProcessor {
   }
 
   calculateNextFrame() {
-    const tempX = this._ballX;
-    const tempY = this._ballY;
+    const prevBallX = this._ballX;
+    const prevBallY = this._ballY;
     this._ballX += Math.cos(radians(this._ballDirection)) * this._ballSpeed;
     this._ballY += Math.sin(radians(this._ballDirection)) * this._ballSpeed;
 
     this.checkBordersCollisions();
-    this.checkClubsBarriersCollisions(tempX, tempY);
+    this.checkClubsCollisions();
+    this.checkBarriersCollisions(prevBallX, prevBallY);
     this.checkGoals();
     this.moveClubs();
 
@@ -415,9 +432,7 @@ class GameProcessor {
       status: this._status,
       durationMs: this._durationMs,
       isCompleted: this._isCompleted,
-      wallWidth: this._wallWidth,
-      wallHeight: this._wallHeight,
-      wallPos: this._wallPos,
+      barriers: this._barriers,
     };
   }
 }
@@ -436,6 +451,7 @@ export class GamesService {
     isRanked: boolean,
     player1Id: number,
     player2Id?: number,
+    mode?: number,
   ): Promise<Game> {
     const player1 = await this.usersService.findOne(player1Id);
     const player2 = player2Id
@@ -445,7 +461,7 @@ export class GamesService {
     const gameId = randomUUID();
     this.gameProcessors.set(
       gameId,
-      new GameProcessor(isRanked, player1.id, player2?.id),
+      new GameProcessor(isRanked, player1.id, player2?.id, mode),
     );
     await this.notificationsService.send(player1.id);
     await this.notificationsService.send(player2?.id);

@@ -5,8 +5,11 @@ import { fetchWithHandleErrors } from '../../utils';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 import Image from 'next/image';
 import pingpong from '../../images/pingpong.svg';
-import ReadyGameBlock from '../notifications/readyGameBlock';
-import Modal from '../layout/modal';
+import dynamic from 'next/dynamic';
+
+const Modal = dynamic(() => import('../../components/layout/modal'), {
+  ssr: false,
+});
 
 interface InviteProps {
   user: User;

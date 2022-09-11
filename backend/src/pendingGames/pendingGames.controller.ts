@@ -38,10 +38,12 @@ export class PendingGamesController {
   @Put()
   async create(
     @Req() request: Request,
-    @Body() { player2Id }: CreatePendingGameDto,
+    @Body() { player2Id, mode }: CreatePendingGameDto,
   ): Promise<PendingGame> {
+    console.log('Hello!');
+    console.log(mode);
     return this.pendingGamesService
-      .create(request.user.id, player2Id)
+      .create(request.user.id, player2Id, mode)
       .catch((error) => {
         this.logger.error(error);
         throw new ConflictException();
@@ -79,6 +81,7 @@ export class PendingGamesController {
       false,
       pending.player1.id,
       pending.player2.id,
+      pending.mode,
     );
   }
 

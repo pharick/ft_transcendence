@@ -54,9 +54,7 @@ const GameField: FC<PongProps> = ({ game }) => {
     score2,
     status,
     durationMs,
-    wallWidth,
-    wallHeight,
-    wallPos,
+    barriers,
   }: GameFrame) => {
     setStatus(status);
     setDuration(Math.round(durationMs / 1000));
@@ -98,13 +96,13 @@ const GameField: FC<PongProps> = ({ game }) => {
 
     // wall
     ctx.fillStyle = 'white';
-    console.log(`${wallPos}`);
-    for (let i = 0; i < wallWidth.length; ++i) {
+    // console.log(`${wallPos}`);
+    for (const barrier of barriers) {
       ctx.fillRect(
-        canvas.width / 2 - wallWidth[i] / 2,
-        wallPos[i] - wallHeight[i] / 2,
-        wallWidth[i],
-        wallHeight[i],
+        canvas.width / 2 - barrier.width / 2,
+        barrier.y - barrier.height / 2,
+        barrier.width,
+        barrier.height,
       );
     }
 
@@ -280,7 +278,6 @@ const GameField: FC<PongProps> = ({ game }) => {
               <span className="key-label">W</span> — club up,{' '}
               <span className="key-label">S</span> — club down
             </li>
-            <li></li>
             <li>Play up to 11 points</li>
           </ul>
         </div>
