@@ -40,6 +40,9 @@ export interface GameFrame {
   status: GameStatus;
   durationMs: number;
   isCompleted: boolean;
+  wallWidth: number[];
+  wallHeight: number[];
+  wallPos: number[];
 }
 
 export interface GameClients {

@@ -30,7 +30,7 @@ const CompletedGameList: FC<CompletedGameListProps> = ({ games }) => {
                     <p className={styles.scores}>{game.score1}</p>
                     <p className={styles.scores}>—</p>
                     <p className={styles.scores}>{game.score2}</p>
-                    <p className={styles.user}>{game.player2.username}</p>
+                    <p className={styles.user}>{game.player2?.username}</p>
                   </div>
                   <div className="col-md-auto">{game.duration}s</div>
                   <div className="col-md-auto">

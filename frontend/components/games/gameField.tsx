@@ -54,6 +54,9 @@ const GameField: FC<PongProps> = ({ game }) => {
     score2,
     status,
     durationMs,
+    wallWidth,
+    wallHeight,
+    wallPos,
   }: GameFrame) => {
     setStatus(status);
     setDuration(Math.round(durationMs / 1000));
@@ -90,6 +93,18 @@ const GameField: FC<PongProps> = ({ game }) => {
         y,
         ballSize / 4,
         ballSize / 2,
+      );
+    }
+
+    // wall
+    ctx.fillStyle = 'white';
+    console.log(`${wallPos}`);
+    for (let i = 0; i < wallWidth.length; ++i) {
+      ctx.fillRect(
+        canvas.width / 2 - wallWidth[i] / 2,
+        wallPos[i] - wallHeight[i] / 2,
+        wallWidth[i],
+        wallHeight[i],
       );
     }
 

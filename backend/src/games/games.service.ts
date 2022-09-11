@@ -15,6 +15,16 @@ const random = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
+function findThirdCoordinate(
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  x: number,
+): number {
+  return y1 + ((y2 - y1) / (x2 - x1)) * (x - x1);
+}
+
 class GameProcessor {
   private readonly _ballRadius: number = 4;
   private readonly _clubWidth: number = 8;
@@ -22,13 +32,14 @@ class GameProcessor {
   private readonly _startingBallSpeed: number = 20;
   private readonly _ballSpeedDelta = 0.5;
   private readonly _frameDelta: number = 40;
-  private readonly _max_score: number = 11;
+  private readonly _maxScore: number = 11;
 
   public readonly fieldWidth: number = 800;
   public readonly fieldHeight: number = 600;
   public readonly player1Id: number;
   public readonly player2Id: number;
-  public readonly isRanked;
+  public readonly isRanked: boolean;
+  public readonly isCustomization: boolean;
 
   private readonly _clubHeightRight: number;
   private readonly _clubHeightLeft: number;
@@ -47,8 +58,27 @@ class GameProcessor {
   private _gameTimer: NodeJS.Timer;
   private _durationMs: number;
   private _isCompleted: boolean;
+  private _wallWidth: number[] = [];
+  private _wallHeight: number[] = [];
+  private _wallPos: number[] = [];
 
-  constructor(isRanked: boolean, player1Id: number, player2Id?: number) {
+  constructor(
+    isRanked: boolean,
+    player1Id: number,
+    player2Id?: number,
+    isCustomization = true,
+  ) {
+    if (!isCustomization) {
+      this._wallWidth.push(0);
+      this._wallHeight.push(0);
+    } else {
+      this._wallWidth.push(8);
+      this._wallHeight.push(120);
+      this._wallPos.push(100);
+      this._wallWidth.push(8);
+      this._wallHeight.push(120);
+      this._wallPos.push(400);
+    }
     this._ballSpeed = this._startingBallSpeed;
     this._club1Pos = this.fieldHeight / 2;
     this._club2Pos = this.fieldHeight / 2;
@@ -144,6 +174,22 @@ class GameProcessor {
     return this.fieldWidth - this._ballRadius * 2 - this._clubWidth;
   }
 
+  getWallTop(centerPos: number, wallHeight: number): number {
+    return centerPos - wallHeight / 2;
+  }
+
+  getWallBottom(centerPos: number, wallHeight: number): number {
+    return centerPos + wallHeight / 2;
+  }
+
+  getWallRight(wallWidth: number): number {
+    return this.fieldWidth / 2 + this._ballRadius * 2 + wallWidth;
+  }
+
+  getWallLeft(wallWidth: number): number {
+    return this.fieldWidth / 2 - this._ballRadius * 2 - wallWidth;
+  }
+
   moveClubStart(isClub1: boolean, up: boolean) {
     if (isClub1) {
       this._club1Delta = up ? -this._moveClubDelta : this._moveClubDelta;
@@ -203,7 +249,49 @@ class GameProcessor {
     return 180;
   }
 
-  private checkClubsCollisions() {
+  checkBarrierCollision(prevValueX: number, prevValueY, i: number) {
+    if (prevValueX <= this.fieldWidth / 2) {
+      this.checkBarrierLeft(prevValueX, prevValueY, i);
+    } else {
+      this.checkBarrierRight(prevValueX, prevValueY, i);
+    }
+  }
+
+  private checkBarrierLeft(prevValueX: number, prevValueY: number, i: number) {
+    const y = findThirdCoordinate(
+      prevValueX,
+      prevValueY,
+      this._ballX,
+      this._ballY,
+      this.getWallLeft(this._wallWidth[i]),
+    );
+    if (
+      this.getWallBottom(this._wallPos[i], this._wallHeight[i]) > y &&
+      y > this.getWallTop(this._wallPos[i], this._wallHeight[i])
+    ) {
+      this.ballRight = this.getWallLeft(this._wallWidth[i]);
+      this._ballDirection = 180 - this._ballDirection;
+    }
+  }
+
+  private checkBarrierRight(prevValueX: number, prevValueY, i: number) {
+    const y = findThirdCoordinate(
+      prevValueX,
+      prevValueY,
+      this._ballX,
+      this._ballY,
+      this.getWallRight(this._wallWidth[i]),
+    );
+    if (
+      this.getWallBottom(this._wallPos[i], this._wallHeight[i]) > y &&
+      y > this.getWallTop(this._wallPos[i], this._wallHeight[i])
+    ) {
+      this.ballLeft = this.getWallRight(this._wallWidth[i]);
+      this._ballDirection = 180 - this._ballDirection;
+    }
+  }
+
+  private checkClubsBarriersCollisions(prevValueX: number, prevValueY: number) {
     if (
       this.ballLeft < this.club1Right &&
       this.ballBottom > this.club1Top &&
@@ -224,6 +312,16 @@ class GameProcessor {
         this.calculateClubRebound(this.club1Bottom - this.ballTop) -
         this._ballDirection;
     }
+    for (let i = 0; i < this._wallWidth.length; ++i) {
+      if (
+        (prevValueX < this.getWallLeft(this._wallWidth[i]) &&
+          this.getWallLeft(this._wallWidth[i]) < this._ballX) ||
+        (prevValueX > this.getWallRight(this._wallWidth[i]) &&
+          this.getWallRight(this._wallWidth[i]) > this._ballX)
+      ) {
+        this.checkBarrierCollision(prevValueX, prevValueY, i);
+      }
+    }
   }
 
   private checkGoals() {
@@ -235,7 +333,7 @@ class GameProcessor {
       this._score2++;
       this.newRound();
     }
-    if (this._score1 >= this._max_score || this._score2 >= this._max_score) {
+    if (this._score1 >= this._maxScore || this._score2 >= this._maxScore) {
       this._isCompleted = true;
     }
   }
@@ -257,17 +355,19 @@ class GameProcessor {
   }
 
   calculateNextFrame() {
+    const tempX = this._ballX;
+    const tempY = this._ballY;
     this._ballX += Math.cos(radians(this._ballDirection)) * this._ballSpeed;
     this._ballY += Math.sin(radians(this._ballDirection)) * this._ballSpeed;
 
     this.checkBordersCollisions();
-    this.checkClubsCollisions();
+    this.checkClubsBarriersCollisions(tempX, tempY);
     this.checkGoals();
     this.moveClubs();
 
     this._durationMs += this._frameDelta;
 
-    if (this._score1 == this._max_score || this._score2 == this._max_score) {
+    if (this._score1 == this._maxScore || this._score2 == this._maxScore) {
       this._isCompleted = true;
     }
   }
@@ -312,6 +412,9 @@ class GameProcessor {
       status: this._status,
       durationMs: this._durationMs,
       isCompleted: this._isCompleted,
+      wallWidth: this._wallWidth,
+      wallHeight: this._wallHeight,
+      wallPos: this._wallPos,
     };
   }
 }
