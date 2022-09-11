@@ -1,0 +1,38 @@
+.arrowUp {
+    color: green;
+}
+
+.arrowDown {
+    color: red;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    background: gray;
+    color: white;
+    line-height: 2em;
+    text-align: left;
+}
+
+.table tr:not(:last-child) td {
+    border-bottom: 1px solid gray;
+}
+
+.number {
+    width: 10%;
+    text-align: right;
+    padding-right: 10px;
+    line-height: 2em;
+}
+
+.username {
+    width: 70%;
+}
+
+.rank {
+    width: 20%;
+}
