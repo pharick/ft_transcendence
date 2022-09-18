@@ -3,6 +3,8 @@ export interface User {
   ecole42Id: number;
   username: string;
   avatar: string;
+  rankedWins: number;
+  rankedLoses: number;
   rank: number;
   prevRank: number;
 }

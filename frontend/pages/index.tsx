@@ -41,7 +41,7 @@ const HomePage: NextPage = () => {
         </div>
 
         <div className={`col-md ${styles.section}`}>
-          <h2>Top-10 leadership board</h2>
+          <h2>Top 10 leaders in ranked games</h2>
           <TableTopTen />
         </div>
       </section>

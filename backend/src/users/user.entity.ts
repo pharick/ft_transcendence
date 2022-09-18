@@ -15,6 +15,12 @@ export class User {
   avatar: string;
 
   @Column({ default: 0 })
+  rankedWins: number;
+
+  @Column({ default: 0 })
+  rankedLoses: number;
+
+  @Column({ default: 0 })
   rank: number;
 
   @Column({ default: 0 })

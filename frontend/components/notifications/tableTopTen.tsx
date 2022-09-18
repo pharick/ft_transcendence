@@ -32,25 +32,29 @@ const TableTopTen: FC = () => {
           <tr>
             <th></th>
             <th>Nickname</th>
+            <th>Wins</th>
+            <th>Loses</th>
             <th>Rank</th>
           </tr>
         </thead>
         <tbody>
           {topTenList.map((user, i) => (
             <tr key={user.id}>
+              <td className={styles.number}>{i + 1}</td>
+              <td className={styles.username}>{user.username}</td>
+              <td className={styles.wins}>{user.rankedWins}</td>
+              <td className={styles.loses}>{user.rankedLoses}</td>
               {user.rank > user.prevRank ? (
-                <td className={`${styles.arrowUp} ${styles.number}`}>
-                  ▲ {i + 1}
+                <td className={`${styles.arrowUp} ${styles.rank}`}>
+                  ▲ {user.rank}
                 </td>
               ) : user.rank < user.prevRank ? (
-                <td className={`${styles.arrowDown} ${styles.number}`}>
-                  ▼ {i + 1}
+                <td className={`${styles.arrowDown} ${styles.rank}`}>
+                  ▼ {user.rank}
                 </td>
               ) : (
-                <td className={styles.number}>{i + 1}</td>
+                <td className={styles.rank}>{user.rank}</td>
               )}
-              <td className={styles.username}>{user.username}</td>
-              <td className={styles.rank}>{user.rank}</td>
             </tr>
           ))}
         </tbody>
