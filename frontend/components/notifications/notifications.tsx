@@ -5,6 +5,7 @@ import PendingGameBlock from './pendingGameBlock';
 import { Game, Notifications, PendingGame } from '../../types/interfaces';
 import { UserContext } from '../users/userProvider';
 import styles from '../../styles/Notifications.module.css';
+import TableTopTen from './tableTopTen';
 
 const Notifications: FC = () => {
   const [isConnected, setIsConnected] = useState(false);
@@ -54,36 +55,42 @@ const Notifications: FC = () => {
     return (
       <section className={`row flex-grow-1 ${styles.notifications}`}>
         <div className={`col-md ${styles.section}`}>
-          <h2>Ongoing games</h2>
-          {games.length > 0 ? (
-            <ul className={styles.list}>
-              {games.map((game) => (
-                <li key={`game-${game.id}`}>
-                  <ReadyGameBlock game={game} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>You don&apos;t have any ongoing games</p>
-          )}
+          <div className={`row flex-grow-1 ${styles.notifications}`}>
+            <h2>Ongoing games</h2>
+            {games.length > 0 ? (
+              <ul className={styles.list}>
+                {games.map((game) => (
+                  <li key={`game-${game.id}`}>
+                    <ReadyGameBlock game={game} />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>You don&apos;t have any ongoing games</p>
+            )}
+          </div>
+          <div className={`row flex-grow-1 ${styles.notifications}`}>
+            <h2>Pending games</h2>
+            {pendingGames.length > 0 ? (
+              <ul className={styles.list}>
+                {pendingGames.map((game) => (
+                  <li key={`pending-${game.id}`}>
+                    <PendingGameBlock game={game} />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>
+                You don&apos;t have any invitations to the game, take the first
+                step 😉
+              </p>
+            )}
+          </div>
         </div>
 
         <div className={`col-md ${styles.section}`}>
-          <h2>Pending games</h2>
-          {pendingGames.length > 0 ? (
-            <ul className={styles.list}>
-              {pendingGames.map((game) => (
-                <li key={`pending-${game.id}`}>
-                  <PendingGameBlock game={game} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>
-              You don&apos;t have any invitations to the game, take the first
-              step 😉
-            </p>
-          )}
+          <h2>Top-10 leadership board</h2>
+          <TableTopTen />
         </div>
       </section>
     );
