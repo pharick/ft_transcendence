@@ -32,9 +32,12 @@ const RoomUserList: FC<RoomUserListProps> = ({ roomUsers, currentUser }) => {
                     : ''}
                 </p>
 
-                <div className="ms-auto">
-                  <RoomUserButtons user={roomUser} />
-                </div>
+                {(currentUser?.type == ChatRoomUserType.Owner ||
+                  currentUser?.type == ChatRoomUserType.Admin) && (
+                  <div className="ms-auto">
+                    <RoomUserButtons user={roomUser} />
+                  </div>
+                )}
               </article>
             </li>
           ))}

@@ -3,7 +3,7 @@ import styles from '../../styles/Dropdown.module.css';
 
 interface DropdownItem {
   text: string;
-  callback: () => void;
+  callback: () => any;
 }
 
 interface DropdownProps {
@@ -26,7 +26,9 @@ const Dropdown: FC<DropdownProps> = ({ menu }) => {
         <ul className={styles.menu}>
           {menu.map(({ text, callback }, index) => (
             <li key={index} className={styles.item}>
-              <button className={styles.itemButton}>{text}</button>
+              <button className={styles.itemButton} onClick={callback}>
+                {text}
+              </button>
             </li>
           ))}
         </ul>

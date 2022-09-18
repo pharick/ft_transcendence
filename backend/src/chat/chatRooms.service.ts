@@ -101,11 +101,4 @@ export class ChatRoomsService {
     });
     return roomUsers;
   }
-
-  async resetBan(roomUserId: number) {
-    await this.roomUserRepository.update(
-      { id: roomUserId },
-      { bannedUntil: null },
-    );
-  }
 }

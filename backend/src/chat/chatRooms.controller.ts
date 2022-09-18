@@ -16,7 +16,7 @@ import { CreateChatRoomDto } from './chat.dtos';
 import { ChatRoom } from './chatRoom.entity';
 
 @Controller('chat/rooms')
-export class ChatRoomController {
+export class ChatRoomsController {
   constructor(private chatRoomsService: ChatRoomsService) {}
 
   @Put()

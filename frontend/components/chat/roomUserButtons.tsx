@@ -1,51 +1,37 @@
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 import { ChatRoomUser } from '../../types/interfaces';
 import Dropdown from '../layout/dropdown';
+import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
+import { fetchWithHandleErrors } from '../../utils';
 
 interface RoomUserButtonsProps {
   user: ChatRoomUser;
 }
 
-const RoomUserButtons: FC<RoomUserButtonsProps> = () => {
+const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
+  const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
+
+  const handleMakeAdmin = async () => {
+    const response = await fetchWithHandleErrors({
+      requestErrorHandlerContext,
+      url: `/api/chat/users/${user.id}/makeAdmin`,
+      method: 'POST',
+      authRequired: true,
+    });
+    if (response.ok) {
+      console.log('admin');
+    }
+  };
+
   return (
     <Dropdown
       menu={[
-        { text: 'Not admin', callback: () => {} },
+        { text: 'Make admin', callback: handleMakeAdmin },
         { text: 'Block', callback: () => {} },
         { text: 'Mute', callback: () => {} },
       ]}
     />
   );
-
-  // {(currentUser?.type == ChatRoomUserType.Owner ||
-  //   currentUser?.type == ChatRoomUserType.Admin) && (
-  //   <ul className={styles.buttons}>
-  //     <li>
-  //       <button className="icon-button">
-  //         <Image
-  //           src={adminImage}
-  //           alt="Admin"
-  //           layout="fixed"
-  //           width={20}
-  //           height={20}
-  //         />
-  //         Make admin
-  //       </button>
-  //     </li>
-  //     <li>
-  //       <button className="icon-button">
-  //         <Image
-  //           src={banImage}
-  //           alt="Ban"
-  //           layout="fixed"
-  //           width={20}
-  //           height={20}
-  //         />
-  //         Block
-  //       </button>
-  //     </li>
-  //   </ul>
-  // )}
 };
 
 export default RoomUserButtons;

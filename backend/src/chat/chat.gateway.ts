@@ -14,6 +14,7 @@ import { AuthService } from '../auth/auth.service';
 import { ChatRoomUser } from './chatRoomUser.entity';
 import { ChatMessagesService } from './chatMessages.service';
 import { ChatMessageDto, ChatRoomPasswordDto } from './chat.dtos';
+import { RoomUsersService } from './roomUsers.service';
 
 @WebSocketGateway({ namespace: 'chat', cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -24,6 +25,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     @Inject(forwardRef(() => ChatRoomsService))
     private chatRoomService: ChatRoomsService,
+    private roomUsersService: RoomUsersService,
     private chatMessagesService: ChatMessagesService,
     private authService: AuthService,
   ) {}
@@ -115,7 +117,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!roomUser.bannedUntil) return false;
     const now = new Date();
     if (roomUser.bannedUntil <= now) {
-      await this.chatRoomService.resetBan(roomUser.id);
+      await this.roomUsersService.resetBan(roomUser.id);
       return false;
     }
     return true;
