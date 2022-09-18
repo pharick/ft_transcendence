@@ -17,13 +17,6 @@ export class RoomUsersService {
     });
   }
 
-  async resetBan(roomUserId: number) {
-    await this.roomUserRepository.update(
-      { id: roomUserId },
-      { bannedUntil: null },
-    );
-  }
-
   async makeAdmin(roomUserId: number) {
     const user = await this.roomUserRepository.findOneBy({ id: roomUserId });
     if (user.type != ChatRoomUserType.Owner) {
@@ -36,6 +29,20 @@ export class RoomUsersService {
     await this.roomUserRepository.update(
       { id: roomUserId },
       { type: ChatRoomUserType.Common },
+    );
+  }
+
+  async setBlock(roomUserId: number, duration: number) {
+    await this.roomUserRepository.update(
+      { id: roomUserId },
+      { bannedUntil: new Date(Date.now() + duration * 60000) },
+    );
+  }
+
+  async resetBlock(roomUserId: number) {
+    await this.roomUserRepository.update(
+      { id: roomUserId },
+      { bannedUntil: null },
     );
   }
 }

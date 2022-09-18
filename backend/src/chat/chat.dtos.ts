@@ -25,3 +25,11 @@ export class ChatMessageDto {
 export class ChatRoomPasswordDto {
   password: string;
 }
+
+export class BlockChatUserDto {
+  durationMin: number;
+}
+
+export class MuteChatUserDto {
+  durationMin: number;
+}

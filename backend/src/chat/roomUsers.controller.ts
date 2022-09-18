@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Param,
   ParseIntPipe,
@@ -10,6 +11,7 @@ import { RoomUsersService } from './roomUsers.service';
 import { ChatRoomUserType } from './chatRoomUser.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
+import { BlockChatUserDto } from './chat.dtos';
 
 @Controller('chat/users')
 export class RoomUsersController {
@@ -21,8 +23,12 @@ export class RoomUsersController {
     @Req() request: Request,
     @Param('userId', new ParseIntPipe()) userId: number,
   ): Promise<void> {
-    const currentUser = await this.roomUsersService.findOne(request.user.id);
-    if (currentUser.type == ChatRoomUserType.Owner)
+    const requester = await this.roomUsersService.findOne(request.user.id);
+    const user = await this.roomUsersService.findOne(userId);
+    if (
+      requester.room.id == user.room.id &&
+      requester.type == ChatRoomUserType.Owner
+    )
       await this.roomUsersService.makeAdmin(userId);
   }
 
@@ -32,8 +38,28 @@ export class RoomUsersController {
     @Req() request: Request,
     @Param('userId', new ParseIntPipe()) userId: number,
   ): Promise<void> {
-    const currentUser = await this.roomUsersService.findOne(request.user.id);
-    if (currentUser.type == ChatRoomUserType.Owner)
+    const requester = await this.roomUsersService.findOne(request.user.id);
+    const user = await this.roomUsersService.findOne(userId);
+    if (
+      requester.room.id == user.room.id &&
+      requester.type == ChatRoomUserType.Owner
+    )
       await this.roomUsersService.revokeAdmin(userId);
+  }
+
+  @Post(':userId/block')
+  @UseGuards(JwtAuthGuard)
+  async blockUser(
+    @Req() request: Request,
+    @Param('userId', new ParseIntPipe()) userId: number,
+    @Body() { durationMin }: BlockChatUserDto,
+  ): Promise<void> {
+    const requester = await this.roomUsersService.findOne(request.user.id);
+    const user = await this.roomUsersService.findOne(userId);
+    if (
+      requester.room.id == user.room.id &&
+      requester.type == ChatRoomUserType.Owner
+    )
+      await this.roomUsersService.setBlock(userId, durationMin);
   }
 }

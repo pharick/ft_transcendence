@@ -117,7 +117,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!roomUser.bannedUntil) return false;
     const now = new Date();
     if (roomUser.bannedUntil <= now) {
-      await this.roomUsersService.resetBan(roomUser.id);
+      await this.roomUsersService.resetBlock(roomUser.id);
       return false;
     }
     return true;
