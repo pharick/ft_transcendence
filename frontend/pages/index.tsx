@@ -7,6 +7,9 @@ import Notifications from '../components/notifications/notifications';
 import Link from 'next/link';
 import Image from 'next/image';
 import pongImage from '../images/pingpong.svg';
+import styles from '../styles/Notifications.module.css';
+import TableTopTen from '../components/notifications/tableTopTen';
+import React from 'react';
 
 const HomePage: NextPage = () => {
   return (
@@ -32,7 +35,16 @@ const HomePage: NextPage = () => {
         </div>
       </section>
 
-      <Notifications />
+      <section className={`row flex-grow-1 ${styles.notifications}`}>
+        <div className={`col-md ${styles.section}`}>
+          <Notifications />
+        </div>
+
+        <div className={`col-md ${styles.section}`}>
+          <h2>Top-10 leadership board</h2>
+          <TableTopTen />
+        </div>
+      </section>
     </>
   );
 };
