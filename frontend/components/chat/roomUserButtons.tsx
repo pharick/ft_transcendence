@@ -1,8 +1,9 @@
 import { FC, useContext } from 'react';
-import { ChatRoomUser } from '../../types/interfaces';
+import { ChatRoomUser, ChatRoomUserType } from '../../types/interfaces';
 import Dropdown from '../layout/dropdown';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 import { fetchWithHandleErrors } from '../../utils';
+import { useRouter } from 'next/router';
 
 interface RoomUserButtonsProps {
   user: ChatRoomUser;
@@ -10,23 +11,30 @@ interface RoomUserButtonsProps {
 
 const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
+  const router = useRouter();
 
   const handleMakeAdmin = async () => {
-    const response = await fetchWithHandleErrors({
+    const url =
+      user.type != ChatRoomUserType.Admin
+        ? `/api/chat/users/${user.id}/makeAdmin`
+        : `/api/chat/users/${user.id}/revokeAdmin`;
+    await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      url: `/api/chat/users/${user.id}/makeAdmin`,
+      url,
       method: 'POST',
       authRequired: true,
     });
-    if (response.ok) {
-      console.log('admin');
-    }
+    router.reload();
   };
 
   return (
     <Dropdown
       menu={[
-        { text: 'Make admin', callback: handleMakeAdmin },
+        {
+          text:
+            user.type == ChatRoomUserType.Admin ? 'Revoke Admin' : 'Make admin',
+          callback: handleMakeAdmin,
+        },
         { text: 'Block', callback: () => {} },
         { text: 'Mute', callback: () => {} },
       ]}
