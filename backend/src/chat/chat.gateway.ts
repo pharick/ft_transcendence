@@ -58,8 +58,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = await this.authService.getUser(token);
     if (!user) return;
     const roomUser = await this.roomUsersService.findOneByUserId(user.id);
-    if (await this.checkMute(roomUser)) {
-      client.emit('muted');
+    const muteDate = await this.checkMute(roomUser);
+    if (muteDate) {
+      client.emit('muted', `You're muted until ${muteDate}`);
     } else {
       const message = await this.chatMessagesService.create(
         user.id,
@@ -91,51 +92,57 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       password,
     );
 
-    const isBanned = await this.checkBlock(roomUser);
-
-    if ((!roomUser && room.type == ChatRoomType.Private) || isBanned) {
-      client.emit('forbidden');
+    if (!roomUser && room.type == ChatRoomType.Private) {
+      client.emit('forbidden', `This room is private`);
       client.disconnect();
       return;
-    } else if (!roomUser && room.type == ChatRoomType.Protected) {
-      client.emit('passwordRequired');
-    } else {
-      client.join(`room-${room.id}`);
-      client.join(`user-${user.id}`);
-
-      this.server
-        .to(`room-${roomId}`)
-        .emit('sendClients', await this.chatRoomService.getRoomUsers(roomId));
-      this.server
-        .to(`user-${user.id}`)
-        .emit(
-          'initMessages',
-          await this.chatMessagesService.findAllByRoom(room.id),
-        );
-
-      this.logger.log(
-        `Chat client ${client.id} (user ${user?.id}) connected to ${room.name} room`,
-      );
     }
+    const blockDate = await this.checkBlock(roomUser);
+    if (blockDate) {
+      client.emit('forbidden', `You're blocked until ${blockDate}`);
+      client.disconnect();
+      return;
+    }
+    if (!roomUser && room.type == ChatRoomType.Protected) {
+      client.emit('passwordRequired');
+      return;
+    }
+
+    client.join(`room-${room.id}`);
+    client.join(`user-${user.id}`);
+
+    this.server
+      .to(`room-${roomId}`)
+      .emit('sendClients', await this.chatRoomService.getRoomUsers(roomId));
+    this.server
+      .to(`user-${user.id}`)
+      .emit(
+        'initMessages',
+        await this.chatMessagesService.findAllByRoom(room.id),
+      );
+
+    this.logger.log(
+      `Chat client ${client.id} (user ${user?.id}) connected to ${room.name} room`,
+    );
   }
 
-  private async checkBlock(roomUser: ChatRoomUser): Promise<boolean> {
-    if (!roomUser.bannedUntil) return false;
+  private async checkBlock(roomUser: ChatRoomUser): Promise<Date | null> {
+    if (!roomUser.bannedUntil) return null;
     const now = new Date();
     if (roomUser.bannedUntil <= now) {
       await this.roomUsersService.resetBlock(roomUser.id);
-      return false;
+      return null;
     }
-    return true;
+    return roomUser.bannedUntil;
   }
 
-  private async checkMute(roomUser: ChatRoomUser): Promise<boolean> {
-    if (!roomUser.mutedUntil) return false;
+  private async checkMute(roomUser: ChatRoomUser): Promise<Date | null> {
+    if (!roomUser.mutedUntil) return null;
     const now = new Date();
     if (roomUser.mutedUntil <= now) {
       await this.roomUsersService.resetMute(roomUser.id);
-      return false;
+      return null;
     }
-    return true;
+    return roomUser.mutedUntil;
   }
 }

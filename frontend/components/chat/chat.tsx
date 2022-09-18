@@ -21,7 +21,8 @@ interface ChatProps {
 
 const Chat: FC<ChatProps> = ({ room }) => {
   const [socket, setSocket] = useState<Socket>();
-  const [forbidden, setForbidden] = useState(false);
+  const [forbiddenText, setForbiddenText] = useState<string>(null);
+  const [mutedText, setMutedText] = useState<string>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [roomUsers, setRoomUsers] = useState<ChatRoomUser[]>([]);
   const [passwordRequired, setPasswordRequired] = useState(false);
@@ -60,12 +61,16 @@ const Chat: FC<ChatProps> = ({ room }) => {
       setMessages((messages) => [...messages, message]);
     });
 
-    socket.on('forbidden', () => {
-      setForbidden(true);
+    socket.on('forbidden', (text: string) => {
+      setForbiddenText(text);
     });
 
     socket.on('passwordRequired', () => {
       setPasswordRequired(true);
+    });
+
+    socket.on('muted', (text: string) => {
+      setMutedText(text);
     });
 
     setSocket(socket);
@@ -94,8 +99,8 @@ const Chat: FC<ChatProps> = ({ room }) => {
     newMessageForm.reset();
   };
 
-  if (forbidden) {
-    return <p>Room is forbidden</p>;
+  if (forbiddenText) {
+    return <p>{forbiddenText}</p>;
   }
 
   return (
@@ -142,7 +147,7 @@ const Chat: FC<ChatProps> = ({ room }) => {
             <input
               className="flex-grow-1"
               type="text"
-              placeholder="New message"
+              placeholder={mutedText || 'New message'}
               {...newMessageForm.register('text', { required: true })}
             />
 
