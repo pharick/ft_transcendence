@@ -72,6 +72,7 @@ class GameProcessor {
 
   private readonly _clubHeightRight: number;
   private readonly _clubHeightLeft: number;
+  private readonly _barriers: GameBarrier[];
 
   private _status: GameStatus;
   private _ballX: number;
@@ -87,7 +88,6 @@ class GameProcessor {
   private _gameTimer: NodeJS.Timer;
   private _durationMs: number;
   private _isCompleted: boolean;
-  private _barriers: GameBarrier[];
 
   constructor(
     isRanked: boolean,
@@ -385,7 +385,7 @@ class GameProcessor {
     this.checkGoals();
     this.moveClubs();
 
-    this._durationMs += this._frameDelta;
+    if (this._ballSpeed > 0) this._durationMs += this._frameDelta;
 
     if (this._score1 == this._maxScore || this._score2 == this._maxScore) {
       this._isCompleted = true;
