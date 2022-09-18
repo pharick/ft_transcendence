@@ -17,6 +17,13 @@ export class RoomUsersService {
     });
   }
 
+  findOneByUserId(userId: number): Promise<ChatRoomUser> {
+    return this.roomUserRepository.findOne({
+      where: { user: { id: userId } },
+      relations: ['room'],
+    });
+  }
+
   async makeAdmin(roomUserId: number) {
     const user = await this.roomUserRepository.findOneBy({ id: roomUserId });
     if (user.type != ChatRoomUserType.Owner) {
@@ -43,6 +50,20 @@ export class RoomUsersService {
     await this.roomUserRepository.update(
       { id: roomUserId },
       { bannedUntil: null },
+    );
+  }
+
+  async setMute(roomUserId: number, duration: number) {
+    await this.roomUserRepository.update(
+      { id: roomUserId },
+      { mutedUntil: new Date(Date.now() + duration * 60000) },
+    );
+  }
+
+  async resetMute(roomUserId: number) {
+    await this.roomUserRepository.update(
+      { id: roomUserId },
+      { mutedUntil: null },
     );
   }
 }

@@ -57,12 +57,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { token } = client.handshake.auth;
     const user = await this.authService.getUser(token);
     if (!user) return;
-    const message = await this.chatMessagesService.create(
-      user.id,
-      roomId,
-      text,
-    );
-    this.server.to(`room-${roomId}`).emit('messageToClient', message);
+    const roomUser = await this.roomUsersService.findOneByUserId(user.id);
+    if (await this.checkMute(roomUser)) {
+      client.emit('muted');
+    } else {
+      const message = await this.chatMessagesService.create(
+        user.id,
+        roomId,
+        text,
+      );
+      this.server.to(`room-${roomId}`).emit('messageToClient', message);
+    }
   }
 
   private async authenticate(
@@ -75,6 +80,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user: User = await this.authService.getUser(token);
 
     if (!room || !user) {
+      client.emit('forbidden');
       client.disconnect();
       return;
     }
@@ -85,7 +91,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       password,
     );
 
-    const isBanned = await this.checkBan(roomUser);
+    const isBanned = await this.checkBlock(roomUser);
 
     if ((!roomUser && room.type == ChatRoomType.Private) || isBanned) {
       client.emit('forbidden');
@@ -113,11 +119,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  private async checkBan(roomUser: ChatRoomUser): Promise<boolean> {
+  private async checkBlock(roomUser: ChatRoomUser): Promise<boolean> {
     if (!roomUser.bannedUntil) return false;
     const now = new Date();
     if (roomUser.bannedUntil <= now) {
       await this.roomUsersService.resetBlock(roomUser.id);
+      return false;
+    }
+    return true;
+  }
+
+  private async checkMute(roomUser: ChatRoomUser): Promise<boolean> {
+    if (!roomUser.mutedUntil) return false;
+    const now = new Date();
+    if (roomUser.mutedUntil <= now) {
+      await this.roomUsersService.resetMute(roomUser.id);
       return false;
     }
     return true;

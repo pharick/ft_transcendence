@@ -11,7 +11,7 @@ import { RoomUsersService } from './roomUsers.service';
 import { ChatRoomUserType } from './chatRoomUser.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
-import { BlockChatUserDto } from './chat.dtos';
+import { BlockChatUserDto, MuteChatUserDto } from './chat.dtos';
 
 @Controller('chat/users')
 export class RoomUsersController {
@@ -58,8 +58,26 @@ export class RoomUsersController {
     const user = await this.roomUsersService.findOne(userId);
     if (
       requester.room.id == user.room.id &&
-      requester.type == ChatRoomUserType.Owner
+      (requester.type == ChatRoomUserType.Owner ||
+        requester.type == ChatRoomUserType.Admin)
     )
       await this.roomUsersService.setBlock(userId, durationMin);
+  }
+
+  @Post(':userId/mute')
+  @UseGuards(JwtAuthGuard)
+  async muteUser(
+    @Req() request: Request,
+    @Param('userId', new ParseIntPipe()) userId: number,
+    @Body() { durationMin }: MuteChatUserDto,
+  ): Promise<void> {
+    const requester = await this.roomUsersService.findOne(request.user.id);
+    const user = await this.roomUsersService.findOne(userId);
+    if (
+      requester.room.id == user.room.id &&
+      (requester.type == ChatRoomUserType.Owner ||
+        requester.type == ChatRoomUserType.Admin)
+    )
+      await this.roomUsersService.setMute(userId, durationMin);
   }
 }

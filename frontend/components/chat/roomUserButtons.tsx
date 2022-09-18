@@ -46,6 +46,7 @@ const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
       body: data,
       authRequired: true,
     });
+    setBlockModalOpen(false);
   };
 
   const handleMute: SubmitHandler<MuteChatUserDto> = async (data) => {
@@ -56,6 +57,7 @@ const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
       body: data,
       authRequired: true,
     });
+    setMuteModalOpen(false);
   };
 
   return (
@@ -86,7 +88,7 @@ const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
 
       <Modal
         isOpen={blockModalOpen}
-        title="Block Chat User"
+        title="Block chat user"
         cancelButtonText="Cancel"
         cancelButtonHandler={() => {
           setBlockModalOpen(false);
@@ -109,7 +111,7 @@ const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
 
       <Modal
         isOpen={muteModalOpen}
-        title="Mute Chat User"
+        title="Mute char user"
         cancelButtonText="Cancel"
         cancelButtonHandler={() => {
           setMuteModalOpen(false);
@@ -126,7 +128,7 @@ const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
             placeholder="Duration in minutes"
             {...muteDurationForm.register('durationMin', { required: true })}
           />
-          <button type="submit">Block</button>
+          <button type="submit">Mute</button>
         </form>
       </Modal>
     </>

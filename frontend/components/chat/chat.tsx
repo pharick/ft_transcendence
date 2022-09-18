@@ -130,28 +130,24 @@ const Chat: FC<ChatProps> = ({ room }) => {
             ))}
           </ul>
 
-          {userContext.user ? (
-            <form
-              className="d-flex"
-              onSubmit={newMessageForm.handleSubmit(sendMessage)}
-            >
-              <input
-                type="hidden"
-                value={room.id}
-                {...newMessageForm.register('roomId', { required: true })}
-              />
-              <input
-                className="flex-grow-1"
-                type="text"
-                placeholder="New message"
-                {...newMessageForm.register('text', { required: true })}
-              />
+          <form
+            className="d-flex"
+            onSubmit={newMessageForm.handleSubmit(sendMessage)}
+          >
+            <input
+              type="hidden"
+              value={room.id}
+              {...newMessageForm.register('roomId', { required: true })}
+            />
+            <input
+              className="flex-grow-1"
+              type="text"
+              placeholder="New message"
+              {...newMessageForm.register('text', { required: true })}
+            />
 
-              <button type="submit">Send</button>
-            </form>
-          ) : (
-            <p className="warning-message">Please login to send messages</p>
-          )}
+            <button type="submit">Send</button>
+          </form>
         </div>
         <div className="col-md-3">
           <RoomUserList roomUsers={roomUsers} currentUser={currentUser} />

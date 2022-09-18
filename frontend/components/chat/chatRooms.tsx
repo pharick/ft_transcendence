@@ -36,6 +36,7 @@ const ChatRooms: FC = () => {
   };
 
   const loadRooms = async () => {
+    setRooms([]);
     const response = await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: '/api/chat/rooms',
@@ -48,7 +49,7 @@ const ChatRooms: FC = () => {
 
   useEffect(() => {
     loadRooms().then();
-  }, []);
+  }, [userContext.user?.id]);
 
   return (
     <section>
