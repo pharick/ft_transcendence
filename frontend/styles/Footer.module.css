@@ -3,3 +3,7 @@
     color: white;
     padding: 1.5em;
 }
+
+.footer a {
+    color: lightgray;
+}
