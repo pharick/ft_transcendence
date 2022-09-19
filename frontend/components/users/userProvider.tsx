@@ -81,7 +81,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
       handleLogin,
       handleLogout,
     }),
-    [user],
+    [user?.id],
   );
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

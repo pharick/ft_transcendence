@@ -5,8 +5,17 @@ import Link from 'next/link';
 
 import styles from '../../styles/UserHeaderBlock.module.css';
 
-const UserHeaderBlock: FC = () => {
+interface UserHeaderBlockProps {
+  onLogin?: () => void;
+}
+
+const UserHeaderBlock: FC<UserHeaderBlockProps> = ({ onLogin }) => {
   const userContext = useContext(UserContext);
+
+  const handleLogin = (code: string, params: URLSearchParams) => {
+    userContext.handleLogin(code, params);
+    if (onLogin) onLogin();
+  };
 
   return (
     <section className={styles.userHeaderBlock}>
@@ -24,7 +33,7 @@ const UserHeaderBlock: FC = () => {
           width={600}
           height={650}
           onClose={() => 0}
-          onCode={userContext.handleLogin || (() => 0)}
+          onCode={handleLogin}
         >
           <button>Login via 42</button>
         </OauthPopup>

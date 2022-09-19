@@ -9,13 +9,13 @@ import 'bootstrap/dist/css/bootstrap-utilities.css';
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
-    <RequestErrorHandlerProvider>
-      <UserProvider>
+    <UserProvider>
+      <RequestErrorHandlerProvider>
         <Layout>
           <Component {...pageProps} />
         </Layout>
-      </UserProvider>
-    </RequestErrorHandlerProvider>
+      </RequestErrorHandlerProvider>
+    </UserProvider>
   );
 };
 

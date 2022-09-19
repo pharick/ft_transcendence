@@ -1,5 +1,6 @@
 import { createContext, FC, ReactNode, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import UserHeaderBlock from '../users/userHeaderBlock';
 
 const Modal = dynamic(() => import('../../components/layout/modal'), {
   ssr: false,
@@ -75,9 +76,10 @@ const RequestErrorHandlerProvider: FC<RequestErrorHandlerProviderProps> = ({
         cancelButtonHandler={closeHandler}
       >
         {result == RequestResult.Unauthorized ? (
-          <>
-            <p>You must be authenticated to play. Sorry...</p>
-          </>
+          <div className="d-flex">
+            <p>You must be authenticated to do this</p>
+            <UserHeaderBlock onLogin={closeHandler} />
+          </div>
         ) : (
           <>
             <p>
