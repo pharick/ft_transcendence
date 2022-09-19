@@ -3,6 +3,8 @@ import { GetServerSideProps } from 'next';
 import { User } from '../../types/interfaces';
 import Link from 'next/link';
 import Head from 'next/head';
+import styles from '../../styles/UsersPage.module.css';
+import UserBlock from '../../components/users/userBlock';
 
 interface UsersPageProps {
   users: User[];
@@ -24,11 +26,15 @@ const UsersPage: NextPage<UsersPageProps> = ({ users }) => {
       </Head>
 
       <h1>Players</h1>
-      <ul>
+      <ul className={styles.list}>
         {users.map((user) => (
           <li key={user.id}>
             <Link href={`/users/${user.id}`}>
-              <a>{user.username}</a>
+              <a className={styles.link}>
+                <article className={styles.block}>
+                  <UserBlock user={user} />
+                </article>
+              </a>
             </Link>
           </li>
         ))}
