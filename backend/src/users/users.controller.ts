@@ -18,7 +18,10 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import {
+  JwtAuthGuard,
+  TwoFactorJwtAuthGuard,
+} from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -41,7 +44,7 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TwoFactorJwtAuthGuard)
   @Get('me')
   async getCurrentUser(@Req() request: Request) {
     return request.user;

@@ -60,4 +60,16 @@ export class AuthController {
     );
     return this.authService.get2FactorQRCode(response, otpAuthUrl);
   }
+
+  @Post('2fa_auth')
+  @UseGuards(JwtAuthGuard)
+  async twoFactorAuth(
+    @Req() request: Request,
+    @Body() { code }: TwoFactorCodeDto,
+  ) {
+    const isValid = this.authService.validate2FactorCode(code, request.user);
+    if (!isValid)
+      throw new UnauthorizedException('Wrong 2factor authentication code');
+    return this.authService.login(request.user, true);
+  }
 }

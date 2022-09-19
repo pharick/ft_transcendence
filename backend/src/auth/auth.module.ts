@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from '../users/users.module';
 import { Ecole42Strategy } from './strategies/ecole42.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { TwoFactorJwtStrategy } from './strategies/jwt-2fa.strategy';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     PassportModule,
     UsersModule,
   ],
-  providers: [AuthService, Ecole42Strategy, JwtStrategy],
+  providers: [AuthService, Ecole42Strategy, JwtStrategy, TwoFactorJwtStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })

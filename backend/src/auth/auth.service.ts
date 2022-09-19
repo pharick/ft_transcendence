@@ -20,10 +20,11 @@ export class AuthService {
     return this.userService.findOrCreate(ids, username);
   }
 
-  async login(user: User) {
+  async login(user: User, secondFactorChecked = false) {
     return {
       access_token: this.jwtService.sign({
         sub: user.id,
+        secondFactorChecked,
       }),
     };
   }

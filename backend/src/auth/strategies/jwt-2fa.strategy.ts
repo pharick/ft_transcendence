@@ -1,13 +1,16 @@
-import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt } from 'passport-jwt';
 import { Injectable } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersService } from '../../users/users.service';
 import { ConfigService } from '@nestjs/config';
-import { User } from '../../users/user.entity';
 import { JwtPayload } from '../payload.interface';
+import { User } from '../../users/user.entity';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class TwoFactorJwtStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-2fa',
+) {
   constructor(
     private usersService: UsersService,
     private configService: ConfigService,
@@ -19,7 +22,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  validate(payload: JwtPayload): Promise<User> {
-    return this.usersService.findOne(payload.sub);
+  async validate(payload: JwtPayload): Promise<User> {
+    const user = await this.usersService.findOne(payload.sub);
+    if (!user) return null;
+    if (!user.twoFactorEnabled || payload.secondFactorChecked) {
+      return user;
+    }
+    return null;
   }
 }
