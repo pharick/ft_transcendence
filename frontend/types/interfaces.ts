@@ -3,6 +3,7 @@ export interface User {
   ecole42Id: number;
   username: string;
   avatar: string;
+  twoFactorEnabled: boolean;
   rankedWins: number;
   rankedLoses: number;
   rank: number;

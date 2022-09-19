@@ -20,6 +20,12 @@
     width: 100px;
 }
 
+.input input[type=checkbox] {
+    flex: none;
+    width: auto;
+    margin-right: 10px;
+}
+
 .submit {
     display: block;
     margin-left: auto;

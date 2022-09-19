@@ -6,13 +6,19 @@ export class User {
   id: number;
 
   @Column({ nullable: true })
-  ecole42Id: number;
+  ecole42Id?: number;
 
   @Column({ unique: true })
   username: string;
 
   @Column({ nullable: true })
-  avatar: string;
+  avatar?: string;
+
+  @Column({ nullable: true })
+  twoFactorSecret?: string;
+
+  @Column({ default: false })
+  twoFactorEnabled: boolean;
 
   @Column({ default: 0 })
   rankedWins: number;

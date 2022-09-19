@@ -48,3 +48,7 @@ export class BlockChatUserDto {
 export class MuteChatUserDto {
   durationMin: number;
 }
+
+export class TwoFactorCodeDto {
+  code: string;
+}

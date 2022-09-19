@@ -4,6 +4,9 @@ import { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
 import { UsersService } from '../users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { User } from '../users/user.entity';
+import { authenticator } from 'otplib';
+import { Response } from 'express';
+import { toFileStream } from 'qrcode';
 
 @Injectable()
 export class AuthService {
@@ -37,5 +40,28 @@ export class AuthService {
         return undefined;
       throw e;
     }
+  }
+
+  async generate2FactorSecret(user: User) {
+    const secret = authenticator.generateSecret();
+    const otpAuthUrl = authenticator.keyuri(
+      `${user.username} - ${user.id}`,
+      'ft_transcendence',
+      secret,
+    );
+    await this.userService.setTwoFactorSecret(user.id, secret);
+
+    return { secret, otpAuthUrl };
+  }
+
+  async get2FactorQRCode(stream: Response, otpAuthUrl: string) {
+    return toFileStream(stream, otpAuthUrl);
+  }
+
+  validate2FactorCode(code: string, user: User): boolean {
+    return authenticator.verify({
+      token: code,
+      secret: user.twoFactorSecret,
+    });
   }
 }

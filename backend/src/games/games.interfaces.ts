@@ -1,7 +1,7 @@
 export interface Player {
   id: number;
   username: string;
-  avatar: string;
+  avatar?: string;
   rank?: number;
   prevRank?: number;
 }

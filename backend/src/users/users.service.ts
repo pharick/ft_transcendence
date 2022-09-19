@@ -39,14 +39,19 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
-  public async setAvatar(userId: number, avatarUrl: string) {
+  async setAvatar(userId: number, avatarUrl: string) {
     await this.usersRepository.update(userId, { avatar: avatarUrl });
   }
 
-  public async updateProfile(
-    userId: number,
-    profile: QueryDeepPartialEntity<User>,
-  ) {
+  async updateProfile(userId: number, profile: QueryDeepPartialEntity<User>) {
     await this.usersRepository.update(userId, profile);
+  }
+
+  async setTwoFactorSecret(userId: number, secret: string): Promise<void> {
+    await this.usersRepository.update(userId, { twoFactorSecret: secret });
+  }
+
+  async enable2FactorAuth(userId: number) {
+    await this.usersRepository.update(userId, { twoFactorEnabled: true });
   }
 }

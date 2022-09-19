@@ -9,6 +9,7 @@ import UserBlock from '../../components/users/userBlock';
 import UserProfile from '../../components/users/userProfile';
 import styles from '../../styles/UserPage.module.css';
 import GameInviteArcadeButton from '../../components/users/gameInviteArcadeButton';
+import TwoFactorSettings from '../../components/users/TwoFactorSettings';
 
 interface UserPageProps {
   user: User;
@@ -55,7 +56,10 @@ const UserPage: NextPage<UserPageProps> = ({ user, completedGames }) => {
               </li>
             </ul>
           ) : (
-            <UserProfile />
+            <>
+              <UserProfile />
+              <TwoFactorSettings />
+            </>
           )}
         </div>
         <div className="col-lg">
