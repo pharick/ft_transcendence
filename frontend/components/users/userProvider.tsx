@@ -40,7 +40,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
     });
     const { access_token } = await tokenResponse?.json();
     localStorage.setItem('token', access_token);
-    await getUser();
+    await getUser(true);
   };
 
   const handleLogout = () => {
@@ -48,7 +48,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
     localStorage.clear();
   };
 
-  const getUser = async () => {
+  const getUser = async (checkTwoFactor = false) => {
     const userResponse = await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: '/api/users/me',
@@ -56,7 +56,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
     if (userResponse?.ok) {
       const user = await userResponse?.json();
       setUser(user);
-    } else if (localStorage.getItem('token')) {
+    } else if (checkTwoFactor) {
       setTwoFactorModalOpen(true);
     }
   };
@@ -68,7 +68,6 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
       method: 'POST',
       body: data,
     });
-    console.log('here');
     if (tokenResponse.ok) {
       const { access_token } = await tokenResponse?.json();
       localStorage.setItem('token', access_token);
