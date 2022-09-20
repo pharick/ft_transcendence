@@ -18,7 +18,7 @@ import {
 import { Request } from 'express';
 import { PendingGamesService } from './pendingGames.service';
 import { PendingGame } from './pendingGame.entity';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { TwoFactorJwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreatePendingGameDto } from './pendingGames.dto';
 import { Game } from '../games/games.interfaces';
 import { GamesService } from '../games/games.service';
@@ -34,7 +34,7 @@ export class PendingGamesController {
     private usersService: UsersService,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TwoFactorJwtAuthGuard)
   @Put()
   async create(
     @Req() request: Request,
@@ -62,7 +62,7 @@ export class PendingGamesController {
     return this.pendingGamesService.findAllByUser(userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TwoFactorJwtAuthGuard)
   @Post(':id/accept')
   async accept(
     @Req() request: Request,
@@ -83,7 +83,7 @@ export class PendingGamesController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TwoFactorJwtAuthGuard)
   @Delete(':id')
   async remove(
     @Req() request: Request,

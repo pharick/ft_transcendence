@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { GamesService } from './games.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { TwoFactorJwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Game } from './games.interfaces';
 
 @Controller('games')
@@ -17,7 +17,7 @@ export class GamesController {
   constructor(private gamesService: GamesService) {}
 
   @Put()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TwoFactorJwtAuthGuard)
   async createTraining(@Req() request: Request): Promise<Game> {
     return await this.gamesService.create(false, request.user.id, null, 2);
   }

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { RoomUsersService } from './roomUsers.service';
 import { ChatRoomUserType } from './chatRoomUser.entity';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { TwoFactorJwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { BlockChatUserDto, MuteChatUserDto } from './chat.dtos';
 
@@ -18,7 +18,7 @@ export class RoomUsersController {
   constructor(private roomUsersService: RoomUsersService) {}
 
   @Post(':userId/makeAdmin')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TwoFactorJwtAuthGuard)
   async makeAdmin(
     @Req() request: Request,
     @Param('userId', new ParseIntPipe()) userId: number,
@@ -33,7 +33,7 @@ export class RoomUsersController {
   }
 
   @Post(':userId/revokeAdmin')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TwoFactorJwtAuthGuard)
   async revokeAdmin(
     @Req() request: Request,
     @Param('userId', new ParseIntPipe()) userId: number,
@@ -48,7 +48,7 @@ export class RoomUsersController {
   }
 
   @Post(':userId/block')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TwoFactorJwtAuthGuard)
   async blockUser(
     @Req() request: Request,
     @Param('userId', new ParseIntPipe()) userId: number,
@@ -65,7 +65,7 @@ export class RoomUsersController {
   }
 
   @Post(':userId/mute')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TwoFactorJwtAuthGuard)
   async muteUser(
     @Req() request: Request,
     @Param('userId', new ParseIntPipe()) userId: number,

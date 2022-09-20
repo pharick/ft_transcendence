@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ChatRoomsService } from './chatRooms.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { TwoFactorJwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { CreateChatRoomDto } from './chat.dtos';
 import { ChatRoom } from './chatRoom.entity';
@@ -20,7 +20,7 @@ export class ChatRoomsController {
   constructor(private chatRoomsService: ChatRoomsService) {}
 
   @Put()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TwoFactorJwtAuthGuard)
   create(
     @Req() request: Request,
     @Body() { name, type, password }: CreateChatRoomDto,
@@ -29,7 +29,7 @@ export class ChatRoomsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TwoFactorJwtAuthGuard)
   findAll(@Req() request: Request): Promise<ChatRoom[]> {
     return this.chatRoomsService.findAll(request.user.id);
   }

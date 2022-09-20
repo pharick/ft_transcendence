@@ -29,7 +29,7 @@ const UserProfile: FC = () => {
   const updateProfile: SubmitHandler<UpdateUserProfileDto> = async (data) => {
     await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      url: `/api/users/${userContext.user?.id}`,
+      url: `/api/users/me`,
       method: 'PATCH',
       body: data,
     });
@@ -50,7 +50,7 @@ const UserProfile: FC = () => {
     body.append('avatar', avatar);
     await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      url: `/api/users/${userContext.user?.id}/avatar`,
+      url: `/api/users/me/avatar`,
       method: 'PUT',
       body,
     });

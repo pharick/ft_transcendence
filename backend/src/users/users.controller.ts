@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   FileTypeValidator,
-  ForbiddenException,
   Get,
   MaxFileSizeValidator,
   NotFoundException,
@@ -18,10 +17,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
-import {
-  JwtAuthGuard,
-  TwoFactorJwtAuthGuard,
-} from '../auth/guards/jwt-auth.guard';
+import { TwoFactorJwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -57,12 +53,11 @@ export class UsersController {
     return user;
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Put(':id/avatar')
+  @UseGuards(TwoFactorJwtAuthGuard)
+  @Put('me/avatar')
   @UseInterceptors(FileInterceptor('avatar', { storage }))
   async uploadAvatar(
     @Req() request: Request,
-    @Param('id', new ParseIntPipe()) userId: number,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -73,15 +68,18 @@ export class UsersController {
     )
     file: Express.Multer.File,
   ) {
-    if (request.user.id != userId) throw new ForbiddenException();
-    await this.usersService.setAvatar(userId, file.path);
+    await this.usersService.setAvatar(request.user.id, file.path);
   }
 
-  @Patch(':id')
+  @UseGuards(TwoFactorJwtAuthGuard)
+  @Patch('me')
   async updateProfile(
-    @Param('id', new ParseIntPipe()) userId: number,
+    @Req() request: Request,
     @Body() updateUserProfileDto: UpdateUserProfileDto,
   ) {
-    await this.usersService.updateProfile(userId, updateUserProfileDto);
+    await this.usersService.updateProfile(
+      request.user.id,
+      updateUserProfileDto,
+    );
   }
 }
