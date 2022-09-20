@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { Ecole42AuthGuard } from './guards/ecole42-auth.guard';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtAuthGuard, TwoFactorJwtAuthGuard } from './guards/jwt-auth.guard';
 import { Response, Request } from 'express';
 import { TwoFactorCodeDto } from '../users/twoFactorCodeDto';
 import { UsersService } from '../users/users.service';
@@ -41,7 +41,7 @@ export class AuthController {
   }
 
   @Post('2fa_enable')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TwoFactorJwtAuthGuard)
   async enable2FactorAuth(
     @Req() request: Request,
     @Body() { code }: TwoFactorCodeDto,

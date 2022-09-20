@@ -1,28 +1,21 @@
 import { FC, useContext, useState } from 'react';
 import { fetchWithHandleErrors } from '../../utils';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
-import Image from 'next/image';
-import dynamic from 'next/dynamic';
-import styles from '../../styles/TwoFactorSettings.module.css';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler } from 'react-hook-form';
 import { TwoFactorCodeDto } from '../../types/dtos';
 import { useRouter } from 'next/router';
 import { UserContext } from './userProvider';
-
-const Modal = dynamic(() => import('../../components/layout/modal'), {
-  ssr: false,
-});
+import TwoFactorModal from './twoFactorModal';
 
 const TwoFactorSettings: FC = () => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
   const userContext = useContext(UserContext);
   const [modalOpen, setModalOpen] = useState(false);
-  const [qrCodeUrl, setQrCodeUrl] = useState<string>();
   const [isCodeError, setIsCodeError] = useState(false);
-  const codeForm = useForm<TwoFactorCodeDto>();
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>();
   const router = useRouter();
 
-  const handle2FactorEnable = async () => {
+  const getQrCode = async () => {
     const response = await fetchWithHandleErrors({
       requestErrorHandlerContext,
       url: '/api/auth/2fa_gen',
@@ -56,35 +49,20 @@ const TwoFactorSettings: FC = () => {
       ) : (
         <div className="d-flex align-items-center justify-content-between">
           <p>Two-factor auth disabled</p>
-          <button onClick={handle2FactorEnable}>Enable</button>
+          <button onClick={getQrCode}>Enable</button>
         </div>
       )}
 
-      <Modal
-        isOpen={modalOpen}
+      <TwoFactorModal
         title="Enable two-factor authentication"
-        cancelButtonText="Cancel"
+        isOpen={modalOpen}
+        isCodeError={isCodeError}
         cancelButtonHandler={() => {
           setModalOpen(false);
         }}
-      >
-        <div className={styles.wrapper}>
-          <Image src={qrCodeUrl} width={200} height={200} />
-
-          {isCodeError && (
-            <p className={styles.error}>Invalid code. Try again.</p>
-          )}
-
-          <form onSubmit={codeForm.handleSubmit(checkCode)}>
-            <input
-              type="text"
-              placeholder="Google Authenticator code"
-              {...codeForm.register('code', { required: true })}
-            />
-            <button type="submit">Check</button>
-          </form>
-        </div>
-      </Modal>
+        checkCodeHandler={checkCode}
+        qrCodeUrl={qrCodeUrl}
+      />
     </>
   );
 };
