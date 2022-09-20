@@ -5,6 +5,7 @@ import { In, Repository } from 'typeorm';
 import { ChatRoomUser, ChatRoomUserType } from './chatRoomUser.entity';
 import { UsersService } from '../users/users.service';
 import { ChatGateway } from './chat.gateway';
+import { hash, compare } from 'bcrypt';
 
 @Injectable()
 export class ChatRoomsService {
@@ -26,10 +27,11 @@ export class ChatRoomsService {
   ): Promise<ChatRoom> {
     const user = await this.usersService.findOne(userId);
     if (!user) return undefined;
+    const passwordHash = await hash(password, 10);
     const chatRoom = this.chatRoomsRepository.create({
       name,
       type,
-      password,
+      passwordHash,
     });
     const savedChatRoom = await this.chatRoomsRepository.save(chatRoom);
     const roomUser = this.roomUserRepository.create({
@@ -71,12 +73,14 @@ export class ChatRoomsService {
   ): Promise<ChatRoomUser> {
     const room = await this.chatRoomsRepository.findOneBy({ id: roomId });
     const user = await this.usersService.findOne(userId);
-    if (!room || !user) return undefined;
+    if (!room || !user || (room.type == ChatRoomType.Protected && !password))
+      return undefined;
     const roomUser = await this.roomUserRepository.findOneBy({ user, room });
     if (roomUser) return roomUser;
     if (
       room.type == ChatRoomType.Public ||
-      (room.type == ChatRoomType.Protected && room.password === password)
+      (room.type == ChatRoomType.Protected &&
+        (await compare(password, room.passwordHash)))
     ) {
       const newRoomUser = this.roomUserRepository.create({ user, room });
       return this.roomUserRepository.save(newRoomUser);

@@ -20,7 +20,7 @@ export class ChatRoom {
   type: ChatRoomType;
 
   @Column({ nullable: true })
-  password: string;
+  passwordHash: string;
 
   @OneToMany(() => ChatRoomUser, (roomUser) => roomUser.room)
   users: ChatRoomUser[];
