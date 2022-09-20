@@ -54,4 +54,8 @@ export class UsersService {
   async enable2FactorAuth(userId: number) {
     await this.usersRepository.update(userId, { twoFactorEnabled: true });
   }
+
+  async disable2FactorAuth(userId: number) {
+    await this.usersRepository.update(userId, { twoFactorEnabled: false });
+  }
 }

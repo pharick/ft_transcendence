@@ -40,11 +40,21 @@ const TwoFactorSettings: FC = () => {
     }
   };
 
+  const disable2Fa = async () => {
+    await fetchWithHandleErrors({
+      requestErrorHandlerContext,
+      url: '/api/auth/2fa_disable',
+      method: 'POST',
+    });
+    router.reload();
+  };
+
   return (
     <>
       {userContext.user?.twoFactorEnabled ? (
         <div className="d-flex align-items-center justify-content-between">
           <p>Two-factor auth enabled</p>
+          <button onClick={disable2Fa}>Disable</button>
         </div>
       ) : (
         <div className="d-flex align-items-center justify-content-between">

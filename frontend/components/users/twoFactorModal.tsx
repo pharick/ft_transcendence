@@ -28,6 +28,11 @@ const TwoFactorModal: FC<TwoFactorModalProps> = ({
 }) => {
   const codeForm = useForm<TwoFactorCodeDto>();
 
+  const handleSubmit: SubmitHandler<TwoFactorCodeDto> = (data) => {
+    checkCodeHandler(data);
+    codeForm.reset();
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -42,7 +47,7 @@ const TwoFactorModal: FC<TwoFactorModalProps> = ({
           <p className={styles.error}>Invalid code. Try again.</p>
         )}
 
-        <form onSubmit={codeForm.handleSubmit(checkCodeHandler)}>
+        <form onSubmit={codeForm.handleSubmit(handleSubmit)}>
           <input
             type="text"
             placeholder="Google Authenticator code"

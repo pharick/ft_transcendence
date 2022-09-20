@@ -41,7 +41,7 @@ export class AuthController {
   }
 
   @Post('2fa_enable')
-  @UseGuards(TwoFactorJwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async enable2FactorAuth(
     @Req() request: Request,
     @Body() { code }: TwoFactorCodeDto,
@@ -50,6 +50,12 @@ export class AuthController {
     if (!isValid)
       throw new UnauthorizedException('Wrong 2factor authentication code');
     await this.userService.enable2FactorAuth(request.user.id);
+  }
+
+  @Post('2fa_disable')
+  @UseGuards(TwoFactorJwtAuthGuard)
+  async disable2FactorAuth(@Req() request: Request) {
+    await this.userService.disable2FactorAuth(request.user.id);
   }
 
   @Post('2fa_gen')

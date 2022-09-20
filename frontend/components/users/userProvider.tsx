@@ -68,6 +68,7 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
       method: 'POST',
       body: data,
     });
+    console.log('here');
     if (tokenResponse.ok) {
       const { access_token } = await tokenResponse?.json();
       localStorage.setItem('token', access_token);
@@ -115,7 +116,6 @@ const UserProvider: FC<UserProviderProps> = ({ children }) => {
       <TwoFactorModal
         title="Two-factor authentication"
         isOpen={twoFactorModalOpen}
-        generateNewSecret={false}
         isCodeError={twoFactorCodeError}
         cancelButtonHandler={() => {
           setTwoFactorModalOpen(false);
