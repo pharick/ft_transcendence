@@ -7,6 +7,7 @@ export interface FetchParams {
   headers?: HeadersInit;
   body?: Record<string, any> | FormData;
   authRequired?: boolean;
+  ignoreCodes?: number[];
 }
 
 export const fetchWithHandleErrors = async ({
@@ -15,8 +16,11 @@ export const fetchWithHandleErrors = async ({
   method,
   body,
   authRequired,
+  ignoreCodes,
 }: FetchParams) => {
   const token = localStorage.getItem('token');
+  if (ignoreCodes == null) ignoreCodes = [];
+  if (authRequired) ignoreCodes.push(401);
   return await requestErrorHandlerContext.requestErrorHandler(async () => {
     const headers: Record<string, string> = {};
     if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -27,5 +31,5 @@ export const fetchWithHandleErrors = async ({
       headers,
       body: body instanceof FormData ? body : JSON.stringify(body),
     });
-  }, authRequired || false);
+  }, ignoreCodes);
 };

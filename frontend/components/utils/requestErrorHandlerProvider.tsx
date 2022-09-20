@@ -13,7 +13,7 @@ interface RequestErrorHandlerProviderProps {
 type RequestHandler = () => Promise<Response | undefined>;
 type RequestErrorHandler = (
   requestHandler: RequestHandler,
-  authRequired: boolean,
+  ignoreCodes: number[],
 ) => Promise<Response | undefined>;
 
 export interface RequestErrorHandlerContextInterface {
@@ -41,12 +41,16 @@ const RequestErrorHandlerProvider: FC<RequestErrorHandlerProviderProps> = ({
 
   const requestErrorHandler = async (
     requestHandler: () => Promise<Response | undefined>,
-    authRequired = false,
+    ignoreCodes: number[] = [],
   ) => {
     const response = await requestHandler();
-    if (authRequired && response?.status == 401) {
+    if (response?.status == 401 && !ignoreCodes.includes(401)) {
       setResult(RequestResult.Unauthorized);
-    } else if (!response?.ok && response?.status != 401) {
+    } else if (
+      !response?.ok &&
+      response?.status != 401 &&
+      !ignoreCodes.includes(response?.status)
+    ) {
       setResult(RequestResult.Error);
       setResponse(response);
     }

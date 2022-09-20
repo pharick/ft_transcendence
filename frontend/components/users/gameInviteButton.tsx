@@ -35,6 +35,7 @@ const GameInviteButton: FC<InviteProps> = ({ user }) => {
       method: 'PUT',
       body: createPendingGameDto,
       authRequired: true,
+      ignoreCodes: [409],
     });
 
     if (response?.status == 409) setIsError(true);
@@ -89,9 +90,7 @@ const GameInviteButton: FC<InviteProps> = ({ user }) => {
             <option disabled>Choose a mode</option>
             <option value="0">Classic game</option>
             <option value="1">Arcade game with one barrier</option>
-            <option selected value="2">
-              Arcade game with two barriers
-            </option>
+            <option value="2">Arcade game with two barriers</option>
           </select>
           <button type="submit">Invite</button>
         </form>
