@@ -39,14 +39,14 @@ export class RoomUsersService {
     );
   }
 
-  async setBlock(roomUserId: number, duration: number) {
+  async setBan(roomUserId: number, duration: number) {
     await this.roomUserRepository.update(
       { id: roomUserId },
       { bannedUntil: new Date(Date.now() + duration * 60000) },
     );
   }
 
-  async resetBlock(roomUserId: number) {
+  async resetBan(roomUserId: number) {
     await this.roomUserRepository.update(
       { id: roomUserId },
       { bannedUntil: null },

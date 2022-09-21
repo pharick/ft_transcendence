@@ -97,9 +97,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.disconnect();
       return;
     }
-    const blockDate = await this.checkBlock(roomUser);
-    if (blockDate) {
-      client.emit('forbidden', `You're blocked until ${blockDate}`);
+    const banDate = await this.checkBan(roomUser);
+    if (banDate) {
+      client.emit('forbidden', `You're banned until ${banDate}`);
       client.disconnect();
       return;
     }
@@ -126,11 +126,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
   }
 
-  private async checkBlock(roomUser: ChatRoomUser): Promise<Date | null> {
+  private async checkBan(roomUser: ChatRoomUser): Promise<Date | null> {
     if (!roomUser?.bannedUntil) return null;
     const now = new Date();
     if (roomUser.bannedUntil <= now) {
-      await this.roomUsersService.resetBlock(roomUser.id);
+      await this.roomUsersService.resetBan(roomUser.id);
       return null;
     }
     return roomUser.bannedUntil;

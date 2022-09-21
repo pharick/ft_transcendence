@@ -11,7 +11,7 @@ import { RoomUsersService } from './roomUsers.service';
 import { ChatRoomUserType } from './chatRoomUser.entity';
 import { TwoFactorJwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
-import { BlockChatUserDto, MuteChatUserDto } from './chat.dtos';
+import { BanChatUserDto, MuteChatUserDto } from './chat.dtos';
 
 @Controller('chat/users')
 export class RoomUsersController {
@@ -47,12 +47,12 @@ export class RoomUsersController {
       await this.roomUsersService.revokeAdmin(userId);
   }
 
-  @Post(':userId/block')
+  @Post(':userId/ban')
   @UseGuards(TwoFactorJwtAuthGuard)
-  async blockUser(
+  async banUser(
     @Req() request: Request,
     @Param('userId', new ParseIntPipe()) userId: number,
-    @Body() { durationMin }: BlockChatUserDto,
+    @Body() { durationMin }: BanChatUserDto,
   ): Promise<void> {
     const requester = await this.roomUsersService.findOne(request.user.id);
     const user = await this.roomUsersService.findOne(userId);
@@ -61,7 +61,7 @@ export class RoomUsersController {
       (requester.type == ChatRoomUserType.Owner ||
         requester.type == ChatRoomUserType.Admin)
     )
-      await this.roomUsersService.setBlock(userId, durationMin);
+      await this.roomUsersService.setBan(userId, durationMin);
   }
 
   @Post(':userId/mute')

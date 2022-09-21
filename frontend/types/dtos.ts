@@ -41,7 +41,7 @@ export class ChatRoomPasswordDto {
   password: string;
 }
 
-export class BlockChatUserDto {
+export class BanChatUserDto {
   durationMin: number;
 }
 

@@ -6,7 +6,7 @@ import { fetchWithHandleErrors } from '../../utils';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { BlockChatUserDto, MuteChatUserDto } from '../../types/dtos';
+import { BanChatUserDto, MuteChatUserDto } from '../../types/dtos';
 
 const Modal = dynamic(() => import('../../components/layout/modal'), {
   ssr: false,
@@ -18,9 +18,9 @@ interface RoomUserButtonsProps {
 
 const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
-  const [blockModalOpen, setBlockModalOpen] = useState(false);
+  const [banModalOpen, setBanModalOpen] = useState(false);
   const [muteModalOpen, setMuteModalOpen] = useState(false);
-  const blockDurationForm = useForm<BlockChatUserDto>();
+  const banDurationForm = useForm<BanChatUserDto>();
   const muteDurationForm = useForm<MuteChatUserDto>();
   const router = useRouter();
 
@@ -38,15 +38,15 @@ const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
     router.reload();
   };
 
-  const handleBlock: SubmitHandler<BlockChatUserDto> = async (data) => {
+  const handleBan: SubmitHandler<BanChatUserDto> = async (data) => {
     await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      url: `/api/chat/users/${user.id}/block`,
+      url: `/api/chat/users/${user.id}/ban`,
       method: 'POST',
       body: data,
       authRequired: true,
     });
-    setBlockModalOpen(false);
+    setBanModalOpen(false);
   };
 
   const handleMute: SubmitHandler<MuteChatUserDto> = async (data) => {
@@ -72,9 +72,9 @@ const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
             callback: handleAdmin,
           },
           {
-            text: 'Block',
+            text: 'Ban',
             callback: () => {
-              setBlockModalOpen(true);
+              setBanModalOpen(true);
             },
           },
           {
@@ -87,23 +87,23 @@ const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
       />
 
       <Modal
-        isOpen={blockModalOpen}
-        title="Block chat user"
+        isOpen={banModalOpen}
+        title="Ban chat user"
         cancelButtonText="Cancel"
         cancelButtonHandler={() => {
-          setBlockModalOpen(false);
+          setBanModalOpen(false);
         }}
       >
         <form
           className="d-flex"
-          onSubmit={blockDurationForm.handleSubmit(handleBlock)}
+          onSubmit={banDurationForm.handleSubmit(handleBan)}
         >
           <input
             className="flex-grow-1"
             type="number"
             min="1"
             placeholder="Duration in minutes"
-            {...blockDurationForm.register('durationMin', { required: true })}
+            {...banDurationForm.register('durationMin', { required: true })}
           />
           <button type="submit">Block</button>
         </form>
