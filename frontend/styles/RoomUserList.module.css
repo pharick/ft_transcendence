@@ -10,6 +10,11 @@
     align-items: center;
 }
 
+.link {
+    display: flex;
+    align-items: center;
+}
+
 .offline p, .offline img {
     opacity: 30%;
 }

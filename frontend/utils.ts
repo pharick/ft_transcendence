@@ -20,7 +20,7 @@ export const fetchWithHandleErrors = async ({
 }: FetchParams) => {
   const token = localStorage.getItem('token');
   if (ignoreCodes == null) ignoreCodes = [];
-  if (authRequired) ignoreCodes.push(401);
+  if (!authRequired) ignoreCodes.push(401);
   return await requestErrorHandlerContext.requestErrorHandler(async () => {
     const headers: Record<string, string> = {};
     if (token) headers['Authorization'] = `Bearer ${token}`;

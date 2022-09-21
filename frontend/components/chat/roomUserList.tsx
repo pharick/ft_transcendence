@@ -3,6 +3,7 @@ import { ChatRoomUser, ChatRoomUserType } from '../../types/interfaces';
 import PlayerBlockSmall from '../users/playerBlockSmall';
 import styles from '../../styles/RoomUserList.module.css';
 import RoomUserButtons from './roomUserButtons';
+import Link from 'next/link';
 
 interface RoomUserListProps {
   roomUsers: ChatRoomUser[];
@@ -22,15 +23,22 @@ const RoomUserList: FC<RoomUserListProps> = ({ roomUsers, currentUser }) => {
                   !roomUser.isOnline ? styles.offline : ''
                 }`}
               >
-                <PlayerBlockSmall user={roomUser.user} showUsername={false} />
-                <p className="m-0 ms-3">
-                  {roomUser.user.username}{' '}
-                  {roomUser.type == ChatRoomUserType.Owner
-                    ? '(owner)'
-                    : roomUser.type == ChatRoomUserType.Admin
-                    ? '(admin)'
-                    : ''}
-                </p>
+                <Link href={`/users/${roomUser.user.id}`}>
+                  <a className={styles.link}>
+                    <PlayerBlockSmall
+                      user={roomUser.user}
+                      showUsername={false}
+                    />
+                    <p className="m-0 ms-3">
+                      {roomUser.user.username}{' '}
+                      {roomUser.type == ChatRoomUserType.Owner
+                        ? '(owner)'
+                        : roomUser.type == ChatRoomUserType.Admin
+                        ? '(admin)'
+                        : ''}
+                    </p>
+                  </a>
+                </Link>
 
                 {(currentUser?.type == ChatRoomUserType.Owner ||
                   currentUser?.type == ChatRoomUserType.Admin) &&
