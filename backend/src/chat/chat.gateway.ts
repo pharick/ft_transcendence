@@ -79,9 +79,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const room: ChatRoom = await this.chatRoomService.findOne(roomId);
     const user: User = await this.authService.getUser(token);
-
     if (!room || !user) {
-      client.emit('forbidden');
+      client.emit(
+        'forbidden',
+        'You should be authenticated to enter chat room',
+      );
       client.disconnect();
       return;
     }

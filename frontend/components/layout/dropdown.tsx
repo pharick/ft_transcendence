@@ -1,10 +1,6 @@
 import { FC, useState } from 'react';
 import styles from '../../styles/Dropdown.module.css';
-
-interface DropdownItem {
-  text: string;
-  callback: () => any;
-}
+import { DropdownItem } from '../../types/interfaces';
 
 interface DropdownProps {
   menu: DropdownItem[];

@@ -136,3 +136,8 @@ export interface ChatRoomUser {
   mutedUntil: Date;
   isOnline: boolean;
 }
+
+export interface DropdownItem {
+  text: string;
+  callback: () => any;
+}

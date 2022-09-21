@@ -1,5 +1,9 @@
 import { FC, useContext, useState } from 'react';
-import { ChatRoomUser, ChatRoomUserType } from '../../types/interfaces';
+import {
+  ChatRoomUser,
+  ChatRoomUserType,
+  DropdownItem,
+} from '../../types/interfaces';
 import Dropdown from '../layout/dropdown';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 import { fetchWithHandleErrors } from '../../utils';
@@ -7,6 +11,7 @@ import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { BanChatUserDto, MuteChatUserDto } from '../../types/dtos';
+import GameInviteModal from '../games/gameInviteModal';
 
 const Modal = dynamic(() => import('../../components/layout/modal'), {
   ssr: false,
@@ -14,12 +19,19 @@ const Modal = dynamic(() => import('../../components/layout/modal'), {
 
 interface RoomUserButtonsProps {
   user: ChatRoomUser;
+  currentUser: ChatRoomUser;
+  successfulInviteHandler: (invitedUser: ChatRoomUser) => void;
 }
 
-const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
+const RoomUserButtons: FC<RoomUserButtonsProps> = ({
+  user,
+  currentUser,
+  successfulInviteHandler,
+}) => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
   const [banModalOpen, setBanModalOpen] = useState(false);
   const [muteModalOpen, setMuteModalOpen] = useState(false);
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const banDurationForm = useForm<BanChatUserDto>();
   const muteDurationForm = useForm<MuteChatUserDto>();
   const router = useRouter();
@@ -60,31 +72,45 @@ const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
     setMuteModalOpen(false);
   };
 
+  const menu: DropdownItem[] = [];
+  if (user.id != currentUser.id) {
+    menu.push({
+      text: 'Invite to game',
+      callback: () => {
+        setInviteModalOpen(true);
+      },
+    });
+  }
+  if (
+    (currentUser?.type == ChatRoomUserType.Owner ||
+      currentUser?.type == ChatRoomUserType.Admin) &&
+    currentUser.id != user.id &&
+    user.type != ChatRoomUserType.Owner
+  ) {
+    menu.push(
+      {
+        text:
+          user.type == ChatRoomUserType.Admin ? 'Revoke Admin' : 'Make admin',
+        callback: handleAdmin,
+      },
+      {
+        text: 'Ban',
+        callback: () => {
+          setBanModalOpen(true);
+        },
+      },
+      {
+        text: 'Mute',
+        callback: () => {
+          setMuteModalOpen(true);
+        },
+      },
+    );
+  }
+
   return (
     <>
-      <Dropdown
-        menu={[
-          {
-            text:
-              user.type == ChatRoomUserType.Admin
-                ? 'Revoke Admin'
-                : 'Make admin',
-            callback: handleAdmin,
-          },
-          {
-            text: 'Ban',
-            callback: () => {
-              setBanModalOpen(true);
-            },
-          },
-          {
-            text: 'Mute',
-            callback: () => {
-              setMuteModalOpen(true);
-            },
-          },
-        ]}
-      />
+      {menu.length > 0 && <Dropdown menu={menu} />}
 
       <Modal
         isOpen={banModalOpen}
@@ -131,6 +157,17 @@ const RoomUserButtons: FC<RoomUserButtonsProps> = ({ user }) => {
           <button type="submit">Mute</button>
         </form>
       </Modal>
+
+      <GameInviteModal
+        isOpen={inviteModalOpen}
+        cancelButtonHandler={() => {
+          setInviteModalOpen(false);
+        }}
+        user={user.user}
+        setIsSuccess={() => {
+          successfulInviteHandler(user);
+        }}
+      />
     </>
   );
 };

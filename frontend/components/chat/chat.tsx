@@ -99,6 +99,14 @@ const Chat: FC<ChatProps> = ({ room }) => {
     newMessageForm.reset();
   };
 
+  const successfulInviteHandler = (invitedUser: ChatRoomUser) => {
+    const data: ChatMessageDto = {
+      roomId: room.id,
+      text: `I invite ${invitedUser.user.username} to play pong!`,
+    };
+    socket.emit('messageToServer', data);
+  };
+
   if (forbiddenText) {
     return <p>{forbiddenText}</p>;
   }
@@ -155,7 +163,11 @@ const Chat: FC<ChatProps> = ({ room }) => {
           </form>
         </div>
         <div className="col-md-3">
-          <RoomUserList roomUsers={roomUsers} currentUser={currentUser} />
+          <RoomUserList
+            roomUsers={roomUsers}
+            currentUser={currentUser}
+            successfulInviteHandler={successfulInviteHandler}
+          />
         </div>
       </div>
 

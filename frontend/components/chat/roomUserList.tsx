@@ -8,9 +8,14 @@ import Link from 'next/link';
 interface RoomUserListProps {
   roomUsers: ChatRoomUser[];
   currentUser?: ChatRoomUser;
+  successfulInviteHandler: (invitedUser: ChatRoomUser) => void;
 }
 
-const RoomUserList: FC<RoomUserListProps> = ({ roomUsers, currentUser }) => {
+const RoomUserList: FC<RoomUserListProps> = ({
+  roomUsers,
+  currentUser,
+  successfulInviteHandler,
+}) => {
   return (
     <section>
       <ul className={styles.roomUserList}>
@@ -40,14 +45,15 @@ const RoomUserList: FC<RoomUserListProps> = ({ roomUsers, currentUser }) => {
                   </a>
                 </Link>
 
-                {(currentUser?.type == ChatRoomUserType.Owner ||
-                  currentUser?.type == ChatRoomUserType.Admin) &&
-                  currentUser.id != roomUser.id &&
-                  roomUser.type != ChatRoomUserType.Owner && (
-                    <div className="ms-auto">
-                      <RoomUserButtons user={roomUser} />
-                    </div>
-                  )}
+                {
+                  <div className="ms-auto">
+                    <RoomUserButtons
+                      user={roomUser}
+                      currentUser={currentUser}
+                      successfulInviteHandler={successfulInviteHandler}
+                    />
+                  </div>
+                }
               </article>
             </li>
           ))}
