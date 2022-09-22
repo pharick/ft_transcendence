@@ -10,6 +10,7 @@ import RoomUserList from './roomUserList';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import styles from '../../styles/Chat.module.css';
+import InviteChatUserButton from './inviteChatUserButton';
 
 const Modal = dynamic(() => import('../../components/layout/modal'), {
   ssr: false,
@@ -163,6 +164,7 @@ const Chat: FC<ChatProps> = ({ room }) => {
           </form>
         </div>
         <div className="col-md-3">
+          <InviteChatUserButton room={room} />
           <RoomUserList
             roomUsers={roomUsers}
             currentUser={currentUser}

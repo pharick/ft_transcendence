@@ -11,10 +11,16 @@ import { ChatMessage } from './chatMessage.entity';
 import { ChatMessagesService } from './chatMessages.service';
 import { RoomUsersService } from './roomUsers.service';
 import { RoomUsersController } from './roomUsers.controller';
+import { ChatRoomInvite } from './chatRoomInvite';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ChatRoom, ChatRoomUser, ChatMessage]),
+    TypeOrmModule.forFeature([
+      ChatRoom,
+      ChatRoomUser,
+      ChatMessage,
+      ChatRoomInvite,
+    ]),
     UsersModule,
     AuthModule,
   ],

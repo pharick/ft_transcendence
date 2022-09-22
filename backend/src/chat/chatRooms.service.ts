@@ -6,6 +6,7 @@ import { ChatRoomUser, ChatRoomUserType } from './chatRoomUser.entity';
 import { UsersService } from '../users/users.service';
 import { ChatGateway } from './chat.gateway';
 import { hash, compare } from 'bcrypt';
+import { ChatRoomInvite } from './chatRoomInvite';
 
 @Injectable()
 export class ChatRoomsService {
@@ -14,6 +15,8 @@ export class ChatRoomsService {
     private chatRoomsRepository: Repository<ChatRoom>,
     @InjectRepository(ChatRoomUser)
     private roomUserRepository: Repository<ChatRoomUser>,
+    @InjectRepository(ChatRoomInvite)
+    private chatRoomInviteRepository: Repository<ChatRoomInvite>,
     private usersService: UsersService,
     @Inject(forwardRef(() => ChatGateway))
     private chatGateway: ChatGateway,
@@ -104,5 +107,19 @@ export class ChatRoomsService {
       );
     });
     return roomUsers;
+  }
+
+  async inviteUser(
+    inviterUserId: number,
+    roomId: number,
+    userId: number,
+  ): Promise<ChatRoomInvite> {
+    const room = await this.chatRoomsRepository.findOneBy({ id: roomId });
+    const user = await this.usersService.findOne(userId);
+    if (!room || !user) return undefined;
+    const chatRoomUser = await this.authenticate(roomId, inviterUserId);
+    if (!chatRoomUser) return undefined;
+    const invite = this.chatRoomInviteRepository.create({ user, room });
+    return await this.chatRoomInviteRepository.save(invite);
   }
 }

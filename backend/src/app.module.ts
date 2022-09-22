@@ -17,6 +17,7 @@ import { ChatModule } from './chat/chat.module';
 import { ChatRoom } from './chat/chatRoom.entity';
 import { ChatRoomUser } from './chat/chatRoomUser.entity';
 import { ChatMessage } from './chat/chatMessage.entity';
+import { ChatRoomInvite } from './chat/chatRoomInvite';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ChatMessage } from './chat/chatMessage.entity';
           ChatRoom,
           ChatRoomUser,
           ChatMessage,
+          ChatRoomInvite,
         ],
       }),
     }),

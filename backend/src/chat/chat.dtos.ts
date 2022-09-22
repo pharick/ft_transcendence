@@ -33,3 +33,7 @@ export class BanChatUserDto {
 export class MuteChatUserDto {
   durationMin: number;
 }
+
+export class InviteChatUserDto {
+  userId: number;
+}

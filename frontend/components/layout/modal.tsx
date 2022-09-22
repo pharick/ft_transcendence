@@ -8,7 +8,7 @@ interface ModalProps {
   children?: ReactNode;
   title: string;
   isCancelButtonDisabled?: boolean;
-  cancelButtonText: string;
+  cancelButtonText?: string;
   cancelButtonHandler: () => void;
 }
 
@@ -48,7 +48,7 @@ const Modal: FC<ModalProps> = ({
               className="error-button"
               disabled={isCancelButtonDisabled}
             >
-              {cancelButtonText}
+              {cancelButtonText || 'Cancel'}
             </button>
           </div>
         </div>

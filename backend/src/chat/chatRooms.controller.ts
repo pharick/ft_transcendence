@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -12,7 +13,7 @@ import {
 import { ChatRoomsService } from './chatRooms.service';
 import { TwoFactorJwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
-import { CreateChatRoomDto } from './chat.dtos';
+import { CreateChatRoomDto, InviteChatUserDto } from './chat.dtos';
 import { ChatRoom } from './chatRoom.entity';
 
 @Controller('chat/rooms')
@@ -41,5 +42,21 @@ export class ChatRoomsController {
     const room = await this.chatRoomsService.findOne(id);
     if (!room) throw new NotFoundException();
     return room;
+  }
+
+  @Put(':id/invite')
+  @UseGuards(TwoFactorJwtAuthGuard)
+  async inviteUser(
+    @Req() request: Request,
+    @Param('id', new ParseIntPipe()) roomId: number,
+    @Body() { userId }: InviteChatUserDto,
+  ) {
+    const invite = await this.chatRoomsService.inviteUser(
+      request.user.id,
+      roomId,
+      userId,
+    );
+    if (!invite) throw new ForbiddenException();
+    return invite;
   }
 }

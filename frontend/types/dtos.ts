@@ -52,3 +52,7 @@ export class MuteChatUserDto {
 export class TwoFactorCodeDto {
   code: string;
 }
+
+export class InviteChatUserDto {
+  userId: number;
+}
