@@ -37,13 +37,13 @@ const InviteChatUserButton: FC<InviteChatUserButtonProps> = ({
     };
     const response = await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      url: `/api/chat/rooms/${room.id}/invite`,
+      url: `/api/chat/rooms/${room.id}/invites`,
       method: 'PUT',
       body: data,
       authRequired: true,
+      ignoreCodes: [409],
     });
-    console.log(response);
-    return true;
+    return response.status != 409;
   };
 
   return (
@@ -63,6 +63,7 @@ const InviteChatUserButton: FC<InviteChatUserButtonProps> = ({
           setModalOpen(false);
         }}
         actionButtonText="Invite"
+        errorButtonText="Already invited"
         actionButtonHandler={handleInvite}
       />
     </>

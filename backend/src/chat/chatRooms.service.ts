@@ -6,7 +6,7 @@ import { ChatRoomUser, ChatRoomUserType } from './chatRoomUser.entity';
 import { UsersService } from '../users/users.service';
 import { ChatGateway } from './chat.gateway';
 import { hash, compare } from 'bcrypt';
-import { ChatRoomInvite } from './chatRoomInvite';
+import { ChatRoomInvite } from './chatRoomInvite.entity';
 
 @Injectable()
 export class ChatRoomsService {
@@ -78,7 +78,10 @@ export class ChatRoomsService {
     const user = await this.usersService.findOne(userId);
     if (!room || !user || (room.type == ChatRoomType.Protected && !password))
       return undefined;
-    const roomUser = await this.roomUserRepository.findOneBy({ user, room });
+    const roomUser = await this.roomUserRepository.findOne({
+      where: { user, room },
+      relations: ['user'],
+    });
     if (roomUser) return roomUser;
     if (
       room.type == ChatRoomType.Public ||
@@ -117,9 +120,13 @@ export class ChatRoomsService {
     const room = await this.chatRoomsRepository.findOneBy({ id: roomId });
     const user = await this.usersService.findOne(userId);
     if (!room || !user) return undefined;
-    const chatRoomUser = await this.authenticate(roomId, inviterUserId);
-    if (!chatRoomUser) return undefined;
-    const invite = this.chatRoomInviteRepository.create({ user, room });
+    const inviterRoomUser = await this.authenticate(roomId, inviterUserId);
+    if (!inviterRoomUser) return undefined;
+    const invite = this.chatRoomInviteRepository.create({
+      inviter: inviterRoomUser.user,
+      user,
+      room,
+    });
     return await this.chatRoomInviteRepository.save(invite);
   }
 }

@@ -13,6 +13,7 @@ interface UserSearchListModalProps {
   title: string;
   cancelButtonHandler: () => void;
   actionButtonText: string;
+  errorButtonText: string;
   actionButtonHandler: (user: User) => Promise<boolean>;
 }
 
@@ -22,12 +23,15 @@ const UserSearchListModal: FC<UserSearchListModalProps> = ({
   title,
   cancelButtonHandler,
   actionButtonText,
+  errorButtonText,
   actionButtonHandler,
 }) => {
   const [searchValue, setSearchValue] = useState('');
+  const [userErrors, setUserErrors] = useState<number[]>([]);
 
   const handleButton = async (user: User) => {
-    await actionButtonHandler(user);
+    const res = await actionButtonHandler(user);
+    if (!res) setUserErrors((prev) => prev.concat([user.id]));
   };
 
   return (
@@ -55,11 +59,17 @@ const UserSearchListModal: FC<UserSearchListModalProps> = ({
                 <p className={styles.username}>{user.username}</p>
                 <div className="ms-auto">
                   <button
+                    className={
+                      userErrors.includes(user.id) ? 'error-button' : ''
+                    }
+                    disabled={userErrors.includes(user.id)}
                     onClick={() => {
                       handleButton(user).then();
                     }}
                   >
-                    {actionButtonText}
+                    {userErrors.includes(user.id)
+                      ? errorButtonText
+                      : actionButtonText}
                   </button>
                 </div>
               </li>

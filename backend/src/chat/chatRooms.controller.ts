@@ -1,8 +1,10 @@
 import {
   Body,
+  ConflictException,
   Controller,
   ForbiddenException,
   Get,
+  Logger,
   NotFoundException,
   Param,
   ParseIntPipe,
@@ -18,6 +20,8 @@ import { ChatRoom } from './chatRoom.entity';
 
 @Controller('chat/rooms')
 export class ChatRoomsController {
+  private logger = new Logger('ChatRoomsController');
+
   constructor(private chatRoomsService: ChatRoomsService) {}
 
   @Put()
@@ -44,18 +48,19 @@ export class ChatRoomsController {
     return room;
   }
 
-  @Put(':id/invite')
+  @Put(':id/invites')
   @UseGuards(TwoFactorJwtAuthGuard)
   async inviteUser(
     @Req() request: Request,
     @Param('id', new ParseIntPipe()) roomId: number,
     @Body() { userId }: InviteChatUserDto,
   ) {
-    const invite = await this.chatRoomsService.inviteUser(
-      request.user.id,
-      roomId,
-      userId,
-    );
+    const invite = await this.chatRoomsService
+      .inviteUser(request.user.id, roomId, userId)
+      .catch((error) => {
+        this.logger.error(error);
+        throw new ConflictException();
+      });
     if (!invite) throw new ForbiddenException();
     return invite;
   }

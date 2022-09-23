@@ -11,7 +11,7 @@ import { ChatMessage } from './chatMessage.entity';
 import { ChatMessagesService } from './chatMessages.service';
 import { RoomUsersService } from './roomUsers.service';
 import { RoomUsersController } from './roomUsers.controller';
-import { ChatRoomInvite } from './chatRoomInvite';
+import { ChatRoomInvite } from './chatRoomInvite.entity';
 
 @Module({
   imports: [
