@@ -164,7 +164,7 @@ const Chat: FC<ChatProps> = ({ room }) => {
           </form>
         </div>
         <div className="col-md-3">
-          <InviteChatUserButton room={room} />
+          <InviteChatUserButton room={room} roomUsers={roomUsers} />
           <RoomUserList
             roomUsers={roomUsers}
             currentUser={currentUser}

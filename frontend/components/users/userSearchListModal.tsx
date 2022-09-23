@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { User } from '../../types/interfaces';
 import dynamic from 'next/dynamic';
 const Modal = dynamic(() => import('../../components/layout/modal'), {
@@ -8,6 +8,7 @@ import styles from '../../styles/UserSearchListModal.module.css';
 import PlayerBlockSmall from './playerBlockSmall';
 
 interface UserSearchListModalProps {
+  users: User[];
   isOpen: boolean;
   title: string;
   cancelButtonHandler: () => void;
@@ -16,26 +17,17 @@ interface UserSearchListModalProps {
 }
 
 const UserSearchListModal: FC<UserSearchListModalProps> = ({
+  users,
   isOpen,
   title,
   cancelButtonHandler,
   actionButtonText,
   actionButtonHandler,
 }) => {
-  const [users, setUsers] = useState<User[]>([]);
   const [searchValue, setSearchValue] = useState('');
 
-  useEffect(() => {
-    const getUsers = async () => {
-      const response = await fetch(`/api/users`);
-      const users: User[] = await response.json();
-      setUsers(users);
-    };
-    getUsers().then();
-  }, []);
-
   const handleButton = async (user: User) => {
-    actionButtonHandler(user);
+    await actionButtonHandler(user);
   };
 
   return (
