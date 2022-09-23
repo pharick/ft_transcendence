@@ -31,5 +31,6 @@ import { ChatRoomInvite } from './chatRoomInvite.entity';
     ChatGateway,
   ],
   controllers: [ChatRoomsController, RoomUsersController],
+  exports: [ChatRoomsService],
 })
 export class ChatModule {}

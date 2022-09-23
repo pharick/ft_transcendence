@@ -2,14 +2,21 @@ import React, { FC, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import ReadyGameBlock from './readyGameBlock';
 import PendingGameBlock from './pendingGameBlock';
-import { Game, Notifications, PendingGame } from '../../types/interfaces';
+import {
+  ChatRoomInvite,
+  Game,
+  Notifications,
+  PendingGame,
+} from '../../types/interfaces';
 import { UserContext } from '../users/userProvider';
 import styles from '../../styles/Notifications.module.css';
+import ChatRoomInviteBlock from './chatRoomInviteBlock';
 
 const Notifications: FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [games, setGames] = useState<Game[]>([]);
   const [pendingGames, setPendingGames] = useState<PendingGame[]>([]);
+  const [chatInvites, setChatInvites] = useState<ChatRoomInvite[]>([]);
   const userContext = useContext(UserContext);
 
   useEffect(() => {
@@ -38,8 +45,10 @@ const Notifications: FC = () => {
     });
 
     socket.on('notifications', (notifications: Notifications) => {
+      console.log(notifications);
       setGames(notifications.games);
       setPendingGames(notifications.pending);
+      setChatInvites(notifications.chatInvites);
     });
 
     return () => {
@@ -55,7 +64,9 @@ const Notifications: FC = () => {
       <>
         <h2>Notifications</h2>
 
-        {games.length > 0 || pendingGames.length > 0 ? (
+        {games.length > 0 ||
+        pendingGames.length > 0 ||
+        chatInvites.length > 0 ? (
           <ul className={styles.list}>
             {games.map((game) => (
               <li key={`game-${game.id}`}>
@@ -66,6 +77,12 @@ const Notifications: FC = () => {
             {pendingGames.map((game) => (
               <li key={`pending-${game.id}`}>
                 <PendingGameBlock game={game} />
+              </li>
+            ))}
+
+            {chatInvites.map((invite) => (
+              <li key={`chatInvite-${invite.id}`}>
+                <ChatRoomInviteBlock invite={invite} />
               </li>
             ))}
           </ul>

@@ -88,6 +88,7 @@ export interface PendingGame {
 export interface Notifications {
   games: Game[];
   pending: PendingGame[];
+  chatInvites: ChatRoomInvite[];
 }
 
 export enum UserStatus {
@@ -140,4 +141,11 @@ export interface ChatRoomUser {
 export interface DropdownItem {
   text: string;
   callback: () => any;
+}
+
+export interface ChatRoomInvite {
+  id: number;
+  user: User;
+  room: ChatRoom;
+  inviter: User;
 }

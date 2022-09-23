@@ -129,4 +129,11 @@ export class ChatRoomsService {
     });
     return await this.chatRoomInviteRepository.save(invite);
   }
+
+  async findAllInvitesByUser(userId: number): Promise<ChatRoomInvite[]> {
+    return this.chatRoomInviteRepository.find({
+      where: { user: { id: userId } },
+      relations: ['user', 'room', 'inviter'],
+    });
+  }
 }
