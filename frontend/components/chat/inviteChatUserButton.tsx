@@ -63,6 +63,7 @@ const InviteChatUserButton: FC<InviteChatUserButtonProps> = ({
           setModalOpen(false);
         }}
         actionButtonText="Invite"
+        successButtonText="Invited"
         errorButtonText="Already invited"
         actionButtonHandler={handleInvite}
       />
