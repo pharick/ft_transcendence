@@ -9,6 +9,7 @@ import {
   NotFoundException,
   Param,
   ParseIntPipe,
+  Post,
   Put,
   Req,
   UseGuards,
@@ -73,5 +74,14 @@ export class ChatRoomsController {
     @Param('inviteId', new ParseIntPipe()) inviteId: number,
   ) {
     await this.chatRoomsService.removeInvite(inviteId, request.user.id);
+  }
+
+  @Post('invites/:inviteId/accept')
+  @UseGuards(TwoFactorJwtAuthGuard)
+  async acceptInvite(
+    @Req() request: Request,
+    @Param('inviteId', new ParseIntPipe()) inviteId: number,
+  ) {
+    await this.chatRoomsService.acceptInvite(inviteId, request.user.id);
   }
 }

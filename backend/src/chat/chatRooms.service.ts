@@ -140,6 +140,26 @@ export class ChatRoomsService {
     return savedInvite;
   }
 
+  async acceptInvite(inviteId: number, userId: number) {
+    const invite = await this.chatRoomInviteRepository.findOne({
+      where: {
+        id: inviteId,
+      },
+      relations: ['user', 'room'],
+    });
+    if (!invite) return;
+    if (invite.user.id != userId && invite.inviter.id != userId) {
+      throw new ForbiddenException();
+    }
+    const chatRoomUser = await this.roomUserRepository.create({
+      room: invite.room,
+      user: invite.user,
+    });
+    await this.roomUserRepository.save(chatRoomUser);
+    await this.chatRoomInviteRepository.remove(invite);
+    await this.notificationsService.send(invite.user.id);
+  }
+
   async removeInvite(inviteId: number, userId: number) {
     const invite = await this.chatRoomInviteRepository.findOne({
       where: {

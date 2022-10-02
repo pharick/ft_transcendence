@@ -12,7 +12,13 @@ interface ChatRoomInviteBlockProps {
 const ChatRoomInviteBlock: FC<ChatRoomInviteBlockProps> = ({ invite }) => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
 
-  const handleAccept = async (inviteId: number) => {};
+  const handleAccept = async (inviteId: number) => {
+    await fetchWithHandleErrors({
+      requestErrorHandlerContext,
+      url: `/api/chat/rooms/invites/${inviteId}/accept`,
+      method: 'POST',
+    });
+  };
 
   const handleRemove = async (inviteId: number) => {
     await fetchWithHandleErrors({
