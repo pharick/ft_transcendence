@@ -2,6 +2,7 @@ import {
   Body,
   ConflictException,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   Logger,
@@ -63,5 +64,14 @@ export class ChatRoomsController {
       });
     if (!invite) throw new ForbiddenException();
     return invite;
+  }
+
+  @Delete('invites/:inviteId')
+  @UseGuards(TwoFactorJwtAuthGuard)
+  async removeInvite(
+    @Req() request: Request,
+    @Param('inviteId', new ParseIntPipe()) inviteId: number,
+  ) {
+    await this.chatRoomsService.removeInvite(inviteId, request.user.id);
   }
 }

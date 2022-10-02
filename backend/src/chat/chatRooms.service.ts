@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { ChatRoom, ChatRoomType } from './chatRoom.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
@@ -7,6 +12,7 @@ import { UsersService } from '../users/users.service';
 import { ChatGateway } from './chat.gateway';
 import { hash, compare } from 'bcrypt';
 import { ChatRoomInvite } from './chatRoomInvite.entity';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class ChatRoomsService {
@@ -20,6 +26,8 @@ export class ChatRoomsService {
     private usersService: UsersService,
     @Inject(forwardRef(() => ChatGateway))
     private chatGateway: ChatGateway,
+    @Inject(forwardRef(() => NotificationsService))
+    private notificationsService: NotificationsService,
   ) {}
 
   async create(
@@ -127,7 +135,24 @@ export class ChatRoomsService {
       user,
       room,
     });
-    return await this.chatRoomInviteRepository.save(invite);
+    const savedInvite = await this.chatRoomInviteRepository.save(invite);
+    await this.notificationsService.send(savedInvite.user.id);
+    return savedInvite;
+  }
+
+  async removeInvite(inviteId: number, userId: number) {
+    const invite = await this.chatRoomInviteRepository.findOne({
+      where: {
+        id: inviteId,
+      },
+      relations: ['user'],
+    });
+    if (!invite) return;
+    if (invite.user.id != userId && invite.inviter.id != userId) {
+      throw new ForbiddenException();
+    }
+    await this.chatRoomInviteRepository.remove(invite);
+    await this.notificationsService.send(invite.user.id);
   }
 
   async findAllInvitesByUser(userId: number): Promise<ChatRoomInvite[]> {
