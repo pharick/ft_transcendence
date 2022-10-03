@@ -56,3 +56,7 @@ export class TwoFactorCodeDto {
 export class InviteChatUserDto {
   userId: number;
 }
+
+export class CreateInviteFriendDto {
+  friendId: number;
+}

@@ -38,12 +38,14 @@ export class ChatRoomsService {
   ): Promise<ChatRoom> {
     const user = await this.usersService.findOne(userId);
     if (!user) return undefined;
-    const passwordHash = await hash(password, 10);
     const chatRoom = this.chatRoomsRepository.create({
       name,
       type,
-      passwordHash,
     });
+    if (password) {
+      const passwordHash = await hash(password, 10);
+      chatRoom.passwordHash = passwordHash;
+    }
     const savedChatRoom = await this.chatRoomsRepository.save(chatRoom);
     const roomUser = this.roomUserRepository.create({
       user,

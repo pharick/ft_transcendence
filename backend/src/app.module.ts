@@ -18,6 +18,9 @@ import { ChatRoom } from './chat/chatRoom.entity';
 import { ChatRoomUser } from './chat/chatRoomUser.entity';
 import { ChatMessage } from './chat/chatMessage.entity';
 import { ChatRoomInvite } from './chat/chatRoomInvite.entity';
+import { FriendsModule } from './friends/friends.module';
+import { InviteFriends } from './friends/inviteFriends.entity';
+import { FriendsNote } from './friends/friends.entity';
 
 @Module({
   imports: [
@@ -41,6 +44,8 @@ import { ChatRoomInvite } from './chat/chatRoomInvite.entity';
           ChatRoomUser,
           ChatMessage,
           ChatRoomInvite,
+          InviteFriends,
+          FriendsNote,
         ],
       }),
     }),
@@ -56,6 +61,7 @@ import { ChatRoomInvite } from './chat/chatRoomInvite.entity';
     PendingGamesModule,
     MatchMakingModule,
     ChatModule,
+    FriendsModule,
   ],
   controllers: [],
   providers: [],
