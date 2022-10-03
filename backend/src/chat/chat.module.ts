@@ -13,6 +13,7 @@ import { RoomUsersService } from './roomUsers.service';
 import { RoomUsersController } from './roomUsers.controller';
 import { ChatRoomInvite } from './chatRoomInvite.entity';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { Direct } from './direct.entity';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
       ChatRoomUser,
       ChatMessage,
       ChatRoomInvite,
+      Direct,
     ]),
     UsersModule,
     AuthModule,

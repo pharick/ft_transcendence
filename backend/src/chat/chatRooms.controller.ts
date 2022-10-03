@@ -42,11 +42,27 @@ export class ChatRoomsController {
   }
 
   @Get(':id')
+  @UseGuards(TwoFactorJwtAuthGuard)
   async findOne(
     @Param('id', new ParseIntPipe()) id: number,
   ): Promise<ChatRoom> {
     const room = await this.chatRoomsService.findOne(id);
     if (!room) throw new NotFoundException();
+    return room;
+  }
+
+  @Get('directs/:userId')
+  @UseGuards(TwoFactorJwtAuthGuard)
+  async findDirect(
+    @Req() request: Request,
+    @Param('userId', new ParseIntPipe()) userId: number,
+  ): Promise<ChatRoom> {
+    const room = await this.chatRoomsService.findDirect(
+      userId,
+      request.user.id,
+    );
+    if (!room) {
+    }
     return room;
   }
 

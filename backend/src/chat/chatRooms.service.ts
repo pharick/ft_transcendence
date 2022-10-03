@@ -10,9 +10,10 @@ import { In, Repository } from 'typeorm';
 import { ChatRoomUser, ChatRoomUserType } from './chatRoomUser.entity';
 import { UsersService } from '../users/users.service';
 import { ChatGateway } from './chat.gateway';
-import { hash, compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { ChatRoomInvite } from './chatRoomInvite.entity';
 import { NotificationsService } from '../notifications/notifications.service';
+import { Direct } from './direct.entity';
 
 @Injectable()
 export class ChatRoomsService {
@@ -23,6 +24,8 @@ export class ChatRoomsService {
     private roomUserRepository: Repository<ChatRoomUser>,
     @InjectRepository(ChatRoomInvite)
     private chatRoomInviteRepository: Repository<ChatRoomInvite>,
+    @InjectRepository(Direct)
+    private directRepository: Repository<Direct>,
     private usersService: UsersService,
     @Inject(forwardRef(() => ChatGateway))
     private chatGateway: ChatGateway,
@@ -38,12 +41,13 @@ export class ChatRoomsService {
   ): Promise<ChatRoom> {
     const user = await this.usersService.findOne(userId);
     if (!user) return undefined;
-    const passwordHash = await hash(password, 10);
     const chatRoom = this.chatRoomsRepository.create({
       name,
       type,
-      passwordHash,
     });
+    if (type == ChatRoomType.Protected) {
+      chatRoom.passwordHash = await hash(password, 10);
+    }
     const savedChatRoom = await this.chatRoomsRepository.save(chatRoom);
     const roomUser = this.roomUserRepository.create({
       user,
@@ -52,6 +56,36 @@ export class ChatRoomsService {
     });
     await this.roomUserRepository.save(roomUser);
     return savedChatRoom;
+  }
+
+  async createDirect(user1Id: number, user2Id: number): Promise<ChatRoom> {
+    const user1 = await this.usersService.findOne(user1Id);
+    const user2 = await this.usersService.findOne(user2Id);
+    if (!user1 || !user2) return undefined;
+    const chatRoom = this.chatRoomsRepository.create({
+      name: `Direct messages ${user1.username} and ${user2.username}`,
+      type: ChatRoomType.Direct,
+    });
+    const savedChatRoom = await this.chatRoomsRepository.save(chatRoom);
+    const roomUser1 = this.roomUserRepository.create({
+      user: user1,
+      room: savedChatRoom,
+      type: ChatRoomUserType.Common,
+    });
+    const roomUser2 = this.roomUserRepository.create({
+      user: user2,
+      room: savedChatRoom,
+      type: ChatRoomUserType.Common,
+    });
+    await this.roomUserRepository.save(roomUser1);
+    await this.roomUserRepository.save(roomUser2);
+    const direct = this.directRepository.create({
+      user1,
+      user2,
+      chatRoom: savedChatRoom,
+    });
+    await this.directRepository.save(direct);
+    return chatRoom;
   }
 
   async findAll(userId: number): Promise<ChatRoom[]> {
@@ -75,6 +109,17 @@ export class ChatRoomsService {
 
   findOne(id: number): Promise<ChatRoom> {
     return this.chatRoomsRepository.findOneBy({ id });
+  }
+
+  async findDirect(user1Id: number, user2Id: number): Promise<ChatRoom> {
+    const user1 = await this.usersService.findOne(user1Id);
+    const user2 = await this.usersService.findOne(user2Id);
+    const direct = await this.directRepository.findOneBy([
+      { user1: user1, user2: user2 },
+      { user1: user2, user2: user1 },
+    ]);
+    if (!direct) return this.createDirect(user1Id, user2Id);
+    return direct.chatRoom;
   }
 
   async authenticate(

@@ -6,6 +6,7 @@ export enum ChatRoomType {
   Public,
   Private,
   Protected,
+  Direct,
 }
 
 @Entity()
