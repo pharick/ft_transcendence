@@ -45,7 +45,6 @@ const Notifications: FC = () => {
     });
 
     socket.on('notifications', (notifications: Notifications) => {
-      console.log(notifications);
       setGames(notifications.games);
       setPendingGames(notifications.pending);
       setChatInvites(notifications.chatInvites);

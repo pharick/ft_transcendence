@@ -42,7 +42,6 @@ export class ChatRoomsController {
   }
 
   @Get(':id')
-  @UseGuards(TwoFactorJwtAuthGuard)
   async findOne(
     @Param('id', new ParseIntPipe()) id: number,
   ): Promise<ChatRoom> {
@@ -58,10 +57,11 @@ export class ChatRoomsController {
     @Param('userId', new ParseIntPipe()) userId: number,
   ): Promise<ChatRoom> {
     const room = await this.chatRoomsService.findDirect(
-      userId,
       request.user.id,
+      userId,
     );
     if (!room) {
+      return await this.chatRoomsService.createDirect(request.user.id, userId);
     }
     return room;
   }
