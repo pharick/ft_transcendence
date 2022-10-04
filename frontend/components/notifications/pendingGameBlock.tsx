@@ -34,7 +34,7 @@ const PendingGameBlock: FC<PendingGameBlockProps> = ({ game }) => {
     return (
       <article className={styles.block}>
         <p>
-          Waiting for <b>{game.player2.username}</b>
+          Waiting for <b>{game.player2.username}</b> to accept game invite
         </p>
         <button
           className="error-button"
@@ -50,7 +50,7 @@ const PendingGameBlock: FC<PendingGameBlockProps> = ({ game }) => {
     return (
       <article className={styles.block}>
         <p>
-          <b>{game.player1.username}</b> invites you
+          <b>{game.player1.username}</b> invites you to play pong
         </p>
         <div>
           <button

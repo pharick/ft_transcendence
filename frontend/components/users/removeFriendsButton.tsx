@@ -1,8 +1,6 @@
-import { FC, useContext, useState } from 'react';
+import { FC, useContext } from 'react';
 import { fetchWithHandleErrors } from '../../utils';
 import { User } from '../../types/interfaces';
-import Image from 'next/image';
-import pingpong from '../../images/pingpong.svg';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 
 interface RemoveFriendButtonProps {
@@ -23,7 +21,7 @@ const RemoveFriendButton: FC<RemoveFriendButtonProps> = ({ user }) => {
   return (
     <>
       <button
-        className={`icon-button`}
+        className="error-button my-3 mx-0"
         onClick={() => {
           handleRemove(user.id).then();
         }}

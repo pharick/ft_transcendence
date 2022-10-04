@@ -75,10 +75,9 @@ const UserPage: NextPage<UserPageProps> = ({
         <div className="col-lg">
           <h2>Completed games</h2>
           <CompletedGameList games={completedGames} />
-        </div>
-        <div className="col-lg">
+
           <h2>Friends</h2>
-          <UserFriendsList friends={friends} />
+          <UserFriendsList friendsNotes={friends} />
         </div>
       </div>
     </>

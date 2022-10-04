@@ -1,32 +1,47 @@
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 import { FriendsNote } from '../../types/interfaces';
 import Link from 'next/link';
 
 import styles from '../../styles/CompletedGameList.module.css';
 import RemoveFriendButton from './removeFriendsButton';
+import PlayerBlockSmall from './playerBlockSmall';
+import { UserContext } from './userProvider';
 
 interface UserFriendsListProps {
-  friends: FriendsNote[];
+  friendsNotes: FriendsNote[];
 }
 
-const UserFriendsList: FC<UserFriendsListProps> = ({ friends }) => {
-  return friends.length > 0 ? (
+const UserFriendsList: FC<UserFriendsListProps> = ({ friendsNotes }) => {
+  const userContext = useContext(UserContext);
+
+  return friendsNotes.length > 0 ? (
     <ul className={styles.completedGameList}>
-      {friends.map((friend) => (
-        <li key={friend.id}>
-          <Link href={`/users/${friend.user2.id}`}>
+      {friendsNotes.map((note) => (
+        <li key={note.id}>
+          <Link href={`/users/${note.user2.id}`}>
             <a className={styles.link}>
-              <article className={styles.card}>
-                <div className="row">
-                  <div className="col-md d-flex justify-content-center justify-content-md-start align-items-center my-2 my-md-0">
-                    <p className={styles.user}>{friend.user2.username}</p>
-                    <p className={styles.scores}>{friend.user2.rank}</p>
-                  </div>
+              <div className="d-flex">
+                <div className="flex-grow-1">
+                  <article className={styles.card}>
+                    <div className="d-flex align-items-center">
+                      <div className="me-2">
+                        <PlayerBlockSmall
+                          user={note.user2}
+                          showUsername={false}
+                        />
+                      </div>
+                      <p className={styles.user}>
+                        {note.user2.username} (rank {note.user2.rank})
+                      </p>
+                    </div>
+                  </article>
                 </div>
-              </article>
+                {userContext.user.id == note.user1.id && (
+                  <RemoveFriendButton user={note.user2} />
+                )}
+              </div>
             </a>
           </Link>
-          <RemoveFriendButton user={friend.user2} />
         </li>
       ))}
     </ul>
