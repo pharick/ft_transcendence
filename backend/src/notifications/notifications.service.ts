@@ -4,6 +4,7 @@ import { Notifications } from './notifications.interface';
 import { GamesService } from '../games/games.service';
 import { PendingGamesService } from '../pendingGames/pendingGames.service';
 import { ChatRoomsService } from '../chat/chatRooms.service';
+import { InviteFriendsService } from 'src/friends/inviteFriends.service';
 
 @Injectable()
 export class NotificationsService {
@@ -14,6 +15,8 @@ export class NotificationsService {
     @Inject(forwardRef(() => PendingGamesService))
     private pendingGamesService: PendingGamesService,
     private chatRoomsService: ChatRoomsService,
+    @Inject(forwardRef(() => InviteFriendsService))
+    private inviteFriendsService: InviteFriendsService,
   ) {}
 
   async send(userId: number) {
@@ -22,7 +25,15 @@ export class NotificationsService {
     const chatInvites = await this.chatRoomsService.findAllInvitesByUser(
       userId,
     );
-    const notifications: Notifications = { games, pending, chatInvites };
+    const friendsInvites = await this.inviteFriendsService.findAllByUser(
+      userId,
+    );
+    const notifications: Notifications = {
+      games,
+      pending,
+      chatInvites,
+      friendsInvites,
+    };
     this.notificationsGateway.server
       .to(`user-${userId}`)
       .emit('notifications', notifications);

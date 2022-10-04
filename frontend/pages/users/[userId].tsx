@@ -1,6 +1,6 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import { CompletedGame, User } from '../../types/interfaces';
+import { CompletedGame, FriendsNote, User } from '../../types/interfaces';
 import { UserContext } from '../../components/users/userProvider';
 import GameInviteButton from '../../components/users/gameInviteButton';
 import { useContext } from 'react';
@@ -9,10 +9,13 @@ import UserBlock from '../../components/users/userBlock';
 import UserProfile from '../../components/users/userProfile';
 import styles from '../../styles/UserPage.module.css';
 import TwoFactorSettings from '../../components/users/twoFactorSettings';
+import InviteFriendButton from '../../components/users/inviteFriendButton';
+import UserFriendsList from '../../components/users/usersFriends';
 
 interface UserPageProps {
   user: User;
   completedGames: CompletedGame[];
+  friends: FriendsNote[];
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -27,10 +30,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     `${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/completed/user/${userId}`,
   );
   const completedGames: CompletedGame[] = await completedGamesResponse.json();
-  return { props: { user, completedGames } };
+  const friendsResponse = await fetch(
+    `${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/friends/${userId}`,
+  );
+  const friends: FriendsNote[] = await friendsResponse.json();
+  return { props: { user, completedGames, friends } };
 };
 
-const UserPage: NextPage<UserPageProps> = ({ user, completedGames }) => {
+const UserPage: NextPage<UserPageProps> = ({
+  user,
+  completedGames,
+  friends,
+}) => {
   const userContext = useContext(UserContext);
 
   return (
@@ -50,6 +61,9 @@ const UserPage: NextPage<UserPageProps> = ({ user, completedGames }) => {
               <li>
                 <GameInviteButton user={user} />
               </li>
+              <li>
+                <InviteFriendButton user={user} />
+              </li>
             </ul>
           ) : (
             <>
@@ -61,6 +75,10 @@ const UserPage: NextPage<UserPageProps> = ({ user, completedGames }) => {
         <div className="col-lg">
           <h2>Completed games</h2>
           <CompletedGameList games={completedGames} />
+        </div>
+        <div className="col-lg">
+          <h2>Friends</h2>
+          <UserFriendsList friends={friends} />
         </div>
       </div>
     </>

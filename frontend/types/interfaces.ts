@@ -85,10 +85,23 @@ export interface PendingGame {
   player2: User;
 }
 
+export interface FriendsNote {
+  id: number;
+  user1: User;
+  user2: User;
+}
+
+export interface InviteFriends {
+  id: number;
+  inviter: User;
+  friend: User;
+}
+
 export interface Notifications {
   games: Game[];
   pending: PendingGame[];
   chatInvites: ChatRoomInvite[];
+  friendsInvites: InviteFriends[];
 }
 
 export enum UserStatus {

@@ -7,16 +7,19 @@ import {
   Game,
   Notifications,
   PendingGame,
+  InviteFriends,
 } from '../../types/interfaces';
 import { UserContext } from '../users/userProvider';
 import styles from '../../styles/Notifications.module.css';
 import ChatRoomInviteBlock from './chatRoomInviteBlock';
+import FriendInviteBlock from './friendInviteBlock';
 
 const Notifications: FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [games, setGames] = useState<Game[]>([]);
   const [pendingGames, setPendingGames] = useState<PendingGame[]>([]);
   const [chatInvites, setChatInvites] = useState<ChatRoomInvite[]>([]);
+  const [friendsInvites, setFriendsInvites] = useState<InviteFriends[]>([]);
   const userContext = useContext(UserContext);
 
   useEffect(() => {
@@ -42,12 +45,14 @@ const Notifications: FC = () => {
       setIsConnected(false);
       setGames([]);
       setPendingGames([]);
+      setFriendsInvites([]);
     });
 
     socket.on('notifications', (notifications: Notifications) => {
       setGames(notifications.games);
       setPendingGames(notifications.pending);
       setChatInvites(notifications.chatInvites);
+      setFriendsInvites(notifications.friendsInvites);
     });
 
     return () => {
@@ -65,7 +70,8 @@ const Notifications: FC = () => {
 
         {games.length > 0 ||
         pendingGames.length > 0 ||
-        chatInvites.length > 0 ? (
+        chatInvites.length > 0 ||
+        friendsInvites.length > 0 ? (
           <ul className={styles.list}>
             {games.map((game) => (
               <li key={`game-${game.id}`}>
@@ -82,6 +88,12 @@ const Notifications: FC = () => {
             {chatInvites.map((invite) => (
               <li key={`chatInvite-${invite.id}`}>
                 <ChatRoomInviteBlock invite={invite} />
+              </li>
+            ))}
+
+            {friendsInvites.map((invite) => (
+              <li key={`friendInvite-${invite.id}`}>
+                <FriendInviteBlock invite={invite} />
               </li>
             ))}
           </ul>

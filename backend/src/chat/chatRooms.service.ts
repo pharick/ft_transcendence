@@ -10,7 +10,7 @@ import { In, Repository } from 'typeorm';
 import { ChatRoomUser, ChatRoomUserType } from './chatRoomUser.entity';
 import { UsersService } from '../users/users.service';
 import { ChatGateway } from './chat.gateway';
-import { compare, hash } from 'bcrypt';
+import { hash, compare } from 'bcrypt';
 import { ChatRoomInvite } from './chatRoomInvite.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { Direct } from './direct.entity';
