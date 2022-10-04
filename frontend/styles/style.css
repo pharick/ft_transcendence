@@ -52,6 +52,7 @@ button, .button {
     padding: 5px 8px;
     display: inline-block;
     text-decoration: none;
+    box-sizing: border-box;
 }
 
 button:not(:disabled):hover, .button:hover {

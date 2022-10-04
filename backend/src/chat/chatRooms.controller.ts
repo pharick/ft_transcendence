@@ -50,20 +50,12 @@ export class ChatRoomsController {
     return room;
   }
 
-  @Get('directs/:userId')
-  @UseGuards(TwoFactorJwtAuthGuard)
+  @Get('directs/:user1Id/vs/:user2Id')
   async findDirect(
-    @Req() request: Request,
-    @Param('userId', new ParseIntPipe()) userId: number,
+    @Param('user1Id', new ParseIntPipe()) user1Id: number,
+    @Param('user2Id', new ParseIntPipe()) user2Id: number,
   ): Promise<ChatRoom> {
-    const room = await this.chatRoomsService.findDirect(
-      request.user.id,
-      userId,
-    );
-    if (!room) {
-      return await this.chatRoomsService.createDirect(request.user.id, userId);
-    }
-    return room;
+    return await this.chatRoomsService.findDirect(user1Id, user2Id);
   }
 
   @Put(':id/invites')

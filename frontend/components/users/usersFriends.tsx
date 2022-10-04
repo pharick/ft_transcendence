@@ -36,7 +36,7 @@ const UserFriendsList: FC<UserFriendsListProps> = ({ friendsNotes }) => {
                     </div>
                   </article>
                 </div>
-                {userContext.user.id == note.user1.id && (
+                {userContext.user?.id == note.user1.id && (
                   <RemoveFriendButton user={note.user2} />
                 )}
               </div>

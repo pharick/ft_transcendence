@@ -2,7 +2,7 @@ import { FC, useContext, useState } from 'react';
 import { fetchWithHandleErrors } from '../../utils';
 import { User } from '../../types/interfaces';
 import Image from 'next/image';
-import pingpong from '../../images/pingpong.svg';
+import friend from '../../images/friend.svg';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 import { CreateInviteFriendDto } from '../../types/dtos';
 
@@ -46,10 +46,10 @@ const InviteFriendButton: FC<InviteFriendButtonProps> = ({ user }) => {
     <>
       <button
         disabled={isSuccess || isError}
-        className={`${className} icon-button`}
+        className={`${className} icon-button w-100 d-flex justify-content-center`}
         onClick={handleInvite}
       >
-        <Image src={pingpong} alt={text} width={25} height={25} />
+        <Image src={friend} alt={text} width={25} height={25} />
         {text}
       </button>
     </>

@@ -19,7 +19,7 @@ const GameInviteButton: FC<InviteProps> = ({ user }) => {
     <>
       <button
         disabled={isSuccess}
-        className={`${className} icon-button`}
+        className={`${className} icon-button w-100 d-flex justify-content-center`}
         onClick={() => {
           setIsOpen(true);
         }}
