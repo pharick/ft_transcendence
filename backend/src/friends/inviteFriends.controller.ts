@@ -25,16 +25,19 @@ export class InviteFriendsController {
 
   @UseGuards(TwoFactorJwtAuthGuard)
   @Put()
-  create(
+  async create(
     @Req() request: Request,
     @Body() { friendId }: CreateInviteFriendDto,
   ): Promise<InviteFriends> {
-    return this.inviteFriendsService
+    const invite = await this.inviteFriendsService
       .create(request.user.id, friendId)
       .catch((error) => {
         this.logger.error(error);
         throw new ConflictException();
       });
+    console.log(invite);
+    if (!invite) throw new ConflictException();
+    return invite;
   }
 
   @UseGuards(TwoFactorJwtAuthGuard)
