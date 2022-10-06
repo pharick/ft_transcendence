@@ -118,6 +118,7 @@ export enum ChatRoomType {
   Public,
   Private,
   Protected,
+  Direct,
 }
 
 export interface ChatRoom {

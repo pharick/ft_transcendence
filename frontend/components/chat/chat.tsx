@@ -1,5 +1,10 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
-import { ChatMessage, ChatRoom, ChatRoomUser } from '../../types/interfaces';
+import {
+  ChatMessage,
+  ChatRoom,
+  ChatRoomType,
+  ChatRoomUser,
+} from '../../types/interfaces';
 import { io, Socket } from 'socket.io-client';
 import { utcToZonedTime } from 'date-fns-tz';
 import { format } from 'date-fns';
@@ -164,7 +169,9 @@ const Chat: FC<ChatProps> = ({ room }) => {
           </form>
         </div>
         <div className="col-md-3">
-          <InviteChatUserButton room={room} roomUsers={roomUsers} />
+          {room.type != ChatRoomType.Direct && (
+            <InviteChatUserButton room={room} roomUsers={roomUsers} />
+          )}
           <RoomUserList
             roomUsers={roomUsers}
             currentUser={currentUser}

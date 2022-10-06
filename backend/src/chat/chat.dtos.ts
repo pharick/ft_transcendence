@@ -4,6 +4,7 @@ export enum ChatRoomType {
   Public,
   Private,
   Protected,
+  Direct,
 }
 
 export class CreateChatRoomDto {
