@@ -33,11 +33,12 @@ const InviteFriendButton: FC<InviteFriendButtonProps> = ({ user }) => {
       url: '/api/friends/invites',
       body: dto,
       method: 'PUT',
+      authRequired: true,
       ignoreCodes: [409],
     });
     if (response.ok) {
       setIsSuccess(true);
-    } else {
+    } else if (response.status == 409) {
       setIsError(true);
     }
   };
