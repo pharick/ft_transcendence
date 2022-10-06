@@ -10,7 +10,7 @@ import { In, Repository } from 'typeorm';
 import { ChatRoomUser, ChatRoomUserType } from './chatRoomUser.entity';
 import { UsersService } from '../users/users.service';
 import { ChatGateway } from './chat.gateway';
-import { hash, compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { ChatRoomInvite } from './chatRoomInvite.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { Direct } from './direct.entity';
@@ -98,7 +98,7 @@ export class ChatRoomsService {
         relations: ['room'],
       })
     ).map((roomUser) => roomUser.room.id);
-    return this.chatRoomsRepository.find({
+    const rooms = await this.chatRoomsRepository.find({
       where: [
         { type: ChatRoomType.Public },
         { type: ChatRoomType.Protected },
@@ -106,6 +106,7 @@ export class ChatRoomsService {
       ],
       relations: ['users', 'users.user'],
     });
+    return rooms.filter((room) => room.type != ChatRoomType.Direct);
   }
 
   findOne(id: number): Promise<ChatRoom> {
