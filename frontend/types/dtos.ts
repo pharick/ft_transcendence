@@ -60,3 +60,7 @@ export class InviteChatUserDto {
 export class CreateInviteFriendDto {
   friendId: number;
 }
+
+export class CreateDirectDto {
+  userId: number;
+}

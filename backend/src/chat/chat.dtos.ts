@@ -37,3 +37,7 @@ export class MuteChatUserDto {
 export class InviteChatUserDto {
   userId: number;
 }
+
+export class CreateDirectDto {
+  userId: number;
+}

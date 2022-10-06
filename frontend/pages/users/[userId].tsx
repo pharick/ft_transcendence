@@ -11,9 +11,7 @@ import styles from '../../styles/UserPage.module.css';
 import TwoFactorSettings from '../../components/users/twoFactorSettings';
 import InviteFriendButton from '../../components/users/inviteFriendButton';
 import UserFriendsList from '../../components/users/usersFriends';
-import Link from 'next/link';
-import Image from 'next/image';
-import direct from '../../images/direct.svg';
+import DirectMessagesButton from '../../components/users/directMessagesButton';
 
 interface UserPageProps {
   user: User;
@@ -66,17 +64,7 @@ const UserPage: NextPage<UserPageProps> = ({
                 <InviteFriendButton user={user} />
               </li>
               <li>
-                <Link href={`/chat/direct/${user.id}`}>
-                  <a className="button icon-button w-100 d-flex justify-content-center">
-                    <Image
-                      src={direct}
-                      alt="Direct messages"
-                      width={25}
-                      height={25}
-                    />{' '}
-                    Direct messages
-                  </a>
-                </Link>
+                <DirectMessagesButton user={user} />
               </li>
             </ul>
           ) : (

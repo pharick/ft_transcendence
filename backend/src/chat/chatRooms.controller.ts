@@ -17,7 +17,11 @@ import {
 import { ChatRoomsService } from './chatRooms.service';
 import { TwoFactorJwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
-import { CreateChatRoomDto, InviteChatUserDto } from './chat.dtos';
+import {
+  CreateChatRoomDto,
+  CreateDirectDto,
+  InviteChatUserDto,
+} from './chat.dtos';
 import { ChatRoom } from './chatRoom.entity';
 
 @Controller('chat/rooms')
@@ -50,12 +54,32 @@ export class ChatRoomsController {
     return room;
   }
 
-  @Get('directs/:user1Id/vs/:user2Id')
-  async findDirect(
-    @Param('user1Id', new ParseIntPipe()) user1Id: number,
-    @Param('user2Id', new ParseIntPipe()) user2Id: number,
+  @Put('directs')
+  @UseGuards(TwoFactorJwtAuthGuard)
+  async createDirect(
+    @Req() request: Request,
+    @Body() { userId }: CreateDirectDto,
   ): Promise<ChatRoom> {
-    return await this.chatRoomsService.findDirect(user1Id, user2Id);
+    return this.chatRoomsService
+      .createDirect(request.user.id, userId)
+      .catch((error) => {
+        this.logger.error(error);
+        throw new ConflictException();
+      });
+  }
+
+  @Get('directs/:userId')
+  @UseGuards(TwoFactorJwtAuthGuard)
+  async findDirect(
+    @Req() request: Request,
+    @Param('userId', new ParseIntPipe()) userId: number,
+  ): Promise<ChatRoom> {
+    const room = await this.chatRoomsService.findDirect(
+      request.user.id,
+      userId,
+    );
+    if (!room) throw new NotFoundException();
+    return room;
   }
 
   @Put(':id/invites')

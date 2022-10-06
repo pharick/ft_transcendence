@@ -59,6 +59,7 @@ export class ChatRoomsService {
   }
 
   async createDirect(user1Id: number, user2Id: number): Promise<ChatRoom> {
+    console.log('create...');
     const user1 = await this.usersService.findOne(user1Id);
     const user2 = await this.usersService.findOne(user2Id);
     if (!user1 || !user2) return undefined;
@@ -85,7 +86,7 @@ export class ChatRoomsService {
       chatRoom: savedChatRoom,
     });
     await this.directRepository.save(direct);
-    return chatRoom;
+    return savedChatRoom;
   }
 
   async findAll(userId: number): Promise<ChatRoom[]> {
@@ -114,12 +115,14 @@ export class ChatRoomsService {
   async findDirect(user1Id: number, user2Id: number): Promise<ChatRoom> {
     const user1 = await this.usersService.findOne(user1Id);
     const user2 = await this.usersService.findOne(user2Id);
-    const direct = await this.directRepository.findOneBy([
-      { user1: user1, user2: user2 },
-      { user1: user2, user2: user1 },
-    ]);
-    if (!direct) return this.createDirect(user1Id, user2Id);
-    return direct.chatRoom;
+    const direct = await this.directRepository.findOne({
+      where: [
+        { user1: user1, user2: user2 },
+        { user1: user2, user2: user1 },
+      ],
+      relations: ['chatRoom'],
+    });
+    return direct?.chatRoom;
   }
 
   async authenticate(
