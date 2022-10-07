@@ -11,7 +11,7 @@ import styles from '../../styles/UserPage.module.css';
 import TwoFactorSettings from '../../components/users/twoFactorSettings';
 import InviteFriendButton from '../../components/users/inviteFriendButton';
 import UserFriendsList from '../../components/users/usersFriends';
-import DirectMessagesButton from '../../components/users/directMessagesButton';
+import DirectMessagesButtons from '../../components/users/directMessagesButtons';
 
 interface UserPageProps {
   user: User;
@@ -63,9 +63,7 @@ const UserPage: NextPage<UserPageProps> = ({
               <li>
                 <InviteFriendButton user={user} />
               </li>
-              <li>
-                <DirectMessagesButton user={user} />
-              </li>
+              <DirectMessagesButtons user={user} />
             </ul>
           ) : (
             <>

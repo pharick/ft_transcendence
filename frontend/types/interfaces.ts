@@ -163,3 +163,12 @@ export interface ChatRoomInvite {
   room: ChatRoom;
   inviter: User;
 }
+
+export interface Direct {
+  id: number;
+  user1: User;
+  user2: User;
+  chatRoom: ChatRoom;
+  user1Blocked: boolean;
+  user2Blocked: boolean;
+}

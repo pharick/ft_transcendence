@@ -57,7 +57,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { token } = client.handshake.auth;
     const user = await this.authService.getUser(token);
     if (!user) return;
-    const roomUser = await this.roomUsersService.findOneByUserId(user.id);
+    const roomUser = await this.roomUsersService.findOneByUserId(
+      roomId,
+      user.id,
+    );
+    console.log(roomUser);
     const muteDate = await this.checkMute(roomUser);
     if (muteDate) {
       client.emit('muted', `You're muted until ${muteDate}`);

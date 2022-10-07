@@ -173,6 +173,7 @@ const Chat: FC<ChatProps> = ({ room }) => {
             <InviteChatUserButton room={room} roomUsers={roomUsers} />
           )}
           <RoomUserList
+            room={room}
             roomUsers={roomUsers}
             currentUser={currentUser}
             successfulInviteHandler={successfulInviteHandler}

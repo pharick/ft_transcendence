@@ -58,8 +58,7 @@ export class ChatRoomsService {
     return savedChatRoom;
   }
 
-  async createDirect(user1Id: number, user2Id: number): Promise<ChatRoom> {
-    console.log('create...');
+  async createDirect(user1Id: number, user2Id: number): Promise<Direct> {
     const user1 = await this.usersService.findOne(user1Id);
     const user2 = await this.usersService.findOne(user2Id);
     if (!user1 || !user2) return undefined;
@@ -85,8 +84,7 @@ export class ChatRoomsService {
       user2,
       chatRoom: savedChatRoom,
     });
-    await this.directRepository.save(direct);
-    return savedChatRoom;
+    return this.directRepository.save(direct);
   }
 
   async findAll(userId: number): Promise<ChatRoom[]> {
@@ -113,7 +111,7 @@ export class ChatRoomsService {
     return this.chatRoomsRepository.findOneBy({ id });
   }
 
-  async findDirect(user1Id: number, user2Id: number): Promise<ChatRoom> {
+  async findDirect(user1Id: number, user2Id: number): Promise<Direct> {
     const user1 = await this.usersService.findOne(user1Id);
     const user2 = await this.usersService.findOne(user2Id);
     const direct = await this.directRepository.findOne({
@@ -121,9 +119,36 @@ export class ChatRoomsService {
         { user1: user1, user2: user2 },
         { user1: user2, user2: user1 },
       ],
-      relations: ['chatRoom'],
+      relations: ['chatRoom', 'user1', 'user2'],
     });
-    return direct?.chatRoom;
+    if (!direct) return undefined;
+    const roomUser1 = await this.roomUserRepository.findOneBy({
+      room: direct.chatRoom,
+      user: user1,
+    });
+    const roomUser2 = await this.roomUserRepository.findOneBy({
+      room: direct.chatRoom,
+      user: user2,
+    });
+    if (direct.user1Blocked) {
+      await this.roomUserRepository.update(roomUser1.id, {
+        mutedUntil: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      });
+    } else {
+      await this.roomUserRepository.update(roomUser1.id, {
+        mutedUntil: null,
+      });
+    }
+    if (direct.user2Blocked) {
+      await this.roomUserRepository.update(roomUser2.id, {
+        mutedUntil: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      });
+    } else {
+      await this.roomUserRepository.update(roomUser2.id, {
+        mutedUntil: null,
+      });
+    }
+    return direct;
   }
 
   async authenticate(
@@ -229,5 +254,31 @@ export class ChatRoomsService {
       where: { user: { id: userId } },
       relations: ['user', 'room', 'inviter'],
     });
+  }
+
+  async blockDirect(directId: number, userId: number) {
+    const direct = await this.directRepository.findOne({
+      where: { id: directId },
+      relations: ['user1', 'user2'],
+    });
+    if (!direct) return;
+    if (direct.user1.id == userId) {
+      await this.directRepository.update(direct.id, { user1Blocked: true });
+    } else if (direct.user2.id == userId) {
+      await this.directRepository.update(direct.id, { user2Blocked: true });
+    }
+  }
+
+  async unblockDirect(directId: number, userId: number) {
+    const direct = await this.directRepository.findOne({
+      where: { id: directId },
+      relations: ['user1', 'user2'],
+    });
+    if (!direct) return;
+    if (direct.user1.id == userId) {
+      await this.directRepository.update(direct.id, { user1Blocked: false });
+    } else if (direct.user2.id == userId) {
+      await this.directRepository.update(direct.id, { user2Blocked: false });
+    }
   }
 }

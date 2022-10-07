@@ -1,4 +1,10 @@
-import { Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from '../users/user.entity';
 import { ChatRoom } from './chatRoom.entity';
 
@@ -13,6 +19,12 @@ export class Direct {
 
   @ManyToOne(() => User)
   user2: User;
+
+  @Column({ default: false })
+  user1Blocked: boolean;
+
+  @Column({ default: false })
+  user2Blocked: boolean;
 
   @ManyToOne(() => ChatRoom)
   chatRoom: ChatRoom;

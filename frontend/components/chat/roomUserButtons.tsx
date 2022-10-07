@@ -1,5 +1,6 @@
 import { FC, useContext, useState } from 'react';
 import {
+  ChatRoom,
   ChatRoomUser,
   ChatRoomUserType,
   DropdownItem,
@@ -18,12 +19,14 @@ const Modal = dynamic(() => import('../../components/layout/modal'), {
 });
 
 interface RoomUserButtonsProps {
+  room: ChatRoom;
   user: ChatRoomUser;
   currentUser: ChatRoomUser;
   successfulInviteHandler: (invitedUser: ChatRoomUser) => void;
 }
 
 const RoomUserButtons: FC<RoomUserButtonsProps> = ({
+  room,
   user,
   currentUser,
   successfulInviteHandler,
@@ -39,7 +42,7 @@ const RoomUserButtons: FC<RoomUserButtonsProps> = ({
   const handleAdmin = async () => {
     const url =
       user.type != ChatRoomUserType.Admin
-        ? `/api/chat/users/${user.id}/makeAdmin`
+        ? `/api/chat/users/${room.id}/users/${user.id}/makeAdmin`
         : `/api/chat/users/${user.id}/revokeAdmin`;
     await fetchWithHandleErrors({
       requestErrorHandlerContext,
@@ -53,7 +56,7 @@ const RoomUserButtons: FC<RoomUserButtonsProps> = ({
   const handleBan: SubmitHandler<BanChatUserDto> = async (data) => {
     await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      url: `/api/chat/users/${user.id}/ban`,
+      url: `/api/chat/users/${room.id}/users/${user.id}/ban`,
       method: 'POST',
       body: data,
       authRequired: true,
@@ -64,7 +67,7 @@ const RoomUserButtons: FC<RoomUserButtonsProps> = ({
   const handleMute: SubmitHandler<MuteChatUserDto> = async (data) => {
     await fetchWithHandleErrors({
       requestErrorHandlerContext,
-      url: `/api/chat/users/${user.id}/mute`,
+      url: `/api/chat/users/${room.id}/users/${user.id}/mute`,
       method: 'POST',
       body: data,
       authRequired: true,

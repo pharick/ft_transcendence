@@ -1,17 +1,23 @@
 import { FC } from 'react';
-import { ChatRoomUser, ChatRoomUserType } from '../../types/interfaces';
+import {
+  ChatRoom,
+  ChatRoomUser,
+  ChatRoomUserType,
+} from '../../types/interfaces';
 import PlayerBlockSmall from '../users/playerBlockSmall';
 import styles from '../../styles/RoomUserList.module.css';
 import RoomUserButtons from './roomUserButtons';
 import Link from 'next/link';
 
 interface RoomUserListProps {
+  room: ChatRoom;
   roomUsers: ChatRoomUser[];
   currentUser?: ChatRoomUser;
   successfulInviteHandler: (invitedUser: ChatRoomUser) => void;
 }
 
 const RoomUserList: FC<RoomUserListProps> = ({
+  room,
   roomUsers,
   currentUser,
   successfulInviteHandler,
@@ -48,6 +54,7 @@ const RoomUserList: FC<RoomUserListProps> = ({
                 {
                   <div className="ms-auto">
                     <RoomUserButtons
+                      room={room}
                       user={roomUser}
                       currentUser={currentUser}
                       successfulInviteHandler={successfulInviteHandler}

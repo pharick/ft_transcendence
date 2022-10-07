@@ -23,6 +23,7 @@ import {
   InviteChatUserDto,
 } from './chat.dtos';
 import { ChatRoom } from './chatRoom.entity';
+import { Direct } from './direct.entity';
 
 @Controller('chat/rooms')
 export class ChatRoomsController {
@@ -59,7 +60,7 @@ export class ChatRoomsController {
   async createDirect(
     @Req() request: Request,
     @Body() { userId }: CreateDirectDto,
-  ): Promise<ChatRoom> {
+  ): Promise<Direct> {
     return this.chatRoomsService
       .createDirect(request.user.id, userId)
       .catch((error) => {
@@ -73,13 +74,41 @@ export class ChatRoomsController {
   async findDirect(
     @Req() request: Request,
     @Param('userId', new ParseIntPipe()) userId: number,
-  ): Promise<ChatRoom> {
-    const room = await this.chatRoomsService.findDirect(
+  ): Promise<Direct> {
+    const direct = await this.chatRoomsService.findDirect(
       request.user.id,
       userId,
     );
-    if (!room) throw new NotFoundException();
-    return room;
+    if (!direct) throw new NotFoundException();
+    return direct;
+  }
+
+  @Post('directs/:userId/block')
+  @UseGuards(TwoFactorJwtAuthGuard)
+  async blockDirect(
+    @Req() request: Request,
+    @Param('userId', new ParseIntPipe()) userId: number,
+  ) {
+    const direct = await this.chatRoomsService.findDirect(
+      request.user.id,
+      userId,
+    );
+    if (!direct) throw new NotFoundException();
+    await this.chatRoomsService.blockDirect(direct.id, userId);
+  }
+
+  @Post('directs/:userId/unblock')
+  @UseGuards(TwoFactorJwtAuthGuard)
+  async unblockDirect(
+    @Req() request: Request,
+    @Param('userId', new ParseIntPipe()) userId: number,
+  ) {
+    const direct = await this.chatRoomsService.findDirect(
+      request.user.id,
+      userId,
+    );
+    if (!direct) throw new NotFoundException();
+    await this.chatRoomsService.unblockDirect(direct.id, userId);
   }
 
   @Put(':id/invites')

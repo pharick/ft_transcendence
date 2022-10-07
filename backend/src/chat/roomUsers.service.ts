@@ -17,9 +17,9 @@ export class RoomUsersService {
     });
   }
 
-  findOneByUserId(userId: number): Promise<ChatRoomUser> {
+  findOneByUserId(roomId: number, userId: number): Promise<ChatRoomUser> {
     return this.roomUserRepository.findOne({
-      where: { user: { id: userId } },
+      where: { room: { id: roomId }, user: { id: userId } },
       relations: ['room'],
     });
   }
