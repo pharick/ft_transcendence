@@ -76,7 +76,11 @@ const Chat: FC<ChatProps> = ({ room }) => {
     });
 
     socket.on('muted', (text: string) => {
-      setMutedText(text);
+      if (room.type == ChatRoomType.Direct) {
+        setMutedText('This user blocked your direct messages');
+      } else {
+        setMutedText(text);
+      }
     });
 
     setSocket(socket);

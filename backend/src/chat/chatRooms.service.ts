@@ -122,31 +122,53 @@ export class ChatRoomsService {
       relations: ['chatRoom', 'user1', 'user2'],
     });
     if (!direct) return undefined;
-    const roomUser1 = await this.roomUserRepository.findOneBy({
-      room: direct.chatRoom,
-      user: user1,
+    const roomUser1 = await this.roomUserRepository.findOne({
+      where: {
+        room: direct.chatRoom,
+        user: user1,
+      },
+      relations: ['user'],
     });
-    const roomUser2 = await this.roomUserRepository.findOneBy({
-      room: direct.chatRoom,
-      user: user2,
+    const roomUser2 = await this.roomUserRepository.findOne({
+      where: {
+        room: direct.chatRoom,
+        user: user2,
+      },
+      relations: ['user'],
     });
+
+    console.log(roomUser1);
+    console.log(roomUser2);
+
     if (direct.user1Blocked) {
-      await this.roomUserRepository.update(roomUser1.id, {
-        mutedUntil: new Date(Date.now() + 1000 * 60 * 60 * 24),
-      });
+      await this.roomUserRepository.update(
+        direct.user1.id == roomUser1.user.id ? roomUser1.id : roomUser2.id,
+        {
+          mutedUntil: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        },
+      );
     } else {
-      await this.roomUserRepository.update(roomUser1.id, {
-        mutedUntil: null,
-      });
+      await this.roomUserRepository.update(
+        direct.user1.id == roomUser1.user.id ? roomUser1.id : roomUser2.id,
+        {
+          mutedUntil: null,
+        },
+      );
     }
     if (direct.user2Blocked) {
-      await this.roomUserRepository.update(roomUser2.id, {
-        mutedUntil: new Date(Date.now() + 1000 * 60 * 60 * 24),
-      });
+      await this.roomUserRepository.update(
+        direct.user2.id == roomUser1.user.id ? roomUser1.id : roomUser2.id,
+        {
+          mutedUntil: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        },
+      );
     } else {
-      await this.roomUserRepository.update(roomUser2.id, {
-        mutedUntil: null,
-      });
+      await this.roomUserRepository.update(
+        direct.user2.id == roomUser1.user.id ? roomUser1.id : roomUser2.id,
+        {
+          mutedUntil: null,
+        },
+      );
     }
     return direct;
   }

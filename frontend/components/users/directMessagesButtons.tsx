@@ -6,6 +6,7 @@ import { Direct, User } from '../../types/interfaces';
 import { RequestErrorHandlerContext } from '../utils/requestErrorHandlerProvider';
 import { fetchWithHandleErrors } from '../../utils';
 import { CreateDirectDto } from '../../types/dtos';
+import { useRouter } from 'next/router';
 
 interface DirectMessagesButtonProps {
   user: User;
@@ -15,6 +16,7 @@ const DirectMessagesButtons: FC<DirectMessagesButtonProps> = ({ user }) => {
   const requestErrorHandlerContext = useContext(RequestErrorHandlerContext);
   const [blocked, setBlocked] = useState<boolean>();
   const [roomId, setRoomId] = useState<number>();
+  const router = useRouter();
 
   useEffect(() => {
     const getRoom = async () => {
@@ -54,7 +56,7 @@ const DirectMessagesButtons: FC<DirectMessagesButtonProps> = ({ user }) => {
       method: 'POST',
       authRequired: true,
     });
-    if (response.ok) setBlocked(true);
+    if (response.ok) router.reload();
   };
 
   const handleUnblock = async () => {
@@ -64,7 +66,7 @@ const DirectMessagesButtons: FC<DirectMessagesButtonProps> = ({ user }) => {
       method: 'POST',
       authRequired: true,
     });
-    if (response.ok) setBlocked(false);
+    if (response.ok) router.reload();
   };
 
   if (roomId) {

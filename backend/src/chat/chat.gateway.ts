@@ -61,7 +61,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       roomId,
       user.id,
     );
-    console.log(roomUser);
     const muteDate = await this.checkMute(roomUser);
     if (muteDate) {
       client.emit('muted', `You're muted until ${muteDate}`);
