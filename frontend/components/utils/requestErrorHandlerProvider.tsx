@@ -1,6 +1,14 @@
-import { createContext, FC, ReactNode, useMemo, useState } from 'react';
+import {
+  createContext,
+  FC,
+  ReactNode,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import dynamic from 'next/dynamic';
 import UserHeaderBlock from '../users/userHeaderBlock';
+import { UserContext } from '../users/userProvider';
 
 const Modal = dynamic(() => import('../../components/layout/modal'), {
   ssr: false,
@@ -36,6 +44,7 @@ export const RequestErrorHandlerContext =
 const RequestErrorHandlerProvider: FC<RequestErrorHandlerProviderProps> = ({
   children,
 }) => {
+  const userContext = useContext(UserContext);
   const [result, setResult] = useState(RequestResult.Success);
   const [response, setResponse] = useState<Response | undefined>();
 
@@ -45,6 +54,7 @@ const RequestErrorHandlerProvider: FC<RequestErrorHandlerProviderProps> = ({
   ) => {
     const response = await requestHandler();
     if (response?.status == 401 && !ignoreCodes.includes(401)) {
+      userContext.handleLogout();
       setResult(RequestResult.Unauthorized);
     } else if (
       !response?.ok &&
