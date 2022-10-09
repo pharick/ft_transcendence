@@ -114,7 +114,7 @@ const ChatRooms: FC = () => {
                 }}
               >
                 {Object.keys(ChatRoomType)
-                  .filter((key) => isNaN(Number(key)))
+                  .filter((key) => isNaN(Number(key)) && key != 'Direct')
                   .map((key) => (
                     <option
                       key={Object(ChatRoomType)[key]}
